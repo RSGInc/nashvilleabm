@@ -35,7 +35,7 @@ shared Scen_Dir
 // ----- Set the paths for the TASN_FLOW files
 	Modes            = {"Local","Brt","ExpBus","UrbRail","ComRail"}      // List of transit modes
     AccessAssgnModes = {"Walk","PnR","KnR"}                              // List of access modes for mode choice model
-    Periods = {"PK","OP"}
+    Periods = {"AM","MD","PM","OP"}
 
 	v_stop=null
 	v_route=null

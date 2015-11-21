@@ -5,7 +5,7 @@
     
     //  Define Parameters                                          
     OutDir                = scen_data_dir + "outputs\\"                          // path of the output folder 
-    Periods               = {"PK","OP"}                                          // Periods defined in the transit model
+    Periods               = {"AM","MD","PM","OP"}                                // Periods defined in the transit model
     PeriodsHwy            = {"AM","MD"}                                          // Highway Time of Day Periods used in Transit
     Modes                 = {"Local","Brt", "ExpBus", "UrbRail", "ComRail"}      // List of transit modes
     AccessModes           = {"Walk","Drive"}                                     // List of access modes for building paths
@@ -44,7 +44,6 @@
            inmat  = OutDir + Periods[iper] + "_" + AccessModes[iacc] + Modes[imode] + ".mtx"
            outmat = OutDir + Periods[iper] + "_" + AccessModes[iacc] + Modes[imode] + "Skim.mtx"
            new_mat = CopyFile(inmat,outmat)
-           
          end   // transit 
       end    // access  
     end    // period 
@@ -262,6 +261,17 @@
 	      end
 	   end
   end
+
+  // For Airport Model - copy AM as PK - temp solution while going from two time periods to four time periods - nagendra.dhakar@rsginc.com				
+	for iacc=1 to AccessModes.Length do
+		for imode=1 to Modes.Length do
+				
+				inmat  = OutDir + "AM_" + AccessModes[iacc] + Modes[imode] + "Skim.mtx"
+				outmat = OutDir + "PK_" + AccessModes[iacc] + Modes[imode] + "Skim.mtx"
+				new_mat = CopyFile(inmat,outmat)
+				
+		 end   // transit 
+	end    // access  
 
 	if (DeleteTempOutputFiles = 1) then do
 		batch_ptr = OpenFile(OutDir + "deletefiles.bat", "w")
