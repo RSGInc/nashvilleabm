@@ -599,7 +599,7 @@ EndMacro
 
 // STEP 10.3: Macro to output Mode Choice Statistics
 Macro "TRNSTAT"
-    shared OutDir, DwellTimebyMode, DeleteTempOutputFiles, DeleteSummitFiles, modetable, Periods   // input files
+    shared OutDir, DwellTimeFactor, DeleteTempOutputFiles, DeleteSummitFiles, modetable, Periods   // input files
     shared stat_file // output files
 
     nfiles=Periods.length
@@ -664,7 +664,7 @@ Macro "TRNSTAT"
     WriteLine(sfile,"\n Created On: "+SubString(stime,1,3)+","+SubString(stime,4,7)+""+SubString(stime,20,5)+" ("+SubString(stime,12,8)+")\n Nashville Transit Assignment Summary")
     WriteLine(sfile,"\n Alternative: "+SubString(InDir,1,100)+" \n\n\n")
 
-    dim DwellTimebyMode[100]
+	dim DwellTimeFactor[100]
     ModeTable=OpenTable("modetable","dBASE",{modetable,})
     fields=GetTableStructure(ModeTable)
 
@@ -672,17 +672,14 @@ Macro "TRNSTAT"
     rec=GetFirstRecord(view_set,null)
     i=1
     while rec!=null do
-       values=GetRecordValues(ModeTable,,)
-       Dwell1=ModeTable.AM_Dwell
-       Dwell2=ModeTable.MD_Dwell
-       Dwell3=ModeTable.PM_Dwell
-       Dwell4=ModeTable.OP_Dwell			 
-			 
-       imde=ModeTable.MODE_ID
+        values=GetRecordValues(ModeTable,,)
+		Factor = ModeTable.DWELL_FACT	// mins/mile
+        imde=ModeTable.MODE_ID
+		
+		DwellTimeFactor[i] = {imde,Factor}
 
-       DwellTimebyMode[i] = {imde,Dwell1,Dwell2,Dwell3,Dwell4}
-       i=i+1
-       rec=GetNextRecord(view_set, null, null)
+        i=i+1
+        rec=GetNextRecord(view_set, null, null)
     end
 
     for k = 1 to ModeChoiceFiles.length do
@@ -822,12 +819,12 @@ Macro "TRNSTAT"
 
     WriteLine(sfile,"\n\n\nTRANSIT BOARDINGS BY MODE (TRANSIT ASSIGNMENT RESULTS)")
     WriteLine(sfile,"=======================================================================================|=========")
-    WriteLine(sfile," Mode         Mode Name      Dwell Time         AM         MD         PM         OP    |    Total")
+    WriteLine(sfile," Mode         Mode Name      Factor         AM         MD         PM         OP    |    Total")
     WriteLine(sfile,"=======================================================================================|=========")
     
 		for k=1 to maxmode do
 			if (totbrd[k] > 0) then do
-				WriteLine(sfile,"   "+Format(k,"00")+"    "+modename[k]+"            "+Format(DwellTimebyMode[k][2],"0.00")+"      "+Format(ambrd[k],",00000")+"      "+
+				WriteLine(sfile,"   "+Format(k,"00")+"    "+modename[k]+"            "+Format(DwellTimeFactor[k][2],"0.00")+"      "+Format(ambrd[k],",00000")+"      "+
 				Format(mdbrd[k],",00000")+"      "+Format(pmbrd[k],",00000")+"      "+Format(opbrd[k],",00000")+"   |   "+Format(totbrd[k],",00000"))
 			end
     end
