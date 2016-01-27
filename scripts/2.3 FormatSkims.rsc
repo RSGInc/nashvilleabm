@@ -83,6 +83,7 @@
                 mc22 = CreateMatrixCurrency(m, timevar + " (Commuter Rail)", , , )
                 mc23 = CreateMatrixCurrency(m, timevar + " (New FG)", , , )
                 mc24 = CreateMatrixCurrency(m, timevar + " (Project FG)", , , )
+				mc25 = CreateMatrixCurrency(m, timevar + " (Commuter Rail Shuttles)", , , )
                 
                 mc1 := Nz(mc1)
                 mc2 := Nz(mc2)
@@ -108,6 +109,7 @@
                 mc22 := Nz(mc22)
                 mc23 := Nz(mc23)
                 mc24 := Nz(mc24)
+				mc25 := Nz(mc25)
 
                 if (Modes[imode]="Local") then do
                    FillMatrix(mc2, null, null, {"Multiply", 100}, )
@@ -137,14 +139,15 @@
                   mc14 := if ((mc19 + mc20) <= 0) then 0 else mc14
                   mc15 := if ((mc19 + mc20) <= 0) then 0 else mc15
                   mc16 := if ((mc19 + mc20) <= 0) then 0 else mc16
-                  mc17 := if ((mc19 + mc20) <= 0) then 0 else mc17
+                  mc17 := if ((mc19 + mc20) <= 0) then 0 else (mc17 + mc18)   // for DaySim - as only express bus ivt is provided in the roster, therefore, this core should also include commuter bus.
                   mc18 := if ((mc19 + mc20) <= 0) then 0 else mc18
                   mc19 := if ((mc19 + mc20) <= 0) then 0 else mc19
                   mc20 := if ((mc19 + mc20) <= 0) then 0 else mc20
                   mc21 := if ((mc19 + mc20) <= 0) then 0 else mc21
-                  mc22 := if ((mc19 + mc20) <= 0) then 0 else mc22
+                  mc22 := if ((mc19 + mc20) <= 0) then 0 else (mc22 + mc25)    // for DaySim - as only commuter rail ivt is provided in the roster, therefore, this core should also include commuter rail shuttle.
                   mc23 := if ((mc19 + mc20) <= 0) then 0 else mc23
                   mc24 := if ((mc19 + mc20) <= 0) then 0 else mc24
+				  mc25 := if ((mc19 + mc20) <= 0) then 0 else mc25
                 
                   FillMatrix(mc2, null, null, {"Multiply", 100}, )
 /*                new_mat = CombineMatrices({mc1, mc2, mc3, mc4, mc5, mc6, mc7, mc8, mc9, mc10, mc11, mc12, mc13,
@@ -172,14 +175,15 @@
                   mc14 := if ((mc17 + mc18) <= 0) then 0 else mc14
                   mc15 := if ((mc17 + mc18) <= 0) then 0 else mc15
                   mc16 := if ((mc17 + mc18) <= 0) then 0 else mc16
-                  mc17 := if ((mc17 + mc18) <= 0) then 0 else mc17
+                  mc17 := if ((mc17 + mc18) <= 0) then 0 else (mc17 + mc18)
                   mc18 := if ((mc17 + mc18) <= 0) then 0 else mc18
                   mc19 := if ((mc17 + mc18) <= 0) then 0 else mc19
                   mc20 := if ((mc17 + mc18) <= 0) then 0 else mc20
                   mc21 := if ((mc17 + mc18) <= 0) then 0 else mc21
-                  mc22 := if ((mc17 + mc18) <= 0) then 0 else mc22
+                  mc22 := if ((mc17 + mc18) <= 0) then 0 else (mc22 + mc25)
                   mc23 := if ((mc17 + mc18) <= 0) then 0 else mc23
                   mc24 := if ((mc17 + mc18) <= 0) then 0 else mc24
+				  mc25 := if ((mc17 + mc18) <= 0) then 0 else mc25
                 
                 FillMatrix(mc2, null, null, {"Multiply", 100}, )
 /*                new_mat = CombineMatrices({mc1, mc2, mc3, mc4, mc5, mc6, mc7, mc8, mc9, mc10, mc11, mc12, mc13,
@@ -206,14 +210,15 @@
                   mc14 := if (mc21 <= 0) then 0 else mc14
                   mc15 := if (mc21 <= 0) then 0 else mc15
                   mc16 := if (mc21 <= 0) then 0 else mc16
-                  mc17 := if (mc21 <= 0) then 0 else mc17
+                  mc17 := if (mc21 <= 0) then 0 else (mc17 + mc18)
                   mc18 := if (mc21 <= 0) then 0 else mc18
                   mc19 := if (mc21 <= 0) then 0 else mc19
                   mc20 := if (mc21 <= 0) then 0 else mc20
                   mc21 := if (mc21 <= 0) then 0 else mc21
-                  mc22 := if (mc21 <= 0) then 0 else mc22
+                  mc22 := if (mc21 <= 0) then 0 else (mc22 + mc25)
                   mc23 := if (mc21 <= 0) then 0 else mc23
                   mc24 := if (mc21 <= 0) then 0 else mc24
+				  mc25 := if (mc21 <= 0) then 0 else mc25
                
                 FillMatrix(mc2, null, null, {"Multiply", 100}, )
 /*                new_mat = CombineMatrices({mc1, mc2, mc3, mc4, mc5, mc6, mc7, mc8, mc9, mc10, mc11, mc12, mc13,
@@ -224,30 +229,31 @@
 */              end
 
                 if (Modes[imode]="ComRail") then do
-                  mc1 := if (mc22 <= 0) then 0 else mc1
-                  mc2 := if (mc22 <= 0) then 0 else mc2
-                  mc3 := if (mc22 <= 0) then 0 else mc3
-                  mc4 := if (mc22 <= 0) then 0 else mc4
-                  mc5 := if (mc22 <= 0) then 0 else mc5
-                  mc6 := if (mc22 <= 0) then 0 else mc6
-                  mc7 := if (mc22 <= 0) then 0 else mc7
-                  mc8 := if (mc22 <= 0) then 0 else mc8
-                  mc9 := if (mc22 <= 0) then 0 else mc9
-                  mc10 := if (mc22 <= 0) then 0 else mc10
-                  mc11 := if (mc22 <= 0) then 0 else mc11
-                  mc12 := if (mc22 <= 0) then 0 else mc12
-                  mc13 := if (mc22 <= 0) then 0 else mc13
-                  mc14 := if (mc22 <= 0) then 0 else mc14
-                  mc15 := if (mc22 <= 0) then 0 else mc15
-                  mc16 := if (mc22 <= 0) then 0 else mc16
-                  mc17 := if (mc22 <= 0) then 0 else mc17
-                  mc18 := if (mc22 <= 0) then 0 else mc18
-                  mc19 := if (mc22 <= 0) then 0 else mc19
-                  mc20 := if (mc22 <= 0) then 0 else mc20
-                  mc21 := if (mc22 <= 0) then 0 else mc21
-                  mc22 := if (mc22 <= 0) then 0 else mc22
-                  mc23 := if (mc22 <= 0) then 0 else mc23
-                  mc24 := if (mc22 <= 0) then 0 else mc24
+                  mc1 := if ((mc22 + mc25) <= 0) then 0 else mc1
+                  mc2 := if ((mc22 + mc25) <= 0) then 0 else mc2
+                  mc3 := if ((mc22 + mc25) <= 0) then 0 else mc3
+                  mc4 := if ((mc22 + mc25) <= 0) then 0 else mc4
+                  mc5 := if ((mc22 + mc25) <= 0) then 0 else mc5
+                  mc6 := if ((mc22 + mc25) <= 0) then 0 else mc6
+                  mc7 := if ((mc22 + mc25) <= 0) then 0 else mc7
+                  mc8 := if ((mc22 + mc25) <= 0) then 0 else mc8
+                  mc9 := if ((mc22 + mc25) <= 0) then 0 else mc9
+                  mc10 := if ((mc22 + mc25) <= 0) then 0 else mc10
+                  mc11 := if ((mc22 + mc25) <= 0) then 0 else mc11
+                  mc12 := if ((mc22 + mc25) <= 0) then 0 else mc12
+                  mc13 := if ((mc22 + mc25) <= 0) then 0 else mc13
+                  mc14 := if ((mc22 + mc25) <= 0) then 0 else mc14
+                  mc15 := if ((mc22 + mc25) <= 0) then 0 else mc15
+                  mc16 := if ((mc22 + mc25) <= 0) then 0 else mc16
+                  mc17 := if ((mc22 + mc25) <= 0) then 0 else (mc17 + mc18)
+                  mc18 := if ((mc22 + mc25) <= 0) then 0 else mc18
+                  mc19 := if ((mc22 + mc25) <= 0) then 0 else mc19
+                  mc20 := if ((mc22 + mc25) <= 0) then 0 else mc20
+                  mc21 := if ((mc22 + mc25) <= 0) then 0 else mc21
+                  mc22 := if ((mc22 + mc25) <= 0) then 0 else (mc22 + mc25)
+                  mc23 := if ((mc22 + mc25) <= 0) then 0 else mc23
+                  mc24 := if ((mc22 + mc25) <= 0) then 0 else mc24
+				  mc25 := if ((mc22 + mc25) <= 0) then 0 else mc25
                 
                    FillMatrix(mc2, null, null, {"Multiply", 100}, )
 /*                new_mat = CombineMatrices({mc1, mc2, mc3, mc4, mc5, mc6, mc7, mc8, mc9, mc10, mc11, mc12, mc13,

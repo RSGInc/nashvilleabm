@@ -69,11 +69,14 @@ UpdateProgressBar("SetTransitParameters",)
     OutMarketSegment    = OutDir + "hhauto.dat"
     stat_file           = Args.[Transit Statistics]                                  // file to write transit statistics
 
-		//  Define Parameters
+	//  Define Parameters
     Periods                     = {"AM","MD","PM","OP"}                              // Periods defined in the transit model
-    Modes                       = {"Local","Brt", "ExpBus", "UrbRail", "ComRail"}    // List of transit modes
+	//Periods                     = {"AM"}                              // Periods defined in the transit model    
+	Modes                       = {"Local","Brt", "ExpBus", "UrbRail", "ComRail"}    // List of transit modes
+	//AccessModes                 = {"Walk"}                                   // List of access modes for building paths
     AccessModes                 = {"Walk","Drive"}                                   // List of access modes for building paths
     AccessAssgnModes            = {"Walk","PnR","KnR"}                               // List of access modes for mode choice model
+	//AccessAssgnModes            = {"Walk"}                               // List of access modes for mode choice model
 
     TransitTimeFactor           = {1.00,1.00,0.00,0.00}                              // corresponds to Link TTF No. (arterials, expressways, transitonly links, railroads)
     TransitOnlyLinkDefaultSpeed = {0.00, 0.00, 13.00, 40.00}                         // corresponds to Link TTF No.
@@ -232,7 +235,7 @@ TransitDwell:
 		// in stops file
 		on notfound goto TransitDwellIn
     GetField(view_name+".AMDwellTime")
-    goto skip
+    goto MilepostLastStop
 		
 TransitDwellIn:
     strct = GetTableStructure(view_name)
@@ -245,7 +248,75 @@ TransitDwellIn:
 		end
 
     ModifyTable(view_name, new_struct)	
-		
+
+MilepostLastStop:
+	on notfound goto MilepostLastStopIn
+	GetField(view_name+".MP_LastStop")
+	goto DistanceLastStop
+
+MilepostLastStopIn:
+    strct = GetTableStructure(view_name)
+    for i = 1 to strct.length do strct[i] = strct[i] + {strct[i][1]} end
+		new_struct = strct
+		newfield = "MP_LastStop"
+		new_struct = new_struct + {{newfield, "Real", 10, 4, "False",,,, null}}
+
+    ModifyTable(view_name, new_struct)
+
+DistanceLastStop:
+	on notfound goto DistanceLastStopIn
+	GetField(view_name+".Distance_LastStop")
+	goto CalculateDistanceLastStop
+
+DistanceLastStopIn:
+    strct = GetTableStructure(view_name)
+    for i = 1 to strct.length do strct[i] = strct[i] + {strct[i][1]} end
+		new_struct = strct
+		newfield = "Distance_LastStop"
+		new_struct = new_struct + {{newfield, "Real", 10, 4, "False",,,, null}}
+
+    ModifyTable(view_name, new_struct)
+
+CalculateDistanceLastStop:
+	
+	// Calculate distance from last stop
+	Stopdb_layers = GetDBLayers(route_stop)
+	Stopview=AddLayertoWorkspace("Stopview", route_stop, Stopdb_layers[1])
+	SetLayer(Stopview)
+	
+	// selection set
+	nrecs=SelectByQuery("sorted_set", "Several", "Select * where Route_ID>0")
+	
+	// sort by route_id and milepost
+	SortSet("sorted_set","Route_ID, Milepost")
+	
+	// get route_id and milepost
+	MPStop=GetDataVectors("sorted_set",{"Route_ID","Milepost"},)
+	
+	// initialize variables
+	dim MPLastStop[MPStop[1].Length]
+	RouteID_prev=0
+
+	// populate an array with MP of previous stop
+	for i=1 to MPStop[1].Length do
+		RouteID=MPStop[1][i]
+		if (i=1 | RouteID!=RouteID_prev) then MPLastStop[i]=MPStop[2][i]
+		else MPLastStop[i]=MPStop[2][i-1]
+		RouteID_prev=RouteID
+	end
+	
+	// convert to array
+	MPLastStopVec=ArrayToVector(MPLastStop)
+	
+	//calculate distance from previous stop
+	DistanceLastStop=MPStop[2]-MPLastStopVec
+	
+	// Fill fields
+	SetDataVectors("sorted_set", {{"MP_LastStop", MPLastStopVec},{"Distance_LastStop", DistanceLastStop}}, )
+	
+	// remove layer from workspace
+	DropLayerFromWorkSpace(Stopview)
+	
 skip:
 
 // STEP 1.4: Fill the highway fields with default values
@@ -401,8 +472,9 @@ end
         if !ret_value then goto quit
     end
 
-// STEP 1.6: Open & read the modes table to add Dwell Times
-    dim DwellTimebyMode[100]
+// STEP 1.6: Open & read the modes table to get dwell time factors by mode
+
+	dim DwellTimeFactor[100]
     ModeTable=OpenTable("modetable","dBASE",{modetable,})
     fields=GetTableStructure(ModeTable)
 
@@ -411,31 +483,31 @@ end
     i=1
     while rec!=null do
         values=GetRecordValues(ModeTable,,)
-        Dwell1=ModeTable.AM_Dwell
-        Dwell2=ModeTable.MD_Dwell
-        Dwell3=ModeTable.PM_Dwell
-        Dwell4=ModeTable.OP_Dwell
+		Factor = ModeTable.DWELL_FACT	// mins/mile
         imde=ModeTable.MODE_ID
+		
+		DwellTimeFactor[i] = {imde,Factor}
 
-        DwellTimebyMode[i] = {imde,Dwell1,Dwell2,Dwell3,Dwell4}
         i=i+1
         rec=GetNextRecord(view_set, null, null)
     end
     NoofModes=i-1
 		
+		// New procedure to calculate dwell time - added by nagendra.dhakar@rsginc.com
 		// Fill Dwell time values by period
 		for iper=1 to Periods.Length do
 			for imode=1 to NoofModes do
-        Opts = null
-        Opts.Input.[Dataview Set] = {{route_stop + "|Route Stops", route_bin, "Route_ID", "Route_ID"}, "Route StopsRouteSystemR", "Selection", "Select * where Mode="+string(DwellTimebyMode[imode][1])}
-        Opts.Global.Fields = {Periods[iper]+"DwellTime"}
-        Opts.Global.Method = "Value"
-        Opts.Global.Parameter = {DwellTimebyMode[imode][iper+1]}
-        ret_value = RunMacro("TCB Run Operation", 5, "Fill Dataview", Opts)
+				Opts = null
+				Opts.Input.[Dataview Set] = {{route_stop + "|Route Stops", route_bin, "Route_ID", "Route_ID"}, "Route StopsRouteSystemR", "Selection", "Select * where Mode="+string(DwellTimeFactor[imode][1])+" and " + Periods[iper] + "TransitFlag=1"}
+				Opts.Global.Fields = {Periods[iper]+"DwellTime"}
+				Opts.Global.Method = "Formula"
+				Opts.Global.Parameter = {"Distance_LastStop*"+String(DwellTimeFactor[imode][2])}
+				ret_value = RunMacro("TCB Run Operation", 5, "Fill Dataview", Opts)
 				//if !ret_value then goto quit				// comment this out as not all modes in the routes file
 			end
-		end			
-
+		end					
+		
+		
 // STEP 1.7: Make a zone-zone matrix of 1's to conduct Preassignment
     zonefile=OpenTable("zonedata","FFB",{IDTable,})
     CreateMatrix({zonefile+"|","NEWID","Rows"}, {zonefile+"|","NEWID","Columns"},
@@ -632,11 +704,11 @@ UpdateProgressBar("BuildTransitPaths",)
 								
 								pnr_file = pnr_time_mat[iper]
 
-                if imode=1 then selmode=" (Mode<>null & Mode<=5)"
-                if imode=2 then selmode=" (Mode<>null & (Mode<=5 | Mode=8 | Mode=9))"
-                if imode=3 then selmode=" (Mode<>null & Mode<=9)"
-                if imode=4 then selmode=" (Mode<>null & Mode<=10)"
-                if imode=5 then selmode=" (Mode<>null & Mode<=14)"
+                if imode=1 then selmode=" (Mode<>null & Mode<=5)" 						// local bus
+                if imode=2 then selmode=" (Mode<>null & (Mode<=5 | Mode=8 | Mode=9))"	// BRT
+                if imode=3 then selmode=" (Mode<>null & Mode<=9)"						// Express Bus
+                if imode=4 then selmode=" (Mode<>null & Mode<=10)"						// Urban Rail
+                if imode=5 then selmode=" (Mode<>null & Mode<=14)"						// Commuter Rail
 
 
             // STEP 4.1: Build Transit Network
@@ -686,7 +758,6 @@ UpdateProgressBar("BuildTransitPaths",)
                                                                    {"Pass_Count", {"[Route Stops].Pass_Count"}},
                                                                    {"Milepost", {"[Route Stops].Milepost"}},
                                                                    {"STOP_ID", {"[Route Stops].STOP_ID"}},
-                                                            //sra       {"UserID", {"[Route Stops].UserID"}},
                                                                    {"FareZone", {"[Route Stops].FareZone"}},
                                                                    {"NearNode", {"[Route Stops].NearNode"}}}
                 Opts.Global.[Network Options].[Street Node Attributes].ID = {nlayer + ".ID"}
@@ -725,24 +796,21 @@ UpdateProgressBar("BuildTransitPaths",)
                   Opts.Field.[Link Drive Time] = "TimeC"+Periods[iper]+"_*"
                 end
 								
-                Opts.Field.[Route Headway] 				= Periods[iper] + "_HDWY"
+                Opts.Field.[Route Headway] 		  = Periods[iper] + "_HDWY"
                 Opts.Field.[Mode Fare]            = "FARE"
                 Opts.Field.[Mode Imp Weight]      = Periods[iper]+"_LNKIMP"
                 Opts.Field.[Mode IWait Weight]    = "WAIT_IW"
                 Opts.Field.[Mode XWait Weight]    = "WAIT_XW"
                 Opts.Field.[Mode Dwell Weight]    = "DWELL_W"
-            //    Opts.Field.[Mode Headway]         = "MODES.HEADWAY"
                 Opts.Field.[Mode Max IWait]       = "MAX_WAIT"
                 Opts.Field.[Mode Min IWait]       = "MIN_WAIT"
                 Opts.Field.[Mode Max XWait]       = "MAX_WAIT"
                 Opts.Field.[Mode Min XWait]       = "MIN_WAIT"
-                Opts.Field.[Mode Dwell Time]      = Periods[iper]+"_DWELL"
                 Opts.Field.[Mode Max Access]      = "MAX_ACCESS"
                 Opts.Field.[Mode Max Egress]      = "MAX_EGRESS"
                 Opts.Field.[Mode Max Transfer]    = "MAX_XFER"
                 Opts.Field.[Mode Max Imp]         = "MAX_TIME"
                 Opts.Field.[Mode Impedance]       = Periods[iper]+"_IMP"
-            //    Opts.Field.[Mode Speed]           = "MODES.SPEED"
                 Opts.Field.[Mode Used]            = "MODE_USED"
                 Opts.Field.[Mode Access]          = "MODE_ACC"
                 Opts.Field.[Mode Egress]          = "MODE_EGR"
@@ -752,17 +820,19 @@ UpdateProgressBar("BuildTransitPaths",)
                 Opts.Field.[Inter-Mode Xfer Fare] = "XFER_FARE"
                 Opts.Global.[Global Fare Type] = 1
                 Opts.Global.[Global Fare Value] = 1.60
-                Opts.Global.[Global Xfer Fare] = 1.60
+                Opts.Global.[Global Xfer Fare] = 1.60					
                 Opts.Global.[Global Max WACC Path] = 50
                 Opts.Global.[Global Max PACC Path] = 5
                 Opts.Global.[Path Method] = 3
-                Opts.Global.[Path Threshold] = 0.7
+                Opts.Global.[Path Threshold] = 0.9				      // path combination factor - changed by nagendra.dhakar@rsginc.com on 12/30/2015.   
                 Opts.Global.[Value of Time] = ValueofTime
                 Opts.Global.[Max Xfer Number] = 4
                 Opts.Global.[Max Trip Time] = 240
                 Opts.Global.[Max Drive Time] = 45                     // this is weighted drive time
                 Opts.Global.[Walk Weight] = 2.5
                 Opts.Global.[Drive Time Weight] = 1.0                 // already weighted
+				Opts.Global.[Global Dwell On Time] = 0				  // set to o as dwell time is included in transit times, so that ivtt in skims include dwell times.
+				Opts.Global.[Global Dwell Off Time] = 0
                 Opts.Flag.[Use All Walk Path] = "Yes"
                 if AccessModes[iacc]="Drive" then do
                  Opts.Flag.[Use All Walk Path] = "No"
@@ -796,10 +866,14 @@ UpdateProgressBar("BuildTransitPaths",)
                 Opts.Input.[Dataview Set] = {{route_stop + "|Route Stops", OutDir + Periods[iper]+AccessModes[iacc]+Modes[imode]+"PreloadFlow.bin", "ID", "FROM_STOP"}, "Route Stops"+"RouteSystem"+Periods[iper]+"Prel"}
                 Opts.Global.Fields = {Periods[iper] + AccessModes[iacc] + Modes[imode] + "IVTT"}
                 Opts.Global.Method = "Formula"
-            //  Opts.Global.Parameter = "BaseIVTT + Layover + [" + Periods[iper] + "DwellTime]"
-                Opts.Global.Parameter = "BaseIVTT + Layover"
+				Opts.Global.Parameter = "BaseIVTT + Layover + [" + Periods[iper] + "DwellTime]"   // Added back to make sure IVTT in skims include dwell time
+                //Opts.Global.Parameter = "BaseIVTT + Layover"
                 ret_value = RunMacro("TCB Run Operation", 7, "Fill Dataview", Opts)
                 if !ret_value then goto quit
+				
+				// To Do :
+				// in Stop layer, sort by route_id (A) and MP (A). Then calculate distance from previous stop
+				// Calculate dwell time as = (2*distance). Note : 2 mins/mile
 
             // STEP 4.3.2: Now Update the Time Layer with the Correct Time Information
                 ActiveTransitNetwork=ReadNetwork(outtnw)
@@ -827,7 +901,7 @@ UpdateProgressBar("BuildTransitPaths",)
                                           "Number of Transfers", "In-Vehicle Distance", "Drive Distance", timevar}   // Number of Transfers are converted to Number of Boardings later: by nagendra.dhakar@rsginc.com
                 
                 Opts.Global.[OD Layer Type] = 2
-                Opts.Global.[Skim Modes] = {4, 5, 6, 7, 8, 9, 10, 12, 13, 14}  // skim travel times on new and project modes for additional bias logic in mode choice model
+                Opts.Global.[Skim Modes] = {4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 11}  // skim travel times on new and project modes for additional bias logic in mode choice model
                 Opts.Output.[Skim Matrix].Label = Periods[iper] + AccessModes[iacc] + Modes[imode] + " (Skim)"
                 Opts.Output.[Skim Matrix].Compression = 0
                 Opts.Output.[Skim Matrix].[File Name] = outskim
@@ -843,7 +917,7 @@ UpdateProgressBar("BuildTransitPaths",)
 
                 ret_value = RunMacro("TCB Run Procedure", "Transit Skim PF", Opts, &Ret)
                 if !ret_value then goto quit
-
+/*
             // STEP 4.5: Fill Stop layer BaseIVTT variable with results of preload ivtt (also add the dwell time so that the final network for assignment contains dwell time as well)
                 Opts = null
                 Opts.Input.[Dataview Set] = {{route_stop + "|Route Stops", OutDir + Periods[iper]+AccessModes[iacc]+Modes[imode]+"PreloadFlow.bin", "ID", "FROM_STOP"}, "Route Stops"+"RouteSystem"+Periods[iper]+"Prel"}
@@ -860,7 +934,7 @@ UpdateProgressBar("BuildTransitPaths",)
                 ActiveTransitNetwork=null
                 // NOTE: In-vehicle time in the transit networks now includes IVTT, layover and dwelling time ->
                 // this is done so that the assignment BaseIVTT gives total IVTT
-                
+ */              
             // STEP 5: Calculate boardings as xfers+1 - DaySim uses boardings for OD pairs with IVT>0. Therefore, adding 1 to all xfers is fine.
 
                 Opts = null
