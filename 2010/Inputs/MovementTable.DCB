@@ -1,0 +1,6 @@
+
+16
+"FROM_LINE",I,1,4,0,10,0,,"","",,"Blank",
+"ALIGHT_STOP",I,5,4,0,10,0,,"","",,"Blank",
+"BOARD_STOP",I,9,4,0,10,0,,"","",,"Blank",
+"TO_LINE",I,13,4,0,10,0,,"","",,"Blank",

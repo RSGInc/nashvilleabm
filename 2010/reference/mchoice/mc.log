@@ -1,0 +1,247 @@
+             Mode Choice Model
+        Program Version: 15August2013
+       Developed by Parsons Brinckerhoff
+
+
+Running mode choice for NHBO
+Read outputs/ParkingCost.csv : 78 ms
+Reading matrix origin_time
+Reading matrix Shortest Path - [time_MD_AB / time_MD_BA]
+Reading matrix total_time
+Reading matrix Length
+Reading matrix Length
+Reading matrix Shortest Path - [time_MD_AB / time_MD_BA]
+Reading matrix In-Vehicle Time
+Reading matrix TransitTimeOP_* (New BRT)
+Reading matrix Initial Wait Time
+Reading matrix Transfer Wait Time
+Reading matrix Transfer Walk Time
+Reading matrix Access Walk Time
+Reading matrix Egress Walk Time
+Reading matrix Fare
+Reading matrix Number of Transfers
+Reading matrix In-Vehicle Time
+Reading matrix TransitTimeOP_* (New BRT)
+Reading matrix Initial Wait Time
+Reading matrix Transfer Wait Time
+Reading matrix Transfer Walk Time
+Reading matrix Access Walk Time
+Reading matrix Egress Walk Time
+Reading matrix Fare
+Reading matrix Number of Transfers
+Reading matrix In-Vehicle Time
+Reading matrix TransitTimeOP_* (New BRT)
+Reading matrix Initial Wait Time
+Reading matrix Transfer Wait Time
+Reading matrix Transfer Walk Time
+Reading matrix Egress Walk Time
+Reading matrix Access Drive Time
+Reading matrix Fare
+Reading matrix Number of Transfers
+Reading matrix Access Drive Distance
+Reading matrix In-Vehicle Time
+Reading matrix Initial Wait Time
+Reading matrix Transfer Wait Time
+Reading matrix Transfer Walk Time
+Reading matrix Access Walk Time
+Reading matrix Egress Walk Time
+Reading matrix Fare
+Reading matrix Number of Transfers
+Reading matrix In-Vehicle Time
+Reading matrix TransitTimeOP_* (New BRT)
+Reading matrix Initial Wait Time
+Reading matrix Transfer Wait Time
+Reading matrix Transfer Walk Time
+Reading matrix Egress Walk Time
+Reading matrix Access Drive Time
+Reading matrix Fare
+Reading matrix Number of Transfers
+Reading matrix Access Drive Distance
+Reading matrix In-Vehicle Time
+Reading matrix TransitTimeOP_* (New BRT)
+Reading matrix Initial Wait Time
+Reading matrix Transfer Wait Time
+Reading matrix Transfer Walk Time
+Reading matrix Egress Walk Time
+Reading matrix Access Drive Time
+Reading matrix Fare
+Reading matrix Number of Transfers
+Reading matrix Access Drive Distance
+Reading matrix In-Vehicle Time
+Reading matrix TransitTimeOP_* (New BRT)
+Reading matrix TransitTimeOP_* (Urban Rail)
+Reading matrix Initial Wait Time
+Reading matrix Transfer Wait Time
+Reading matrix Transfer Walk Time
+Reading matrix Access Walk Time
+Reading matrix Egress Walk Time
+Reading matrix Fare
+Reading matrix Number of Transfers
+Reading matrix In-Vehicle Time
+Reading matrix TransitTimeOP_* (Urban Rail)
+Reading matrix Initial Wait Time
+Reading matrix Transfer Wait Time
+Reading matrix Transfer Walk Time
+Reading matrix Access Walk Time
+Reading matrix Egress Walk Time
+Reading matrix Fare
+Reading matrix Number of Transfers
+Reading matrix In-Vehicle Time
+Reading matrix TransitTimeOP_* (New BRT)
+Reading matrix TransitTimeOP_* (Urban Rail)
+Reading matrix Initial Wait Time
+Reading matrix Transfer Wait Time
+Reading matrix Transfer Walk Time
+Reading matrix Egress Walk Time
+Reading matrix Access Drive Time
+Reading matrix Fare
+Reading matrix Number of Transfers
+Reading matrix Access Drive Distance
+Reading matrix In-Vehicle Time
+Reading matrix TransitTimeOP_* (Urban Rail)
+Reading matrix Initial Wait Time
+Reading matrix Transfer Wait Time
+Reading matrix Transfer Walk Time
+Reading matrix Egress Walk Time
+Reading matrix Access Drive Time
+Reading matrix Fare
+Reading matrix Number of Transfers
+Reading matrix Access Drive Distance
+Reading matrix In-Vehicle Time
+Reading matrix TransitTimeOP_* (New BRT)
+Reading matrix TransitTimeOP_* (Urban Rail)
+Reading matrix Initial Wait Time
+Reading matrix Transfer Wait Time
+Reading matrix Transfer Walk Time
+Reading matrix Egress Walk Time
+Reading matrix Access Drive Time
+Reading matrix Fare
+Reading matrix Number of Transfers
+Reading matrix Access Drive Distance
+Reading matrix In-Vehicle Time
+Reading matrix TransitTimeOP_* (New BRT)
+Reading matrix Initial Wait Time
+Reading matrix Transfer Wait Time
+Reading matrix Transfer Walk Time
+Reading matrix Egress Walk Time
+Reading matrix Access Drive Time
+Reading matrix Fare
+Reading matrix Number of Transfers
+Reading matrix Access Drive Distance
+Reading matrix In-Vehicle Time
+Reading matrix TransitTimeOP_* (Urban Rail)
+Reading matrix Initial Wait Time
+Reading matrix Transfer Wait Time
+Reading matrix Transfer Walk Time
+Reading matrix Egress Walk Time
+Reading matrix Access Drive Time
+Reading matrix Fare
+Reading matrix Number of Transfers
+Reading matrix Access Drive Distance
+
+Nest Name = level_2_alt_0_to_1   NestingCoefficient = 1.00000000
+Alternatives  = level_1_alt_0_to_1, level_1_alt_2_to_4, 
+
+Nest Name = level_1_alt_0_to_1   NestingCoefficient = 0.50000000
+Alternatives  = level_0_alt_0_to_0, level_0_alt_1_to_2, 
+
+Nest Name = level_0_alt_0_to_0   NestingCoefficient = 0.50000000
+Alternatives  = DA, 
+
+Nest Name = level_0_alt_1_to_2   NestingCoefficient = 0.25000000
+Alternatives  = SR2, SR3, 
+
+Nest Name = level_1_alt_2_to_4   NestingCoefficient = 0.50000000
+Alternatives  = level_0_alt_3_to_7, level_0_alt_8_to_12, level_0_alt_13_to_17, 
+
+Nest Name = level_0_alt_3_to_7   NestingCoefficient = 0.25000000
+Alternatives  = WLKLOCBUS, WLKBRT, WLKEXPBUS, WLKURBRAIL, WLKCOMRAIL, 
+
+Nest Name = level_0_alt_8_to_12   NestingCoefficient = 0.25000000
+Alternatives  = PNRLOCBUS, PNRBRT, PNREXPBUS, PNRURBRAIL, PNRCOMRAIL, 
+
+Nest Name = level_0_alt_13_to_17   NestingCoefficient = 0.25000000
+Alternatives  = KNRLOCBUS, KNRBRT, KNREXPBUS, KNRURBRAIL, KNRCOMRAIL, 
+Tracing on.
+After DMU creation...
+Reading matrix NHBO1
+Starting mode choice calculations for NHBO
+         using market segments:        nhbo
+  PTAZ 1
+  PTAZ 101
+  PTAZ 201
+  PTAZ 301
+  PTAZ 401
+  PTAZ 501
+  PTAZ 601
+  PTAZ 701
+  PTAZ 801
+  PTAZ 901
+  PTAZ 1001
+  PTAZ 1101
+  PTAZ 1201
+  PTAZ 1301
+  PTAZ 1401
+  PTAZ 1501
+  PTAZ 1601
+  PTAZ 1701
+  PTAZ 1801
+  PTAZ 1901
+  PTAZ 2001
+  PTAZ 2101
+  PTAZ 2201
+  PTAZ 2301
+  PTAZ 2401
+  PTAZ 2501
+  PTAZ 2601
+  PTAZ 2701
+  PTAZ 2801
+Total Trips for NHBO
+                       ShortToShort      ShortToLong      LongToShort       LongToLong     DriveToShort      DriveToLong  NoTransitAccess            Total
+  DA                     0.00000000       0.00000000       0.00000000    1572.44111756       0.00000000       0.00000000       0.00000000    1572.44111756
+  SR2                    0.00000000       0.00000000       0.00000000    2202.17611183       0.00000000       0.00000000       0.00000000    2202.17611183
+  SR3                    0.00000000       0.00000000       0.00000000    1587.24214973       0.00000000       0.00000000       0.00000000    1587.24214973
+  WLKLOCBUS              0.00000000       0.00000000       0.00000000      45.51285241       0.00000000       0.00000000       0.00000000      45.51285241
+  WLKBRT                 0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000
+  WLKEXPBUS              0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000
+  WLKURBRAIL             0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000
+  WLKCOMRAIL             0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000
+  PNRLOCBUS              0.00000000       0.00000000       0.00000000       0.00721623       0.00000000       0.00000000       0.00000000       0.00721623
+  PNRBRT                 0.00000000       0.00000000       0.00000000       0.06305354       0.00000000       0.00000000       0.00000000       0.06305354
+  PNREXPBUS              0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000
+  PNRURBRAIL             0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000
+  PNRCOMRAIL             0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000
+  KNRLOCBUS              0.00000000       0.00000000       0.00000000       0.22391636       0.00000000       0.00000000       0.00000000       0.22391636
+  KNRBRT                 0.00000000       0.00000000       0.00000000       0.33355945       0.00000000       0.00000000       0.00000000       0.33355945
+  KNREXPBUS              0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000
+  KNRURBRAIL             0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000
+  KNRCOMRAIL             0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000
+  Total                  0.00000000       0.00000000       0.00000000    5407.99997711       0.00000000       0.00000000       0.00000000    5407.99997711
+
+
+
+Total Trips for NHBO
+                               nhbo            Total
+  DA                  1572.44111756    1572.44111756
+  SR2                 2202.17611183    2202.17611183
+  SR3                 1587.24214973    1587.24214973
+  WLKLOCBUS             45.51285241      45.51285241
+  WLKBRT                 0.00000000       0.00000000
+  WLKEXPBUS              0.00000000       0.00000000
+  WLKURBRAIL             0.00000000       0.00000000
+  WLKCOMRAIL             0.00000000       0.00000000
+  PNRLOCBUS              0.00721623       0.00721623
+  PNRBRT                 0.06305354       0.06305354
+  PNREXPBUS              0.00000000       0.00000000
+  PNRURBRAIL             0.00000000       0.00000000
+  PNRCOMRAIL             0.00000000       0.00000000
+  KNRLOCBUS              0.22391636       0.22391636
+  KNRBRT                 0.33355945       0.33355945
+  KNREXPBUS              0.00000000       0.00000000
+  KNRURBRAIL             0.00000000       0.00000000
+  KNRCOMRAIL             0.00000000       0.00000000
+  Total               5407.99997711    5407.99997711
+
+
+
+Mode choice model run successfully!

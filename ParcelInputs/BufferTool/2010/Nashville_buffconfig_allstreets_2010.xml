@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DaySimBufferingTool>
+  <INPUTS>
+    <FILEPATHS>
+      <ParcelFile>E:\Projects\Clients\Nashville\RunModel\CleanABMsetup\ToNashvilleMPO\ParcelInputs\BufferTool\2010\MZ_disaggregation_nashville_2010.csv</ParcelFile>
+      <IntersectionFile>E:\Projects\Clients\Nashville\RunModel\CleanABMsetup\ToNashvilleMPO\ParcelInputs\BufferTool\2010\intersections_nashville.txt</IntersectionFile>
+      <TransitStopsFile>E:\Projects\Clients\Nashville\RunModel\CleanABMsetup\ToNashvilleMPO\ParcelInputs\BufferTool\2010\allstops_2010.csv</TransitStopsFile>
+      <OpenSpacesFile />
+      <CircuityFile />
+      <NodeFile>E:\Projects\Clients\Nashville\RunModel\CleanABMsetup\ToNashvilleMPO\ParcelInputs\BufferTool\2010\input_node.csv</NodeFile>
+      <NodeDistanceFile>E:\Projects\Clients\Nashville\RunModel\CleanABMsetup\ToNashvilleMPO\ParcelInputs\BufferTool\2010\node_node_distances.dat</NodeDistanceFile>
+      <ExtendedNodeFile>E:\Projects\Clients\Nashville\RunModel\CleanABMsetup\ToNashvilleMPO\ParcelInputs\BufferTool\2010\extnode_2010.dat</ExtendedNodeFile>
+      <ParcelNodeFile>E:\Projects\Clients\Nashville\RunModel\CleanABMsetup\ToNashvilleMPO\ParcelInputs\BufferTool\2010\mz_node_2010.dat</ParcelNodeFile>
+      <IntNodeFile>E:\Projects\Clients\Nashville\RunModel\CleanABMsetup\ToNashvilleMPO\ParcelInputs\BufferTool\2010\int_node_2010.dat</IntNodeFile>
+      <StopNodeFile>E:\Projects\Clients\Nashville\RunModel\CleanABMsetup\ToNashvilleMPO\ParcelInputs\BufferTool\2010\stop_node_2010.dat</StopNodeFile>
+      <OpenSpacesNodeFile />
+    </FILEPATHS>
+    <PARAMETERS>
+      <DistCalcType>Node-to-Node</DistCalcType>
+      <BuffType>Logistic decay</BuffType>
+      <BuffDist1>660</BuffDist1>
+      <BuffDecaySlope1>0.76</BuffDecaySlope1>
+      <BuffExpParam1>-2.5205</BuffExpParam1>
+      <BuffOffset1>2640</BuffOffset1>
+      <BuffDist2>1320</BuffDist2>
+      <BuffDecaySlope2>0.76</BuffDecaySlope2>
+      <BuffExpParam2>-0.4365</BuffExpParam2>
+      <BuffOffset2>2640</BuffOffset2>
+    </PARAMETERS>
+  </INPUTS>
+  <OUTPUTS>
+    <BufferedParcelFile>E:\Projects\Clients\Nashville\RunModel\CleanABMsetup\ToNashvilleMPO\ParcelInputs\BufferTool\2010\Nashville_mzbuffer_allstreets_2010_longtaz.dat</BufferedParcelFile>
+    <SaveXMLFile>E:\Projects\Clients\Nashville\RunModel\CleanABMsetup\ToNashvilleMPO\ParcelInputs\BufferTool\2010\Nashville_buffconfig_allstreets_2010.xml</SaveXMLFile>
+  </OUTPUTS>
+</DaySimBufferingTool>
