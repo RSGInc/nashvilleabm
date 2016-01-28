@@ -1,4 +1,4 @@
-# nashvilleabm
+
 
 Nashville ABM
 ==============
@@ -18,3 +18,5 @@ Nashville ABM
   ParcelInputs\BufferTool\2010\node_node_distances.dat
 
   2010\DaySim\node_node_distances.dat
+
+4. Requires Git Large File Storage (LFS)
