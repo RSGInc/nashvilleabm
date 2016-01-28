@@ -11,7 +11,7 @@ Nashville ABM
 
 3. Unzip the following file to two locations:
 
-  ParcelInputs\BufferTool\2010\node_node_distances.zip 
+  node_node_distances.zip 
 
   to:
   
