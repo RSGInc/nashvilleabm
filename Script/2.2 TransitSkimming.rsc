@@ -16,7 +16,8 @@ EndMacro
 
 // 04/24/2013 - Incorporated the Transit Model code from the MTA Model
 Macro "SetTransitParameters" (Args)
-UpdateProgressBar("SetTransitParameters",)
+	
+	UpdateProgressBar("SetTransitParameters",)
     shared scen_data_dir
     shared InDir, OutDir
     shared Periods, Modes, AccessModes, AccessAssgnModes
@@ -751,6 +752,7 @@ UpdateProgressBar("BuildTransitPaths",)
                 Opts.Global.[Network Options].[Route Attributes].OP_HDWY = {"[Route System].HW_OP"}		
                 Opts.Global.[Network Options].[Route Attributes].Mode = {"[Route System].Mode"}
                 Opts.Global.[Network Options].[Route Attributes].FareType = {"[Route System].FareType"}
+				Opts.Global.[Network Options].[Route Attributes].Fare = {"[Route System].Fare"}
                 Opts.Global.[Network Options].[Stop Attributes] = {{"ID", {"[Route Stops].ID"}},
                                                                    {"Longitude", {"[Route Stops].Longitude"}},
                                                                    {"Latitude", {"[Route Stops].Latitude"}},
@@ -797,7 +799,8 @@ UpdateProgressBar("BuildTransitPaths",)
                 end
 								
                 Opts.Field.[Route Headway] 		  = Periods[iper] + "_HDWY"
-                Opts.Field.[Mode Fare]            = "FARE"
+                //Opts.Field.[Mode Fare]            = "FARE"
+				Opts.Field.[Route Fare] 		  = "Fare"
                 Opts.Field.[Mode Imp Weight]      = Periods[iper]+"_LNKIMP"
                 Opts.Field.[Mode IWait Weight]    = "WAIT_IW"
                 Opts.Field.[Mode XWait Weight]    = "WAIT_XW"
@@ -819,12 +822,12 @@ UpdateProgressBar("BuildTransitPaths",)
                 Opts.Field.[Inter-Mode Xfer Time] = "XFER_PEN"
                 Opts.Field.[Inter-Mode Xfer Fare] = "XFER_FARE"
                 Opts.Global.[Global Fare Type] = 1
-                Opts.Global.[Global Fare Value] = 1.60
-                Opts.Global.[Global Xfer Fare] = 1.60					
+                Opts.Global.[Global Fare Value] = 1.6
+                Opts.Global.[Global Xfer Fare] = 1.6					
                 Opts.Global.[Global Max WACC Path] = 50
                 Opts.Global.[Global Max PACC Path] = 5
                 Opts.Global.[Path Method] = 3
-                Opts.Global.[Path Threshold] = 0.9				      // path combination factor - changed by nagendra.dhakar@rsginc.com on 12/30/2015.   
+                Opts.Global.[Path Threshold] = 0.8				      // path combination factor - changed by nagendra.dhakar@rsginc.com on 12/30/2015.   
                 Opts.Global.[Value of Time] = ValueofTime
                 Opts.Global.[Max Xfer Number] = 4
                 Opts.Global.[Max Trip Time] = 240

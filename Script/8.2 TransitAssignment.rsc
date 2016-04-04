@@ -819,14 +819,14 @@ Macro "TRNSTAT"
 
     WriteLine(sfile,"\n\n\nTRANSIT BOARDINGS BY MODE (TRANSIT ASSIGNMENT RESULTS)")
     WriteLine(sfile,"=======================================================================================|=========")
-    WriteLine(sfile," Mode         Mode Name      Factor         AM         MD         PM         OP    |    Total")
+    WriteLine(sfile," Mode         Mode Name      Dwell Factor         AM         MD         PM         OP    |    Total")
     WriteLine(sfile,"=======================================================================================|=========")
     
-		for k=1 to maxmode do
-			if (totbrd[k] > 0) then do
-				WriteLine(sfile,"   "+Format(k,"00")+"    "+modename[k]+"            "+Format(DwellTimeFactor[k][2],"0.00")+"      "+Format(ambrd[k],",00000")+"      "+
-				Format(mdbrd[k],",00000")+"      "+Format(pmbrd[k],",00000")+"      "+Format(opbrd[k],",00000")+"   |   "+Format(totbrd[k],",00000"))
-			end
+	for k=1 to maxmode do
+		if (totbrd[k] > 0) then do
+			WriteLine(sfile,"   "+Format(k,"00")+"    "+modename[k]+"            "+Format(DwellTimeFactor[k][2],"0.00")+"      "+Format(ambrd[k],",00000")+"      "+
+			Format(mdbrd[k],",00000")+"      "+Format(pmbrd[k],",00000")+"      "+Format(opbrd[k],",00000")+"   |   "+Format(totbrd[k],",00000"))
+		end
     end
     WriteLine(sfile,"=====================================================================================================================================================================|=========")
     WriteLine(sfile,"        TOTAL                                "+Format(tot[1],",00000")+"      "+Format(tot[2],",00000")+"      "+Format(tot[3],",00000")+"      "+Format(tot[4],",00000")+"   |   "+Format(tot[5],",00000"))
@@ -852,13 +852,13 @@ Macro "TRNSTAT"
     WriteLine(sfile," Route   Mode     Route Name         AM         MD         PM         OP   |    Total")
     WriteLine(sfile,"===========================================================================|=========")
     
-		for k=1 to 400 do
-			if (totbrdrte[k] > 0) then do
-				WriteLine(sfile,"   "+Format(k,"000")+"     "+Format(modenum[k],"00")+"        Rte "+Format(k,"000")+"       "+Format(ambrdrte[k],",00000")+"       "+Format(mdbrdrte[k],",0000")+"       "+Format(pmbrdrte[k],",0000")+"       "+Format(opbrdrte[k],",0000")+"   |   "+Format(totbrdrte[k],",00000"))
-			end
+	for k=1 to 400 do
+		if (totbrdrte[k] > 0) then do
+			WriteLine(sfile,"   "+Format(k,"000")+"     "+Format(modenum[k],"00")+"        Rte "+Format(k,"000")+"       "+Format(ambrdrte[k],",00000")+"       "+Format(mdbrdrte[k],",0000")+"       "+Format(pmbrdrte[k],",0000")+"       "+Format(opbrdrte[k],",0000")+"   |   "+Format(totbrdrte[k],",00000"))
+		end
     end
     
-		WriteLine(sfile,"===================================================================================================================|=========")
+	WriteLine(sfile,"===================================================================================================================|=========")
     WriteLine(sfile,"        TOTAL                     "+Format(totrte[1],",00000")+"      "+Format(totrte[2],",00000")+"      "+Format(totrte[3],",00000")+"      "+Format(totrte[4],",00000")+"   |   "+Format(totrte[5],",00000"))
 
     // Now dump the transit summary file in the report
