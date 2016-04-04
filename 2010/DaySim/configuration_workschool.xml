@@ -111,11 +111,11 @@ PathImpedance_TransitSingleBoardingLimit="1.1"
 PathImpedance_AutoTolledPathConstant="0"
 PathImpedance_AvailablePathUpperTimeLimit="180.0"
 
-PathImpedance_TransitLocalBusPathConstant="0.57"     
-PathImpedance_TransitPremiumBusPathConstant="0.60"      
+PathImpedance_TransitLocalBusPathConstant="0.25"     
+PathImpedance_TransitPremiumBusPathConstant="0.20"      
 PathImpedance_TransitLightRailPathConstant="0.0"       
-PathImpedance_TransitCommuterRailPathConstant="1.5"    
-PathImpedance_TransitFerryPathConstant="0.40"              
+PathImpedance_TransitCommuterRailPathConstant="1.08"    
+PathImpedance_TransitFerryPathConstant="0.10"            
 
 PathImpedance_TransitUsePathTypeSpecificTime="true"
 
