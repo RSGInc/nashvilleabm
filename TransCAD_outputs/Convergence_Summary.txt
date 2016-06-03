@@ -1,0 +1,85 @@
+====== Feedback Summary =======
+
+-------- Iteration = 2 --------
+
+Period         : AM
+Class         : sov
+RMSE           : 37.804667
+Pct_RMSE       : 91.9363
+
+Period         : MD
+Class         : sov
+RMSE           : 16.87317
+Pct_RMSE       : 40.877072
+
+Period         : PM
+Class         : sov
+RMSE           : 27.288841
+Pct_RMSE       : 64.794992
+
+Period         : OP
+Class         : sov
+RMSE           : 3.056593
+Pct_RMSE       : 7.551634
+
+Period         : AM
+Class         : hov
+RMSE           : 37.804667
+Pct_RMSE       : 91.9363
+
+Period         : MD
+Class         : hov
+RMSE           : 16.87317
+Pct_RMSE       : 40.877072
+
+Period         : PM
+Class         : hov
+RMSE           : 27.288841
+Pct_RMSE       : 64.794992
+
+Period         : OP
+Class         : hov
+RMSE           : 3.056593
+Pct_RMSE       : 7.551634
+
+-------- Iteration = 3 --------
+
+Period         : AM
+Class         : sov
+RMSE           : 12.237388
+Pct_RMSE       : 17.503172
+
+Period         : MD
+Class         : sov
+RMSE           : 1.96181
+Pct_RMSE       : 3.586669
+
+Period         : PM
+Class         : sov
+RMSE           : 8.162886
+Pct_RMSE       : 12.881442
+
+Period         : OP
+Class         : sov
+RMSE           : 0.315948
+Pct_RMSE       : 0.764251
+
+Period         : AM
+Class         : hov
+RMSE           : 12.237388
+Pct_RMSE       : 17.503172
+
+Period         : MD
+Class         : hov
+RMSE           : 1.96181
+Pct_RMSE       : 3.586669
+
+Period         : PM
+Class         : hov
+RMSE           : 8.162886
+Pct_RMSE       : 12.881442
+
+Period         : OP
+Class         : hov
+RMSE           : 0.315948
+Pct_RMSE       : 0.764251
