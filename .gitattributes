@@ -13,3 +13,5 @@
 *.csv filter=lfs diff=lfs merge=lfs -text
 *.net filter=lfs diff=lfs merge=lfs -text
 *.BX filter=lfs diff=lfs merge=lfs -text
+*.dat filter=lfs diff=lfs merge=lfs -text
+*.Rdata filter=lfs diff=lfs merge=lfs -text
