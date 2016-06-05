@@ -279,7 +279,7 @@ NodeDistancesDelimiter="32"
 AllowNodeDistanceAsymmetry="true"
 UseShortDistanceCircuityMeasures="false"
 
-HouseholdSamplingRateOneInX="1"
+HouseholdSamplingRateOneInX="500"
 HouseholdSamplingStartWithY="1"
 
 ShouldUseShadowPricing="true"

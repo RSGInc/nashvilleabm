@@ -13,9 +13,9 @@ ChoiceModelRunner="Default"
 DataType="Default"
 Settings="DefaultSettings"
 
-WorkingSubpath = ".\configuration_workschool_working"
-OutputSubpath = ".\configuration_workschool_outputs"
-EstimationSubpath = ".\configuration_workschool_estimation"
+WorkingSubpath = ".\working"
+OutputSubpath = ".\outputs"
+EstimationSubpath = ".\estimation"
 
 RandomSeed="1234"
 ShouldSynchronizeRandomSeed="true"
