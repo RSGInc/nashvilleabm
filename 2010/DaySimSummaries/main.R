@@ -15,6 +15,9 @@ library(Hmisc)
 library(data.table)
 library(plyr)
 
+## This will print the stack trace at the time of the error.
+options(error = function() traceback(2))
+
 #------------------------------------
 #Source functions and config settings
 #------------------------------------

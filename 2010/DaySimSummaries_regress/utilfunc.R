@@ -123,7 +123,7 @@ write_tables <- function(outfilename,datafile,templatefilename,outtype)
     if (!file.exists(workbook_name)) {
       stop(paste0("Workbook file '",workbook_name,"' does not exist!"))
     }
-    wb = loadWorkbook()
+    wb = loadWorkbook(workbook_name)
     setStyleAction(wb,XLC$"STYLE_ACTION.NONE")
     tabulate_summaries(datafile,templatefile,outtype,wb) #TODO update function to work with data.tables
     saveWorkbook(wb)
