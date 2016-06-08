@@ -2,12 +2,12 @@
 dsVersion                                 = "C#"
 
 parcelfile                                = "../DaySim/Nashville_mzbuffer_allstreets.dat"
-dshhfile                                  = "../DaySim/configuration_regress_outputs/_household.tsv"
-dsperfile                                 = "../DaySim/configuration_regress_outputs/_person.tsv"
-dspdayfile                                = "../DaySim/configuration_regress_outputs/_person_day.tsv"
-dstourfile                                = "../DaySim/configuration_regress_outputs/_tour.tsv"
-dstripfile                                = "../DaySim/configuration_regress_outputs/_trip.tsv"
-dstriplistfile                            = "../DaySim/configuration_regress_outputs/Tdm_trip_list.csv"
+dshhfile                                  = "$daysim_outputs/_household.tsv"
+dsperfile                                 = "$daysim_outputs/_person.tsv"
+dspdayfile                                = "$daysim_outputs/_person_day.tsv"
+dstourfile                                = "$daysim_outputs/_tour.tsv"
+dstripfile                                = "$daysim_outputs/_trip.tsv"
+dstriplistfile                            = "$daysim_outputs/Tdm_trip_list.csv"
 
 # Nashville Survey
 surveyhhfile                              = "./data/nash_hrecx_rewt.dat"
@@ -49,7 +49,7 @@ tourtodmodelout                           = "TourTOD.xlsm"
 tripmodemodelout                          = "TripMode.xlsm"
 triptodmodelout                           = "TripTOD.xlsm"
 
-outputsDir                                = "./output"
+outputsDir                                = "$daysim_summaries_outputs"
 validationDir                             = ""
 
 prepSurvey                                = TRUE
