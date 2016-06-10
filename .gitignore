@@ -2,5 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
-**/20*_regression_results/
+**/regression_results_*/
 *.Rdata
