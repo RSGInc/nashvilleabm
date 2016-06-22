@@ -4,4 +4,4 @@
 .Ruserdata
 **/regression_results_*/
 *.Rdata
-/2010/DaySimSummaries_regress/daysim_output_config.R
+**/DaySimSummaries_regress/daysim_output_config.R
