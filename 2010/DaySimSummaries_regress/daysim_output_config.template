@@ -1,25 +1,30 @@
+
+
+#####################################################
+#replaced by DaysimSummaries_regress Python caller 
+DAYSIM_NEW_OUTPUTS = "$daysim_new_outputs"  # "../outputs"
+DAYSIM_REFERENCE_OUTPUTS = "$daysim_reference_outputs"  # "data"
+DAYSIM_SUMMARIES_OUTPUTS = "$daysim_summaries_outputs"  # "output"
+#####################################################
+
+
 #DaySim Version - DelPhi or C#
 dsVersion                                 = "C#"
 
 parcelfile                                = "../DaySim/Nashville_mzbuffer_allstreets.dat"
-dshhfile                                  = "$daysim_new_outputs/_household.tsv"
-dsperfile                                 = "$daysim_new_outputs/_person.tsv"
-dspdayfile                                = "$daysim_new_outputs/_person_day.tsv"
-dstourfile                                = "$daysim_new_outputs/_tour.tsv"
-dstripfile                                = "$daysim_new_outputs/_trip.tsv"
-dstriplistfile                            = "$daysim_new_outputs/Tdm_trip_list.csv"
+dshhfile                                  = paste(DAYSIM_NEW_OUTPUTS, "/_household.tsv", sep="")
+dsperfile                                 = paste(DAYSIM_NEW_OUTPUTS, "/_person.tsv", sep="")
+dspdayfile                                = paste(DAYSIM_NEW_OUTPUTS, "/_person_day.tsv", sep="")
+dstourfile                                = paste(DAYSIM_NEW_OUTPUTS, "/_tour.tsv", sep="")
+dstripfile                                = paste(DAYSIM_NEW_OUTPUTS, "/_trip.tsv", sep="")
+dstriplistfile                            = paste(DAYSIM_NEW_OUTPUTS, "/Tdm_trip_list.csv", sep="")
 
-# Nashville Survey
-#surveyhhfile                              = "./data/nash_hrecx_rewt.dat"
-surveyhhfile                              = "$daysim_reference_outputs/_household.tsv"
-#surveyperfile                             = "./data/nash_precx_rewt.dat"
-surveyperfile                             = "$daysim_reference_outputs/_person.tsv"
-#surveypdayfile                            = "./data/nash_pdayx.dat"
-surveypdayfile                            = "$daysim_reference_outputs/_person_day.tsv"
-#surveytourfile                            = "./data/nash_tourx.dat"
-surveytourfile                            = "$daysim_reference_outputs/_tour.tsv"
-#surveytripfile                            = "./data/nash_tripx.dat"
-surveytripfile                            = "$daysim_reference_outputs/_trip.tsv"
+#reference/survey
+surveyhhfile                              = paste(DAYSIM_REFERENCE_OUTPUTS, "/_household.tsv", sep="")
+surveyperfile                             = paste(DAYSIM_REFERENCE_OUTPUTS, "/_person.tsv", sep="")
+surveypdayfile                            = paste(DAYSIM_REFERENCE_OUTPUTS, "/_person_day.tsv", sep="")
+surveytourfile                            = paste(DAYSIM_REFERENCE_OUTPUTS, "/_tour.tsv", sep="")
+surveytripfile                            = paste(DAYSIM_REFERENCE_OUTPUTS, "/_trip.tsv", sep="")
 
 amskimfile                                = "../DaySim/hwyskim_am.TXT"
 mdskimfile                                = "../DaySim/hwyskim_md.TXT"
@@ -54,7 +59,7 @@ tourtodmodelout                           = "TourTOD.xlsm"
 tripmodemodelout                          = "TripMode.xlsm"
 triptodmodelout                           = "TripTOD.xlsm"
 
-outputsDir                                = "$daysim_summaries_outputs"
+outputsDir                                = paste(DAYSIM_SUMMARIES_OUTPUTS, "", sep="")
 validationDir                             = ""
 
 prepSurvey                                = TRUE
