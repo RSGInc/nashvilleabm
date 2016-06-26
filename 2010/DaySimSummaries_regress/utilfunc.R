@@ -24,7 +24,9 @@ progressNextStep <- function(stepname){
   
   #Increment step
   currentstep <<- currentstep + 1
-  setWinProgressBar(pb_globalsummary, currentstep, title=paste(pbtitle,stepname,sep=": "))
+  message <- paste(pbtitle,stepname,sep=": ")
+  print(message)
+  setWinProgressBar(pb_globalsummary, currentstep, title=message)
   runtimes$stepnames[runtimes$steps == currentstep] <<- stepname
   
 }

@@ -17,13 +17,24 @@ library(plyr)
 
 ## This will print the stack trace at the time of the error.
 options(error = function() traceback(2))
+options(warning = function() traceback(2))
+sourceAFileInTryCatch <- function(filename){
+  tryCatch({
+    source(filename)
+  }, warning = function(war) {
+    print(paste("Caught WARNING while sourcing:", filename, "Warning:",war))
+  }, error = function(err) {
+    print(paste("Caught ERROR while sourcing:", filename, "Warning:",err))
+  })
+}
+
 
 #------------------------------------
 #Source functions and config settings
 #------------------------------------
-source("utilfunc.R")
+sourceAFileInTryCatch("utilfunc.R")
 #TODO function in package to create template config file in a specified location
-source("daysim_output_config.R")
+sourceAFileInTryCatch("daysim_output_config.R")
 
 progressStart("run DaySim summaries",14)
 
@@ -100,47 +111,47 @@ gc()
 progressNextStep("summarizing work location choice")
 if(runWrkSchLocationChoice)
 {
-  source("wrkschlocation.R")
+  sourceAFileInTryCatch("wrkschlocation.R")
 }
 progressNextStep("summarizing vehicle ownership choice")
 if(runVehAvailability)
 {
-  source("vehavailability.R")
+  sourceAFileInTryCatch("vehavailability.R")
 }
 progressNextStep("summarizing Day pattern")
 if(runDayPattern)
 {
-  source("daypattern.R")
+  sourceAFileInTryCatch("daypattern.R")
 }
 progressNextStep("summarizing Destination Choice")
 if(runTourDestination)
 {
-  source("tourdestination.R")
+  sourceAFileInTryCatch("tourDestination.R")
 }
 progressNextStep("summarizing Trip Destination Choice")
 if(runTourDestination)
 {
-  source("tripdestination.R")
+  sourceAFileInTryCatch("tripdestination.R")
 }
 progressNextStep("summarizing Tour Mode Choice") 
 if(runTourMode)
 {
-  source("tourmode.R")
+  sourceAFileInTryCatch("tourmode.R")
 }
 progressNextStep("summarizing Tour Time of Day Choice") 
 if(runTourTOD)
 {
-  source("tourtod.R")
+  sourceAFileInTryCatch("tourtod.R")
 }
 progressNextStep("summarizing Trip Mode Choice") 
 if(runTripMode)
 {
-  source("tripmode.R")
+  sourceAFileInTryCatch("tripmode.R")
 }
 progressNextStep("summarizing Trip Time of Day Choice")
 if(runTripTOD)
 {
-  source("triptod.R")
+  sourceAFileInTryCatch("triptod.R")
 }
 
 progressEnd(outputsDir)
