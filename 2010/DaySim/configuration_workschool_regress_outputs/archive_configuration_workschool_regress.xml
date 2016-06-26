@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<!-- NASHVILLE ABM CONFIGURATION for DAYSIM -->
+<!-- NASHVILLE CONFIGURATION for DAYSIM -->
 <!-- Adapted for DaySim 2.1 1/16/2015 -->
 
 <Configuration
@@ -13,9 +13,9 @@ ChoiceModelRunner="Default"
 DataType="Default"
 Settings="DefaultSettings"
 
-WorkingSubpath = ".\configuration_regress_working"
-OutputSubpath = ".\configuration_regress_outputs"
-EstimationSubpath = ".\configuration_regress_estimation"
+WorkingSubpath = ".\configuration_workschool_regress_working"
+OutputSubpath = ".\configuration_workschool_regress_outputs"
+EstimationSubpath = ".\configuration_workschool_regress_estimation"
 
 RandomSeed="1234"
 ShouldSynchronizeRandomSeed="true"
@@ -76,10 +76,10 @@ ShouldRunChoiceModels="true"
 ShouldRunHouseholdModels="true"
 ShouldRunPersonModels="true"
 ShouldRunPersonDayModels="true"
-ShouldRunTourModels="true"
-ShouldRunTourTripModels="true"
-ShouldRunSubtourModels="true"
-ShouldRunSubtourTripModels="true"
+ShouldRunTourModels="false"
+ShouldRunTourTripModels="false"
+ShouldRunSubtourModels="false"
+ShouldRunSubtourTripModels="false"
 DestinationScale="0"
 EstimationModel="none"
 ShouldOutputAlogitData="false"
@@ -115,7 +115,7 @@ PathImpedance_TransitLocalBusPathConstant="0.25"
 PathImpedance_TransitPremiumBusPathConstant="0.20"      
 PathImpedance_TransitLightRailPathConstant="0.0"       
 PathImpedance_TransitCommuterRailPathConstant="1.08"    
-PathImpedance_TransitFerryPathConstant="0.10"
+PathImpedance_TransitFerryPathConstant="0.10"            
 
 PathImpedance_TransitUsePathTypeSpecificTime="true"
 
@@ -191,74 +191,74 @@ ShouldTraceTransitPassOwnershipModel="false"
 IncludeTransitPassOwnershipModel="true"
 
 AutoOwnershipModelCoefficients=".\AutoOwnershipCoefficients_nashville-v1.5.f12"
-ShouldRunAutoOwnershipModel="true"
+ShouldRunAutoOwnershipModel="false"
 ShouldTraceAutoOwnershipModel="false"
 
 IndividualPersonDayPatternModelCoefficients=".\IndividualPersonDayPatternCoefficients_nashville-v1.8.f12"
-ShouldRunIndividualPersonDayPatternModel="true"
+ShouldRunIndividualPersonDayPatternModel="false"
 ShouldTraceIndividualPersonDayPatternModel="false"
 
 PersonExactNumberOfToursModelCoefficients=".\PersonExactNumberOfToursCoefficients_nashville-v1.5.F12"
-ShouldRunPersonExactNumberOfToursModel="true"
+ShouldRunPersonExactNumberOfToursModel="false"
 ShouldTracePersonExactNumberOfToursModel="false"
 
 WorkTourDestinationModelSampleSize="25"
 WorkTourDestinationModelCoefficients=".\WorkTourDestinationCoefficients_nashville-v1.8.F12"
-ShouldRunWorkTourDestinationModel="true"
+ShouldRunWorkTourDestinationModel="false"
 ShouldTraceWorkTourDestinationModel="false"
 
 OtherTourDestinationModelSampleSize="25"
 OtherTourDestinationModelCoefficients=".\OtherTourDestinationCoefficients_nashville-v1.8.F12"
-ShouldRunOtherTourDestinationModel="true"
+ShouldRunOtherTourDestinationModel="false"
 ShouldTraceOtherTourDestinationModel="false"
 
 WorkBasedSubtourGenerationModelCoefficients=".\WorkbasedSubtourGenerationCoefficients_nashville-v1.5.F12"
-ShouldRunWorkBasedSubtourGenerationModel="true"
+ShouldRunWorkBasedSubtourGenerationModel="false"
 ShouldTraceWorkBasedSubtourGenerationModel="false"
 
 WorkTourModeModelCoefficients=".\WorkTourModeCoefficients_nashville-v1.5.F12"
-ShouldRunWorkTourModeModel="true"
+ShouldRunWorkTourModeModel="false"
 ShouldTraceWorkTourModeModel="false"
 
 SchoolTourModeModelCoefficients=".\SchoolTourModeCoefficients_nashville-v1.5.F12"
-ShouldRunSchoolTourModeModel="true"
+ShouldRunSchoolTourModeModel="false"
 ShouldTraceSchoolTourModeModel="false"
 
 WorkBasedSubtourModeModelCoefficients=".\WorkBasedSubtourModeCoefficients_nashville-v1.5.F12"
-ShouldRunWorkBasedSubtourModeModel="true"
+ShouldRunWorkBasedSubtourModeModel="false"
 ShouldTraceWorkBasedSubtourModeModel="false"
 
 EscortTourModeModelCoefficients=".\EscortTourModeCoefficients_nashville-v1.5.F12"
-ShouldRunEscortTourModeModel="true"
+ShouldRunEscortTourModeModel="false"
 ShouldTraceEscortTourModeModel="false"
 
 OtherHomeBasedTourModeModelCoefficients=".\OtherHomeBasedTourModeCoefficients_nashville-v1.5.F12"
-ShouldRunOtherHomeBasedTourModeModel="true"
+ShouldRunOtherHomeBasedTourModeModel="false"
 ShouldTraceOtherHomeBasedTourModeModel="false"
 
 WorkTourTimeModelCoefficients=".\WorkTourTimeCoefficients_nashville-v1.5.F12"
-ShouldRunWorkTourTimeModel="true"
+ShouldRunWorkTourTimeModel="false"
 ShouldTraceWorkTourTimeModel="false"
 
 SchoolTourTimeModelCoefficients=".\SchoolTourTimeCoefficients_nashville-v1.5.F12"
-ShouldRunSchoolTourTimeModel="true"
+ShouldRunSchoolTourTimeModel="false"
 ShouldTraceSchoolTourTimeModel="false"
 
 OtherHomeBasedTourTimeModelCoefficients=".\OtherHomeBasedTourTimeCoefficients_nashville-v1.5.F12"
-ShouldRunOtherHomeBasedTourTimeModel="true"
+ShouldRunOtherHomeBasedTourTimeModel="false"
 ShouldTraceOtherHomeBasedTourTimeModel="false"
 
 WorkBasedSubtourTimeModelCoefficients=".\WorkbasedSubtourTimeCoefficients_nashville-v1.5.F12"
-ShouldRunWorkBasedSubtourTimeModel="true"
+ShouldRunWorkBasedSubtourTimeModel="false"
 ShouldTraceWorkBasedSubtourTimeModel="false"
 
 IntermediateStopGenerationModelCoefficients=".\IntermediateStopGenerationCoefficients_nashville-v1.5.F12"
-ShouldRunIntermediateStopGenerationModel="true"
+ShouldRunIntermediateStopGenerationModel="false"
 ShouldTraceIntermediateStopGenerationModel="false"
 
 IntermediateStopLocationModelSampleSize="50"
 IntermediateStopLocationModelCoefficients=".\IntermediateStopLocationCoefficients_nashville-v1.8.F12"
-ShouldRunIntermediateStopLocationModel="true"
+ShouldRunIntermediateStopLocationModel="false"
 ShouldTraceIntermediateStopLocationModel="false"
 
 TripModeModelCoefficients=".\TripModeCoefficients_nashville-v1.5.f12"
@@ -297,7 +297,7 @@ ShadowPriceDelimiter="9"
 
 NBatches="16"
 NProcessors="12"
-ShouldUseParkAndRideShadowPricing="true"
+ShouldUseParkAndRideShadowPricing="false"
 ParkAndRideShadowPriceDelimiter="9"
 ParkAndRideShadowPriceMaximumPenalty="-20.0"
 ParkAndRideShadowPriceTimeSpread="5"/>
