@@ -1,5 +1,0 @@
-This folder is a trimmed down duplicated renamed copy of:
-
-E:\Projects\Clients\Nashville\RunModel\CleanABMsetup\ToNashvilleMPO\2010\outputs from WRJMDLPPW01
-
-Outputs seemed especially confusing because this is actually an input to DaySim which in turn has its own outputs folder.

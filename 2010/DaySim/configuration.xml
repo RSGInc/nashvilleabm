@@ -21,8 +21,8 @@ RandomSeed="1234"
 ShouldSynchronizeRandomSeed="true"
 NumberOfRandomSeeds="1000"
 
-RosterPath="..\TransCAD_outputs\nashville-roster_matrix.csv"
-RosterCombinationsPath="..\TransCAD_outputs\nashville_roster.combinations.csv"
+RosterPath="..\outputs\nashville-roster_matrix.csv"
+RosterCombinationsPath="..\outputs\nashville_roster.combinations.csv"
 SkimDelimiter = "44"
 
 VotVeryLowLow="0"
