@@ -22,7 +22,7 @@ ShouldSynchronizeRandomSeed="true"
 NumberOfRandomSeeds="1000"
 
 RosterPath="..\outputs\nashville-roster_matrix.csv"
-RosterCombinationsPath="..\utputs\nashville_roster.combinations.csv"
+RosterCombinationsPath="..\outputs\nashville_roster.combinations.csv"
 SkimDelimiter = "44"
 
 VotVeryLowLow="0"
