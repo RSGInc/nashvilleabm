@@ -17,8 +17,10 @@ WorkingSubpath = ".\configuration_workschool_regress_working"
 OutputSubpath = ".\configuration_workschool_regress_outputs"
 EstimationSubpath = ".\configuration_workschool_regress_estimation"
 
-#Custom code that implements client specific DaySim features/logic
-#CustomizationDll=..\..\DaySimCustomizationsNashville\Nashville\bin\Debug\DaySimCustomizationsNashville.dll
+<!--
+Custom code that implements client specific DaySim features/logic
+CustomizationDll="..\..\DaySimCustomizationsNashville\Nashville\bin\Debug\DaySimCustomizationsNashville.dll"
+-->
 
 RandomSeed="1234"
 ShouldSynchronizeRandomSeed="true"
