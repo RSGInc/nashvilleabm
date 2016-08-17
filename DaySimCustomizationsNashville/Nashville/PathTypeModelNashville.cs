@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace DaySimCustomizationsNashville {
   class NashvillePathTypeModel : PathTypeModel {
-    private static void RegionSpecificTransitImpedanceCalculation(int skimMode, int pathType, double votValue, int outboundTime, int returnTime, int originZoneId, int destinationZoneId, ref double outboundInVehicleTime, ref double returnInVehicleTime, ref double pathTypeSpecificTime, ref double pathTypeSpecificTimeWeight) {
+    protected new static void RegionSpecificTransitImpedanceCalculation(int skimMode, int pathType, double votValue, int outboundTime, int returnTime, int originZoneId, int destinationZoneId, ref double outboundInVehicleTime, ref double returnInVehicleTime, ref double pathTypeSpecificTime, ref double pathTypeSpecificTimeWeight) {
       //Eventually the client specific globals should go away but for now let's make sure that it is set as expected
       if (!Global.Configuration.Nashville) {
         throw new System.Exception(MethodBase.GetCurrentMethod().DeclaringType.Name + " called but Global.Configuration.Nashville is FALSE!");
