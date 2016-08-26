@@ -6,7 +6,3 @@
 *.Rdata
 *_test*
 **/DaySimSummaries_regress/daysim_output_config.R
-DaySimCustomizationsNashville/packages
-DaySimCustomizationsNashville/.vs
-DaySimCustomizationsNashville/bin
-DaySimCustomizationsNashville/obj
