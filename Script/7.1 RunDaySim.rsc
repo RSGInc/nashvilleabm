@@ -92,10 +92,14 @@ STEPS:
         
     end
 
-    // copy _trip.tsv file to global output directory 
+    // copy _trip.tsv and _tour.tsv files to global output directory 
     infile = DaySimDir + "outputs\\_trip.tsv"
-    outfile = OutDir + "_trip.tsv"
+    outfile = OutDir + "_trip.csv"
     CopyFile(infile,outfile)
+	
+    infile = DaySimDir + "outputs\\_tour.tsv"
+    outfile = OutDir + "_tour.csv"
+    CopyFile(infile,outfile)	
     
     status = 0
 		
@@ -177,16 +181,37 @@ EndMacro
 
 Macro "SetDaySimParameters"
     shared OutDir
-    shared TripFile, MaxZone
+    shared TripFile, TourFile, TripTourFile, MaxZone
     
-    TripFile = OutDir + "_trip.tsv"    
+    TripFile = OutDir + "_trip.csv" 
+	TourFile = OutDir + "_tour.csv"
+	TripTourFile = OutDir + "trip_tour.csv"
     MaxZone  = 2900
 
 EndMacro
 
+Macro "JoinDaySimTripTourFiles"
+    shared OutDir
+    shared TripFile, TourFile, TripTourFile
+	
+	tripfile_view = OpenTable("triptable","CSV",{TripFile,})
+	tourfile_view = OpenTable("tourtable","CSV",{TourFile,})
+		
+	joinedview = JoinViews("joined", tripfile_view+".tour_id",tourfile_view+".id",)
+	view_set = joinedview + "|"
+	
+	//export joined view - include only selected fields 
+	ExportView(view_set, "CSV", TripTourFile,{"half","otaz","dtaz","mode","pathtype","deptm","arrtm","trexpfac","tmodetp"},{{"CSV Header", "True"}})
+	
+	CloseView(tripfile_view)
+	CloseView(tourfile_view)
+	CloseView(joinedview)
+	
+EndMacro
+
 Macro "FormatAssignmentInputs" (Args)
 
-    shared OutDir, IDTable, TripFile, Periods, TimePeriod, MaxZone, AccessAssgnModes
+    shared OutDir, IDTable, TripFile, TripFile, TripTourFile, Periods, TimePeriod, MaxZone, AccessAssgnModes
 		shared TripRecords, TimePeriod, ArrayTrips, ArrayTransitTrips, Highway, Transit
 
 /*
@@ -213,8 +238,10 @@ STEPS:
 		
 		// Load daysim trip file to an array
 		UpdateProgressBar("Reading trips into an array ... ", )
-		
-		readfile = OpenFile(TripFile, "r")
+		//join DaySim trip file and tour file
+		RunMacro("JoinDaySimTripTourFiles")
+
+		readfile = OpenFile(TripTourFile, "r")
 		TripRecords = ReadArray(readfile)
 		CloseFile(readfile)		
 		
@@ -287,22 +314,37 @@ STEPS:
 4. for highway save in [da/sr2/sr3][origin][destination] - 3*2900*2900
 5. for transit save as [walk/pnr/knr by submode][origin][destination] - 15*2900*2900
 */
-		
+
     for rec=1 to TripRecords.Length do
 				
 				perc = RealToInt(100*(rec/TripRecords.Length)) // percentage completion
 				UpdateProgressBar("Segmenting trips by time period and sub-mode: " + string(rec) + " of " + string(TripRecords.Length), perc)
 				
          //split string - tab delimited
-        values = ParseString(TripRecords[rec],"\t")
+		values = ParseString(TripRecords[rec],",")
+        //values = ParseString(TripRecords[rec],"\t")
         
-        Half = StringToInt(values[7]) // 1-outbound, 2-inbound
-        OTaz = StringToInt(values[15])
-        DTaz = StringToInt(values[17])
-        Mode = StringToInt(values[18])
-        PathType = StringToInt(values[19])
-        DeptTime = StringToReal(values[21])
-        ArrTime = StringToReal(values[22])
+		//with updated file - trip_tour
+        Half = StringToInt(values[1]) // 1-outbound, 2-inbound
+        OTaz = StringToInt(values[2])
+        DTaz = StringToInt(values[3])
+        Mode = StringToInt(values[4])
+        PathType = StringToInt(values[5])
+        DeptTime = StringToReal(values[6])
+        ArrTime = StringToReal(values[7])
+		TripExpFactor = StringToReal(values[8])
+		TransitAccess = StringToInt(values[9]) //tmodetp - from tour file		
+		
+		//with only trip file - old method
+        //Half = StringToInt(values[7]) // 1-outbound, 2-inbound
+        //OTaz = StringToInt(values[15])
+        //DTaz = StringToInt(values[17])
+        //Mode = StringToInt(values[18])
+        //PathType = StringToInt(values[19])
+        //DeptTime = StringToReal(values[21])
+        //ArrTime = StringToReal(values[22])
+		//TripExpFactor = StringToReal(values[28])
+		//TransitAccess = StringToInt(values[50]) //tmodetp - from tour file
         Trip = 0
         
         if (Half = 1) then TripTime = ArrTime
@@ -315,10 +357,23 @@ STEPS:
 								if (Mode = 6 and PathType > 2) then do // transit trip
 								
 										if Transit = 1 then do
-												Trip=1
+												Trip=TripExpFactor
 												
-												// subtract 2 as sub-transit starts at 3 (local bus)
-												ArrayTransitTrips[PathType-2][OTaz][DTaz] = NullToZero(ArrayTransitTrips[PathType-2][OTaz][DTaz]) + Trip                          
+												if (TransitAccess=6) then do //Walk Transit
+													// subtract 2 as sub-transit starts at 3 (local bus)
+													transit_index = PathType-2
+												end
+												else do //PNR Transit	
+													if (PathType=3) then transit_index=6
+													if (PathType=4) then transit_index=9
+													if (PathType=5) then transit_index=8
+													if (PathType=6) then transit_index=10
+													if (PathType=7) then transit_index=7
+												end											
+												
+												//No KNR currently
+												
+												ArrayTransitTrips[transit_index][OTaz][DTaz] = NullToZero(ArrayTransitTrips[transit_index][OTaz][DTaz]) + Trip                          
 														 
 										end
 								end
@@ -330,21 +385,21 @@ STEPS:
 												// person trip to vehicle trip factors: hov2 (2) and hov3+ (3.5)
 												//SOV
 												if (Mode = 3) then do
-														Trip = 1
+														Trip = TripExpFactor
 														ArrayTrips[1][OTaz][DTaz] = NullToZero(ArrayTrips[1][OTaz][DTaz]) + Trip
 														ArrayTrips[3][OTaz][DTaz] = NullToZero(ArrayTrips[3][OTaz][DTaz]) + 1
 												end
 												
 												//HOV
 												if (Mode = 4) then do
-														Trip = 1/2
+														Trip = TripExpFactor/2
 														ArrayTrips[2][OTaz][DTaz] = NullToZero(ArrayTrips[2][OTaz][DTaz]) + Trip
 														ArrayTrips[3][OTaz][DTaz] = NullToZero(ArrayTrips[3][OTaz][DTaz]) + 1
 												end                            
 
 												//HOV
 												if (Mode = 5) then do
-														Trip = 1/3.5
+														Trip = TripExpFactor/3.5
 														ArrayTrips[2][OTaz][DTaz] = NullToZero(ArrayTrips[2][OTaz][DTaz]) + Trip
 														ArrayTrips[3][OTaz][DTaz] = NullToZero(ArrayTrips[3][OTaz][DTaz]) + 1
 												end 

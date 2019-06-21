@@ -27,7 +27,7 @@ Macro "SetTransitParameters" (Args)
     shared highway_dbd, highway_link_bin, highway_node_bin, zone_dbd, zone_bin, tpen, route_system
     shared route_stop, route_bin, route_stop_bin, SpeedFactorTable, IDTable, TerminalTimeMtx
     shared modetable, modexfertable, MovementTable // input files
-    shared mc_network_file, OutZData, pnr_time_mat 
+    shared mc_network_file, OutZData, pnr_time_mat_op, pnr_time_mat_pd
     shared OutMarketSegment, stat_file, runtime // output files
 
 		//  Set paths
@@ -61,11 +61,16 @@ Macro "SetTransitParameters" (Args)
     //  Output Files
     mc_network_file     = OutDir + "Network_MC.net"
 		
-		pnr_time_mat 				= {OutDir + "PNR_Time_AM.mtx",
-													 OutDir + "PNR_Time_MD.mtx",
-													 OutDir + "PNR_Time_PM.mtx",
-													 OutDir + "PNR_Time_OP.mtx"}
-													 
+	pnr_time_mat_op 				= {OutDir + "PNR_Time_AM.mtx",
+												 OutDir + "PNR_Time_MD.mtx",
+												 OutDir + "PNR_Time_PM_temp.mtx",
+												 OutDir + "PNR_Time_OP_temp.mtx"}											 
+
+	pnr_time_mat_pd 				= {OutDir + "PNR_Time_AM_temp.mtx",
+												 OutDir + "PNR_Time_MD_temp.mtx",
+												 OutDir + "PNR_Time_PM.mtx",
+												 OutDir + "PNR_Time_OP.mtx"}											 
+												 
     OutZData            = OutDir + "ZoneDataMC.asc"
     OutMarketSegment    = OutDir + "hhauto.dat"
     stat_file           = Args.[Transit Statistics]                                  // file to write transit statistics
@@ -539,7 +544,7 @@ UpdateProgressBar("BuildDriveConnectors",)
     shared Periods, Modes
     shared ValueofTime, AutoOperatingCost, AOCC_PNR, PNR_TerminalTime, MaxPNR_DriveTime
     shared highway_dbd, highway_node_bin, zone_bin
-    shared mc_network_file, pnr_time_mat, runtime // output files
+    shared mc_network_file, pnr_time_mat_op, pnr_time_mat_pd, runtime // output files
 
 
     RunMacro("TCB Init")
@@ -593,7 +598,7 @@ UpdateProgressBar("BuildDriveConnectors",)
 
    for iper=1 to Periods.length do
 				innet=mc_network_file
-				outmat=pnr_time_mat[iper]
+				outmat=pnr_time_mat_op[iper]
 
     // STEP 3.2: TCSPMAT - Centroids to Parking Nodes Skim
         Opts = null
@@ -660,6 +665,12 @@ UpdateProgressBar("BuildDriveConnectors",)
             end
             SetMatrixVector(dacc_time_cur, DriveTime, {{"Row", StringToInt(rowID[i])}} )
         end
+	
+		if (Periods[iper] = "PM" or Periods[iper]="OP") then do
+			//P&R to destination - transpose the matrix to get in the format of P&R - TAZ
+			tmat = TransposeMatrix(dacc,{{"File Name", pnr_time_mat_pd[iper]}})
+		end
+		
          vws = GetViewNames()
          for i = 1 to vws.length do CloseView(vws[i]) end
    end
@@ -677,7 +688,7 @@ Macro "BuildTransitPaths"
 UpdateProgressBar("BuildTransitPaths",)
     shared OutDir, Periods, Modes, AccessModes, ValueofTime, highway_dbd, route_system
     shared route_stop, route_stop_bin, IDTable, TerminalTimeMtx, modetable, modexfertable     // input files
-    shared pnr_time_mat, runtime // output files
+    shared pnr_time_mat_op, pnr_time_mat_pd, runtime // output files
 		shared iper_count, iacc_count, imode_count // for quick transit skim
 	
     RunMacro("TCB Init")
@@ -702,8 +713,6 @@ UpdateProgressBar("BuildTransitPaths",)
                 outtnw= OutDir + Periods[iper] + "_" + AccessModes[iacc] + Modes[imode] + ".tnw"
                 outskim = OutDir + Periods[iper] + "_" + AccessModes[iacc] + Modes[imode] + ".mtx"
                 outtps  = OutDir + Periods[iper] + "_" + AccessModes[iacc] + Modes[imode] + ".tps"
-								
-								pnr_file = pnr_time_mat[iper]
 
                 if imode=1 then selmode=" (Mode<>null & Mode<=5)" 						// local bus
                 if imode=2 then selmode=" (Mode<>null & (Mode<=5 | Mode=8 | Mode=9))"	// BRT
@@ -786,8 +795,16 @@ UpdateProgressBar("BuildTransitPaths",)
                 Opts.Input.[Mode Cost Table] = {modexfertable}
 								
                 if AccessModes[iacc]="Drive" then do
-                  Opts.Input.[OP Time Currency] = {pnr_file, "TimeC" + Periods[iper] + "_* (Skim)", , }
-                  Opts.Input.[OP Dist Currency] = {pnr_file, "Length (Skim)", , }             
+				  if (Periods[iper]="AM" or Periods[iper]="MD") then do
+					pnr_file = pnr_time_mat_op[iper]
+					Opts.Input.[OP Time Currency] = {pnr_file, "TimeC" + Periods[iper] + "_* (Skim)", , }
+					Opts.Input.[OP Dist Currency] = {pnr_file, "Length (Skim)", , }
+				  end
+				  if (Periods[iper]="PM" or Periods[iper]="OP") then do
+				  	pnr_file = pnr_time_mat_pd[iper]
+					Opts.Input.[PD Time Currency] = {pnr_file, "TimeC" + Periods[iper] + "_* (Skim)", , }
+					Opts.Input.[PD Dist Currency] = {pnr_file, "Length (Skim)", , }				  
+				  end				  
                   Opts.Input.[Driving Link Set] = {db_linklyr, llayer, "Selection", "Select * where CCSTYLE<>11 & TMODE<>98 & TMODE<>12 & TMODE<>13 & TMODE<>14 & (time_" + Periods[iper] + "_AB+time_" + Periods[iper] +"_BA)<>null"}
                 end
 								
@@ -838,9 +855,19 @@ UpdateProgressBar("BuildTransitPaths",)
 				Opts.Global.[Global Dwell Off Time] = 0
                 Opts.Flag.[Use All Walk Path] = "Yes"
                 if AccessModes[iacc]="Drive" then do
-                 Opts.Flag.[Use All Walk Path] = "No"
-                 Opts.Flag.[Use Park and Ride] = "Yes"
-                 Opts.Flag.[Use P&R Walk Access] = "No"
+					//new update - nagendra.dhakar@rsginc
+					if (Periods[iper]="AM" or Periods[iper]="MD") then do
+						 Opts.Flag.[Use All Walk Path] = "No"
+						 Opts.Flag.[Use Park and Ride] = "Yes"
+						 Opts.Flag.[Use P&R Walk Access] = "No"
+					end
+					if (Periods[iper]="PM" or Periods[iper]="OP") then do
+						 Opts.Flag.[Use All Walk Path] = "No"
+						 Opts.Flag.[Use Park and Ride] = "No"
+						 Opts.Flag.[Use Egress Park and Ride] = "Yes"
+						 Opts.Flag.[Use P&R Walk Access] = "No"
+						 Opts.Flag.[Use P&R Walk Egress] = "No"
+					end					
                 end
                 if AccessModes[iacc]<>"Drive" then do
                   Opts.Flag.[Use Park and Ride] = "No"
