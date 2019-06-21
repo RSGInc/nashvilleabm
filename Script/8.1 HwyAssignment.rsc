@@ -14,7 +14,7 @@ Macro "Pre_Assignment" (Args)
 	HourlyTable=Args.[Hourly]
 	PA_Matrix=Args.[PA Matrix]
     Freight_Matrix = Args.[Freight OD]
-    
+	
     // Flags for EE and II trucks
     IISU_include = Args.[IISU_flags]
     IESU_include = Args.[IESU_flags]
@@ -22,7 +22,10 @@ Macro "Pre_Assignment" (Args)
     IIMU_include = Args.[IIMU_flags]
     EIMU_include = Args.[EIMU_flags]
     IEMU_include = Args.[IEMU_flags]
-    EEMU_include = Args.[EEMU_flags]    
+    EEMU_include = Args.[EEMU_flags]
+
+	//auto assignment classes
+	auto_assign_classes = Args.[Auto_Assign_Classes]	
 
     // Output Files
 	OD = {Args.[AM OD Matrix], Args.[MD OD Matrix], Args.[PM OD Matrix], Args.[OP OD Matrix]}
@@ -47,9 +50,9 @@ Macro "Pre_Assignment" (Args)
 	// combine all OD 
 	intitialization:
 	nonhh    = {"IICOM", "IISU", "IIMU","IEAUTO", "IESU","EEMU","EESU"}
-	//hh       = {"HBO","HBPD","HBSch", "HBShp", "HBW", "NHBO","NHBW"}
+
 	modes    = {"DA","SR2","SR3"}
-	periods1={"AM","MD","PM","OP"}
+	periods1 = {"AM","MD","PM","OP"}
 	periods2 = {0,1,2,3}
 
     // Fill airport trips
@@ -117,7 +120,8 @@ Macro "Pre_Assignment" (Args)
 	allod={am_od_matrix,md_od_matrix,pm_od_matrix,op_od_matrix}
     
 	// add 4+4 cores to the OD matrix for the vehicle classes assignment
-	labels_vehicle={"Passenger","Commercial","SingleUnit","MU","Preload_EIMU","Preload_IEMU","Preload_EEMU","Preload_IESU","Preload_EESU","Preload_Pass","HOV"}
+	//labels_vehicle={"Passenger","Commercial","SingleUnit","MU","Preload_EIMU","Preload_IEMU","Preload_EEMU","Preload_IESU","Preload_EESU","Preload_Pass","HOV"}
+	labels_vehicle={"Passenger","Commercial","SingleUnit","MU","Preload_EIMU","Preload_IEMU","Preload_EEMU","Preload_IESU","Preload_EESU","Preload_Pass","HOV","HOV2","HOV3","Autos"}
   
 	for p=1 to periods1.length do
 		
@@ -188,25 +192,56 @@ Macro "Pre_Assignment" (Args)
         ok = (mc14 <> null)
         if !ok then goto quit
         
-        mc15 = RunMacro("TCB Create Matrix Currency", temp_matrix, "Passenger_HOV", "Rows", "Cols")
+        mc15 = RunMacro("TCB Create Matrix Currency", temp_matrix, "Passenger_HOV2", "Rows", "Cols")
         ok = (mc15 <> null)
-        if !ok then goto quit        
-        
-        mc16 = RunMacro("TCB Create Matrix Currency", OD[p], "HOV", "Rows", "Cols")
-        ok = (mc16 <> null)
         if !ok then goto quit
+		
+        mc16 = RunMacro("TCB Create Matrix Currency", temp_matrix, "Passenger_HOV3", "Rows", "Cols")
+        ok = (mc16 <> null)
+        if !ok then goto quit			
         
-        HOVF=Args.HOVF
-        
-        // Passenger not using HOV lane
-        mc1 := nz(mc5) + HOVF*nz(mc6) + HOVF*nz(mc7) + nz(mc8) + HOVF*nz(mc9) + HOVF*nz(mc10) + nz(mc11) + HOVF*nz(mc12) + HOVF*nz(mc13) + nz(mc14) + HOVF*nz(mc15)
-            
+        mc17 = RunMacro("TCB Create Matrix Currency", OD[p], "HOV2", "Rows", "Cols")
+        ok = (mc17 <> null)
+        if !ok then goto quit
+
+        mc18 = RunMacro("TCB Create Matrix Currency", OD[p], "HOV3", "Rows", "Cols")
+        ok = (mc18 <> null)
+        if !ok then goto quit
+
+        mc19 = RunMacro("TCB Create Matrix Currency", OD[p], "HOV", "Rows", "Cols")
+        ok = (mc19 <> null)
+        if !ok then goto quit
+
+        mc20 = RunMacro("TCB Create Matrix Currency", OD[p], "Autos", "Rows", "Cols")
+        ok = (mc20 <> null)
+        if !ok then goto quit		
+
         //preload EI and IE PASS
         mc4 := nz(mc3)+nz(mc2)
-        
-        //HOV 1-6-2014
+		
+        HOVF=Args.HOVF
         HOVF2=1-HOVF
-        mc16:=HOVF2*(nz(mc6)+ nz(mc7)+ nz(mc9)+ nz(mc10)+ nz(mc12)+ nz(mc13)+ nz(mc15))        
+		
+		// Passenger not using HOV lane
+		mc1 := nz(mc5) + HOVF*nz(mc6) + HOVF*nz(mc7) + nz(mc8) + HOVF*nz(mc9) + HOVF*nz(mc10) + nz(mc11) + HOVF*nz(mc12) + HOVF*nz(mc13) + nz(mc14) + HOVF*nz(mc15) + HOVF*nz(mc16)
+		
+		//HOV2
+		mc17:=HOVF2*(nz(mc6)+ nz(mc9)+ nz(mc12)+ nz(mc15))
+		
+		//HOV3+
+		mc18:=HOVF2*(nz(mc7)+ nz(mc10)+ nz(mc13)+ nz(mc16))
+		
+		//HOV = HOV2+HOV3
+		mc19 := mc17 + mc18
+		
+		//All Autos = SOV+HOV2+HOV3
+		mc20 := mc1 + mc19
+		
+		//if only one auto assignment class then add all autos (sov and hov) into passenger class
+		if (auto_assign_classes=1) then do
+			//passenger = sov+hov2+hov3
+			mc1 := mc1 + mc19
+		end
         
         // Commercial Vehicle trips
         mc1 = RunMacro("TCB Create Matrix Currency", OD[p], "Commercial", "Rows", "Cols")
@@ -319,6 +354,7 @@ endMacro
 Macro "Traffic Assignment" (Args)// Trip Assignment
 
 	shared Scen_Dir, feedback_iteration
+	//shared auto_assign_Classes
     
 	periods1={"AM","MD","PM","OP"}
 	
@@ -419,7 +455,7 @@ endMacro
 Macro "PreloadAssignment"(Args, allod, periods1) 
 	shared Scen_Dir
 	
-    //21 MU-EI, 22 MU-IE, 23 MU-EE, 24 SU-IE, 25 SU-EE, 26 PASS-EE	
+    //21 MU-EI, 22 MU-IE, 23 MU-EE, 24 SU-IE, 25 SU-EE, 26 PASS-EE	 // TODO - check for new matrix indices
 	UpdateProgressBar("Assignment - Preload Assignments "+periods1, )
    
  	layers = GetDBlayers(Args.[hwy db])
@@ -494,6 +530,10 @@ endMacro
 
 Macro "GeneralAssignment"(Args, allod, periods1) 
     Shared Scen_Dir, loop
+	
+	//auto assignment classes
+	auto_assign_classes = Args.[Auto_Assign_Classes]
+	
     feedback_iteration = loop
     
  	hwy_db = Args.[hwy db]
@@ -527,19 +567,60 @@ Macro "GeneralAssignment"(Args, allod, periods1)
 		n=SelectByQuery("HOV", "Several", qry,)
 		HOVSET={Args.[hwy db]+"|"+llayer, llayer, "HOV", "Select * where HOV<>null and lanes>0"}
 	end
-	*/    
+	*/ 	
 	
-    //17 pass 18 com 19 su 20 MU 27 HOV
+	if (auto_assign_classes=1) then do 
+		//17 pass 18 com 19 su 20 MU
+		//autos = sov+hov2+hov3
+		assign_num_classes = 4
+		assign_exclusion_link_sets = {, exclude_hov, exclude_hov_truck ,exclude_hov_truck }
+		assign_turn_Attributes = {, , , }
+		assign_veh_classes = {17, 18, 19, 20}
+		assign_toll_fields = {"n/a", "n/a", trucktoll, trucktoll}
+		assign_pce_fields = {"None", "None", "None", "None"}
+		assign_class_pces = {1, 1, 1.5, 2.5}
+		assign_class_vois = {1, 1, 1, 1}
+	end
+
+	if (auto_assign_classes=2) then do	
+		//17 pass 18 com 19 su 20 MU 27 HOV
+		//passenger = sov
+		//hov = hov2+hov3
+		assign_num_classes = 5
+		assign_exclusion_link_sets = {exclude_hov, exclude_hov, exclude_hov_truck ,exclude_hov_truck , }
+		assign_turn_Attributes = {, , , , }
+		assign_veh_classes = {17, 18, 19, 20, 27}
+		assign_toll_fields = {"n/a", "n/a", trucktoll, trucktoll, "n/a"}
+		assign_pce_fields = {"None", "None", "None", "None", "None"}
+		assign_class_pces = {1, 1, 1.5, 2.5, 1}
+		assign_class_vois = {1, 1, 1, 1, 1}
+	end
+
+	if (auto_assign_classes=3) then do
+		//17 pass 18 com 19 su 20 MU 28 HOV2 29 HOV3
+		//passenger = sov
+		//hov2 = hov2
+		//hov3 = hov3
+		assign_num_classes = 6
+		assign_exclusion_link_sets = {exclude_hov, exclude_hov, exclude_hov_truck ,exclude_hov_truck , , }
+		assign_turn_Attributes = {, , , , , }
+		assign_veh_classes = {17, 18, 19, 20, 28, 29}
+		assign_toll_fields = {"n/a", "n/a", trucktoll, trucktoll, "n/a", "n/a"}
+		assign_pce_fields = {"None", "None", "None", "None", "None", "None"}
+		assign_class_pces = {1, 1, 1.5, 2.5, 1, 1}
+		assign_class_vois = {1, 1, 1, 1, 1, 1}
+	end
+	
 	UpdateProgressBar(periods1+" Assignment ", )
 	Opts = null
     Opts.Input.Database = Args.[hwy db]
     Opts.Input.Network = Args.[Network File]
     Opts.Input.[OD Matrix Currency] = {allod, , , }
-    Opts.Input.[Exclusion Link Sets] = {exclude_hov, exclude_hov, exclude_hov_truck ,exclude_hov_truck , }
-    Opts.Field.[Turn Attributes] = {, , , , }
-    Opts.Field.[Vehicle Classes] = {17, 18, 19, 20, 27}
-    Opts.Field.[Fixed Toll Fields] = {"n/a", "n/a", trucktoll, trucktoll, "n/a"}
-    Opts.Field.[PCE Fields] = {"None", "None", "None", "None", "None"}
+    Opts.Input.[Exclusion Link Sets] = assign_exclusion_link_sets
+    Opts.Field.[Turn Attributes] = assign_turn_Attributes
+    Opts.Field.[Vehicle Classes] = assign_veh_classes
+    Opts.Field.[Fixed Toll Fields] = assign_toll_fields
+    Opts.Field.[PCE Fields] = assign_pce_fields
     Opts.Field.[VDF Fld Names] = {"[time_FF_AB / time_FF_BA]", "[capacity_"+Lower(periods1)+"_AB / capacity_"+Lower(periods1)+"_BA]", "alpha", "beta", "[Preload"+periods1+"AB/BA PCE]"}
     Opts.Global.[Load Method] = "BFW"
     Opts.Global.[Loading Multiplier] = 1
@@ -547,9 +628,9 @@ Macro "GeneralAssignment"(Args, allod, periods1)
     Opts.Global.Convergence = Args.[Hwy Assn Convg]
     Opts.Global.Iterations = Args.[max_feedback]
     Opts.Global.[T2 Iterations] = 100
-    Opts.Global.[Number of Classes] = 5
-    Opts.Global.[Class PCEs] = {1, 1, 1.5, 2.5, 1}
-    Opts.Global.[Class VOIs] = {1, 1, 1, 1, 1}
+    Opts.Global.[Number of Classes] = assign_num_classes
+    Opts.Global.[Class PCEs] = assign_class_pces
+    Opts.Global.[Class VOIs] = assign_class_vois
     Opts.Global.[VDF DLL] = "C:\\Program Files\\TransCAD 6.0\\bpr.vdf"
     Opts.Global.[VDF Defaults] = {, , 0.15, 4, 0}
 
@@ -583,6 +664,9 @@ Macro "PostProcessor" (Args)
     
 	// Input highway layer
    hwy_db = Args.[hwy db]
+   	
+	//auto assignment classes
+	auto_assign_classes = Args.[Auto_Assign_Classes]
 	
 	layers = GetDBlayers(hwy_db)
    llayer = layers[2]
@@ -949,11 +1033,22 @@ Macro "PostProcessor" (Args)
 				"nz("+"VOL_"+vehicles[v]+periods[p]+"AB)+"+"nz("+"VOL_"+vehicles[v]+periods[p]+"BA)"}
            
 			//passenger cars add HOV
-			if vehicles[v]="PASS" then
-			Opts.Global.Parameter = {
-				"nz("+"VOL_"+vehicles[v]+periods[p]+"AB)+" + "nz(AB_Flow_"+vehicles2[v]+")" + "+nz(AB_Flow_HOV)" ,
-				"nz("+"VOL_"+vehicles[v]+periods[p]+"BA)+" + "nz(BA_Flow_"+vehicles2[v]+")"+ "+nz(BA_Flow_HOV)", 
-				"nz("+"VOL_"+vehicles[v]+periods[p]+"AB)+"+"nz("+"VOL_"+vehicles[v]+periods[p]+"BA)"}
+			if vehicles[v]="PASS" then do
+				//if (auto_assign_classes=1) then no HOV class is available, all is in passenger
+				if (auto_assign_classes=2) then do
+					Opts.Global.Parameter = {
+						"nz("+"VOL_"+vehicles[v]+periods[p]+"AB)+" + "nz(AB_Flow_"+vehicles2[v]+")" + "+nz(AB_Flow_HOV)" ,
+						"nz("+"VOL_"+vehicles[v]+periods[p]+"BA)+" + "nz(BA_Flow_"+vehicles2[v]+")"+ "+nz(BA_Flow_HOV)", 
+						"nz("+"VOL_"+vehicles[v]+periods[p]+"AB)+"+"nz("+"VOL_"+vehicles[v]+periods[p]+"BA)"}
+				end				
+				if (auto_assign_classes=3) then do
+					Opts.Global.Parameter = {
+						"nz("+"VOL_"+vehicles[v]+periods[p]+"AB)+" + "nz(AB_Flow_"+vehicles2[v]+")" + "+nz(AB_Flow_HOV2)" + "+nz(AB_Flow_HOV3)" ,
+						"nz("+"VOL_"+vehicles[v]+periods[p]+"BA)+" + "nz(BA_Flow_"+vehicles2[v]+")"+ "+nz(BA_Flow_HOV2)"+ "+nz(BA_Flow_HOV3)", 
+						"nz("+"VOL_"+vehicles[v]+periods[p]+"AB)+"+"nz("+"VOL_"+vehicles[v]+periods[p]+"BA)"}
+				end				
+				
+			end
                 
 			ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
 			if !ret_value then goto quit

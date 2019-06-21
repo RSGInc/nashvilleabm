@@ -230,7 +230,7 @@ STEPS:
    
     TransitModes = {"Local", "UrbRail", "ExpBus", "ComRail", "Brt"}
     TransitMatrix_cores = {"WLKLOCBUS", "WLKURBRAIL", "WLKEXPBUS", "WLKCOMRAIL", "WLKBRT", "PNRLOCBUS", "PNRBRT", "PNREXPBUS", "PNRURBRAIL", "PNRCOMRAIL", "KNRLOCBUS", "KNRBRT", "KNREXPBUS", "KNRURBRAIL", "KNRCOMRAIL"}
-    class = {"SOV","HOV"}
+	class = {"SOV","HOV2","HOV3"}
 
     // set switches
     Highway = 1
@@ -260,18 +260,21 @@ STEPS:
 			if Highway = 1 then do
 					
 					// create a temp matrix
-					mat_cores = {"IICOM", "IISU", "IIMU","IEAUTO", "IESU", "EEAUTO", "EESU","Passenger_SOV","Passenger_HOV","Commercial","SingleUnit","MU","Preload_MU", "Preload_SU", "Preload_Pass", "PersonTrips"}
+					mat_cores = {"IICOM", "IISU", "IIMU","IEAUTO", "IESU", "EEAUTO", "EESU","Passenger_SOV","Passenger_HOV2","Passenger_HOV3","Commercial","SingleUnit","MU","Preload_MU", "Preload_SU", "Preload_Pass", "PersonTrips"}
 					outMat = "temp_" + Periods[p]+"OD.mtx"
 					RunMacro("Create a new matrix", OutDir, IDTable, outMat, mat_cores)
 					
 					// Fill trips from daysim output - "Passenger_SOV"
 					RunMacro("Fill Matrix", OutDir, outMat, MaxZone, "Passenger_SOV", ArrayTrips[1])
 					
-					// Fill trips from daysim output - "Passenger_HOV"
-					RunMacro("Fill Matrix", OutDir, outMat, MaxZone, "Passenger_HOV", ArrayTrips[2])
+					// Fill trips from daysim output - "Passenger_HOV2"
+					RunMacro("Fill Matrix", OutDir, outMat, MaxZone, "Passenger_HOV2", ArrayTrips[2])
+					
+					// Fill trips from daysim output - "Passenger_HOV3"
+					RunMacro("Fill Matrix", OutDir, outMat, MaxZone, "Passenger_HOV3", ArrayTrips[3])
 					
 					// Fill trips from daysim output - "PersonTrips"
-					RunMacro("Fill Matrix", OutDir, outMat, MaxZone, "PersonTrips", ArrayTrips[3])
+					RunMacro("Fill Matrix", OutDir, outMat, MaxZone, "PersonTrips", ArrayTrips[4])
 					
 			end
 			
@@ -387,21 +390,21 @@ STEPS:
 												if (Mode = 3) then do
 														Trip = TripExpFactor
 														ArrayTrips[1][OTaz][DTaz] = NullToZero(ArrayTrips[1][OTaz][DTaz]) + Trip
-														ArrayTrips[3][OTaz][DTaz] = NullToZero(ArrayTrips[3][OTaz][DTaz]) + 1
+														ArrayTrips[4][OTaz][DTaz] = NullToZero(ArrayTrips[4][OTaz][DTaz]) + 1
 												end
 												
-												//HOV
+												//HOV2
 												if (Mode = 4) then do
 														Trip = TripExpFactor/2
 														ArrayTrips[2][OTaz][DTaz] = NullToZero(ArrayTrips[2][OTaz][DTaz]) + Trip
-														ArrayTrips[3][OTaz][DTaz] = NullToZero(ArrayTrips[3][OTaz][DTaz]) + 1
+														ArrayTrips[4][OTaz][DTaz] = NullToZero(ArrayTrips[4][OTaz][DTaz]) + 1
 												end                            
 
-												//HOV
+												//HOV3
 												if (Mode = 5) then do
 														Trip = TripExpFactor/3.5
-														ArrayTrips[2][OTaz][DTaz] = NullToZero(ArrayTrips[2][OTaz][DTaz]) + Trip
-														ArrayTrips[3][OTaz][DTaz] = NullToZero(ArrayTrips[3][OTaz][DTaz]) + 1
+														ArrayTrips[3][OTaz][DTaz] = NullToZero(ArrayTrips[3][OTaz][DTaz]) + Trip
+														ArrayTrips[4][OTaz][DTaz] = NullToZero(ArrayTrips[4][OTaz][DTaz]) + 1
 												end 
 
 										end                         
