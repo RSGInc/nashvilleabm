@@ -433,26 +433,44 @@ Macro "AREATYPE" (Args)// Initialization 1 - Area Type
 	if !ret_value then goto quit
 
 
-	UpdateProgressBar("Area Type - Tagging Area Type to Network -(inside of the TAZs)", )
-	 //tag the area type
-	Opts = null
-	Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer,  "selection", "select * where id>0"}
-	Opts.Input.[Tag View Set] = {taz_db+"|"+tazname,  tazname}
-	Opts.Global.Fields = {llayer+".MOD_AREA"}
-	Opts.Global.Method = "Tag"
-	Opts.Global.Parameter = {"Value", tazname, tazname+".Predict"}
-	ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
-	if !ret_value then goto quit
+	//UpdateProgressBar("Area Type - Tagging Area Type to Network -(inside of the TAZs)", ) //TransCAD6
+	//tag the area type
+	//Opts = null
+	//Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer,  "selection", "select * where id>0"}
+	//Opts.Input.[Tag View Set] = {taz_db+"|"+tazname,  tazname}
+	//Opts.Global.Fields = {llayer+".MOD_AREA"}
+	//Opts.Global.Method = "Tag"
+	//Opts.Global.Parameter = {"Value", tazname, tazname+".Predict"}
+	//ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
+	//if !ret_value then goto quit
+	
+	UpdateProgressBar("Area Type - Tagging Area Type to Network -(inside of the TAZs)", ) //TransCAD8
+	//tag the area type
+	vw_set = RunMacro("TCB Create View Set", hwy_db+"|"+llayer, llayer, "Selection", "Select * where ID>0")
+    ok = (vw_set <> null)
+    if !ok then goto quit
+    tag_set = RunMacro("TCB Create View Set", taz_db+"|"+tazname,  tazname)
+    ok = (tag_set <> null)
+    if !ok then goto quit
+    TagLayer("Value", vw_set, llayer+".MOD_AREA", tag_set, tazname+".Predict")
 
     //tag node layer with TAZ id
-	Opts = null
-	Opts.Input.[Dataview Set] = {hwy_db+"|"+nlayer, llayer,  , }
-	Opts.Input.[Tag View Set] = {taz_db+"|"+tazname,  tazname}
-	Opts.Global.Fields = {nlayer+".TAZID_Stop_New"}
-	Opts.Global.Method = "Tag"
-	Opts.Global.Parameter = {"Value", tazname, tazname+".ID_NEW"}
-	ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
-	if !ret_value then goto quit
+	// Opts = null // TransCAD6
+	//Opts.Input.[Dataview Set] = {hwy_db+"|"+nlayer, llayer,  , }
+	//Opts.Input.[Tag View Set] = {taz_db+"|"+tazname,  tazname}
+	//Opts.Global.Fields = {nlayer+".TAZID_Stop_New"}
+	//Opts.Global.Method = "Tag"
+	//Opts.Global.Parameter = {"Value", tazname, tazname+".ID_NEW"}
+	//ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
+	//if !ret_value then goto quit
+	
+	vw_set = RunMacro("TCB Create View Set", hwy_db+"|"+nlayer, llayer,  , ) //TransCAD8
+    ok = (vw_set <> null)
+    if !ok then goto quit
+    tag_set = RunMacro("TCB Create View Set", taz_db+"|"+tazname,  tazname)
+    ok = (tag_set <> null)
+    if !ok then goto quit
+    TagLayer("Value", vw_set, nlayer+".TAZID_Stop_New", tag_set, tazname+".ID_NEW")
 
 	UpdateProgressBar("Area Type - Tagging Area Type to Network (outside of the TAZs)", )
 	SetLayer(llayer)
@@ -479,14 +497,23 @@ Macro "AREATYPE" (Args)// Initialization 1 - Area Type
 		if n>0 then do
 			
 			// 1 tag to centroids if no tag result
-			Opts = null
-			Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer, "selection", "select * where MOD_AREA=null "}
-			Opts.Input.[Tag View Set] = {Scen_Dir+"\\outputs\\ATCentroids.dbd"+"|Centroids",  "Centroids"}
-			Opts.Global.Fields = {llayer+".MOD_AREA"}
-			Opts.Global.Method = "Tag"
-			Opts.Global.Parameter = {"Value", "Centroids", "Centroids.Predict"}
-			ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
-			if !ret_value then goto quit
+			//Opts = null //TransCAD6
+			//Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer, "selection", "select * where MOD_AREA=null "}
+			//Opts.Input.[Tag View Set] = {Scen_Dir+"\\outputs\\ATCentroids.dbd"+"|Centroids",  "Centroids"}
+			//Opts.Global.Fields = {llayer+".MOD_AREA"}
+			//Opts.Global.Method = "Tag"
+			//Opts.Global.Parameter = {"Value", "Centroids", "Centroids.Predict"}
+			//ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
+			//if !ret_value then goto quit
+			
+			vw_set = RunMacro("TCB Create View Set", hwy_db+"|"+llayer, llayer, "selection", "select * where MOD_AREA=null ") //TransCAD8
+			ok = (vw_set <> null)
+			if !ok then goto quit
+			tag_set = RunMacro("TCB Create View Set", Scen_Dir+"\\outputs\\ATCentroids.dbd"+"|Centroids",  "Centroids")
+			ok = (tag_set <> null)
+			if !ok then goto quit
+			TagLayer("Value", vw_set, llayer+".MOD_AREA", tag_set, "Centroids.Predict")
+						
 		end
 		
 		// 2 rural if no tag result

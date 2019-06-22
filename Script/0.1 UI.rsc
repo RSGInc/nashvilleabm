@@ -84,7 +84,7 @@ dbox "MMC Model"
 
     // Define GUI
     button  0,0
-    icons: "bmp\\nashville_mpo.bmp"
+    icons: "bmp\\2040.bmp"
 
     frame 0.5, 6, 39.0, 5 prompt: "Scenarios"
     scroll list 1.5, 7.0, 37.0, 3.5 multiple list: ScenNames variable: ScenSel do

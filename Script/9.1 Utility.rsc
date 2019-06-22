@@ -88,16 +88,26 @@ macro "MOE1" (Args) //MOE 1 for the table
 			if moe_data[i]<>moe_data[i-1] then moe_names=moe_names+{moe_data[i]}
 		end
 		
-		//tag the line layer with district names
-		Opts = null
-		Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer,  "selection", "Select * where Assignment_Loc=1 and (County='47037' or County='47119' or County='47147' or County='47149' or County='47165' or County='47187' or County='47189')"}
-		Opts.Input.[Tag View Set] = {taz_db+"|"+tazname,  tazname}
-		Opts.Global.Fields = {llayer+".DIST_NAME"}
-		Opts.Global.Method = "Tag"
-		Opts.Global.Parameter = {"Value", tazname, tazname+".MOE_DIST"+i2s(n_dist_set)}
-		ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
-		if !ret_value then goto quit
+		//tag the line layer with district names //TransCAD6
+		//Opts = null
+		//Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer,  "selection", "Select * where Assignment_Loc=1 and (County='47037' or County='47119' or County='47147' or County='47149' or County='47165' or County='47187' or County='47189')"}
+		//Opts.Input.[Tag View Set] = {taz_db+"|"+tazname,  tazname}
+		//Opts.Global.Fields = {llayer+".DIST_NAME"}
+		//Opts.Global.Method = "Tag"
+		//Opts.Global.Parameter = {"Value", tazname, tazname+".MOE_DIST"+i2s(n_dist_set)}
+		//ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
+		//if !ret_value then goto quit
 
+		UpdateProgressBar("tag the line layer with district names", ) //TransCAD8
+		//tag district names
+		vw_set = RunMacro("TCB Create View Set", hwy_db+"|"+llayer, llayer, "Selection", "Select * where Assignment_Loc=1 and (County='47037' or County='47119' or County='47147' or County='47149' or County='47165' or County='47187' or County='47189')")
+		ok = (vw_set <> null)
+		if !ok then goto quit
+		tag_set = RunMacro("TCB Create View Set", taz_db+"|"+tazname,  tazname)
+		ok = (tag_set <> null)
+		if !ok then goto quit
+		TagLayer("Value", vw_set, llayer+".DIST_NAME", tag_set, tazname+".MOE_DIST"+i2s(n_dist_set))
+		
 		// quicksum core
 		check_quicksum=0		
 		core_names = GetMatrixCoreNames(pa_matrix)

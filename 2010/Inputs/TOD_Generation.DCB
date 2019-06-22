@@ -1,7 +1,3 @@
-
-80
-"TRIP",C,1,16,0,16,0,,"","",,"Blank",
-"AM",C,17,16,0,16,0,,"","",,"Blank",
-"MD",C,33,16,0,16,0,,"","",,"Blank",
-"PM",C,49,16,0,16,0,,"","",,"Blank",
-"OP",C,65,16,0,16,0,,"","",,"Blank",
+version https://git-lfs.github.com/spec/v1
+oid sha256:926158914ab0d66badcc64ba29198d05503234b8d68daf1a98e9a0b1dd69af71
+size 197

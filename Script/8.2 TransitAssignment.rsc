@@ -34,6 +34,7 @@ Macro "TransitAssignment"(Args)
 								
 								if (iacc=1) then AccessNet="Walk"
 								if (iacc=2) then AccessNet="Drive"
+								//if (iacc=2) then AccessNet="Walk" //test - assign PNR on walk access network
 								if (iacc=3) then AccessNet="Drive"
 				
                 outtnw= OutDir + Periods[iper] + "_" + AccessNet + Modes[imode] + ".tnw"

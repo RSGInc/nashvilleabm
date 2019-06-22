@@ -113,7 +113,7 @@ UpdateProgressBar("SetTransitParameters",)
     WriteLine(runtime,"\n Begin Model Run                      - "+SubString(stime,1,3)+","+SubString(stime,4,7)+""+SubString(stime,20,5)+" ("+SubString(stime,12,8)+") ")
 
     RunMacro("TCB Init")
-
+/*
 // STEP 1.1: Create a market segment file using the information available in the TAZ layer
     zone_dbd_layers = GetDBLayers(zone_dbd)
     db_tazlyr = zone_dbd + "|" + zone_dbd_layers[1]
@@ -144,15 +144,17 @@ UpdateProgressBar("SetTransitParameters",)
         if (jv11.LNG_PRK <> null) then long_park = jv11.LNG_PRK
         if (jv11.TRANS_DISTRICT = 1) then cbd_type_taz = 1
         if (jv11.TRANS_DISTRICT <> 1) then cbd_type_taz = 0
-        Writeline(marketseg, LPad(i2s(jv11.MATID.NEWID), 8) + LPad(Format(Nz(zerocar),"*0.0"), 8) +  
+        //Writeline(marketseg, LPad(i2s(jv11.MATID.NEWID), 8) + LPad(Format(Nz(zerocar),"*0.0"), 8) +   // TransCAD6
+          Writeline(marketseg, LPad(i2s(jv11.NEWID), 8) + LPad(Format(Nz(zerocar),"*0.0"), 8) +		// TransCAD8
         		    LPad(Format(Nz(onecar),"*0.0"), 8) + LPad(Format(Nz(twocar),"*0.0"), 8) + "       0")
-        WriteLine(parkingfile, JoinStrings({i2s(jv11.MATID.NEWID),r2s(long_park),i2s(cbd_type_taz)},","))
+        //WriteLine(parkingfile, JoinStrings({i2s(jv11.MATID.NEWID),r2s(long_park),i2s(cbd_type_taz)},","))   // TransCAD6
+		WriteLine(parkingfile, JoinStrings({i2s(jv11.NEWID),r2s(long_park),i2s(cbd_type_taz)},","))   // TransCAD8
         rec=GetNextRecord(jv11+"|",,)
     end
 
     CloseFile(marketseg)
     CloseFile(parkingfile)
-
+*/
 
 // STEP 1.3: Add required fields in the highway layer (if not already existing)
     vws = GetViewNames()
@@ -863,6 +865,7 @@ UpdateProgressBar("BuildTransitPaths",)
 					end
 					if (Periods[iper]="PM" or Periods[iper]="OP") then do
 						 Opts.Flag.[Use All Walk Path] = "No"
+						 //Opts.Flag.[Use PNR All Walk] = "No"  // additional setting for TransCAD8 - not needed
 						 Opts.Flag.[Use Park and Ride] = "No"
 						 Opts.Flag.[Use Egress Park and Ride] = "Yes"
 						 Opts.Flag.[Use P&R Walk Access] = "No"
@@ -923,15 +926,21 @@ UpdateProgressBar("BuildTransitPaths",)
                 Opts = null
                 Opts.Input.Database = highway_dbd
                 Opts.Input.Network = outtnw
-                  
+                //Opts.Input.[Transit RS] = route_system //TransCAD8 - new addition
                 Opts.Input.[Origin Set] = {db_nodelyr, nlayer, "AllZones", "Select * where CCSTYLE=99 | CCSTYLE=98 | CCSTYLE=97"}
                 Opts.Input.[Destination Set] = {db_nodelyr, nlayer, "AllZones"}
                 Opts.Global.[Skim Var] = {"Generalized Cost", "Fare", "In-Vehicle Time", "Initial Wait Time", "Transfer Wait Time", "Transfer Penalty Time",
                                           "Transfer Walk Time", "Access Walk Time", "Egress Walk Time", "Access Drive Time", "Dwelling Time",
                                           "Number of Transfers", "In-Vehicle Distance", "Drive Distance", timevar}   // Number of Transfers are converted to Number of Boardings later: by nagendra.dhakar@rsginc.com
-                
-                Opts.Global.[OD Layer Type] = 2
-                Opts.Global.[Skim Modes] = {4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 11}  // skim travel times on new and project modes for additional bias logic in mode choice model
+
+				//Opts.Global.[Skim Variables] = {"Generalized Cost", "Fare", "In-Vehicle Time", "Initial Wait Time", "Transfer Wait Time", "Transfer Penalty Time",
+                //                         "Transfer Walk Time", "Access Walk Time", "Egress Walk Time", "Access Drive Time", "Dwelling Time",
+                //                          "Number of Transfers", "In-Vehicle Distance"}   // Number of Transfers are converted to Number of Boardings later: by nagendra.dhakar@rsginc.com
+										  
+                Opts.Global.[OD Layer Type] = 2  //TransCAD6
+				//Opts.Global.[OD Layer Type] = "Node" //TransCAD8
+				Opts.Global.[Load Method] = "PF" //TransCAD8 - new addition
+                Opts.Global.[Skim Modes] = {4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 11}  // skim travel times on new and project modes for additional bias logic in mode choice model - //TransCAD6 - does not work in TransCAD8
                 Opts.Output.[Skim Matrix].Label = Periods[iper] + AccessModes[iacc] + Modes[imode] + " (Skim)"
                 Opts.Output.[Skim Matrix].Compression = 0
                 Opts.Output.[Skim Matrix].[File Name] = outskim
@@ -941,6 +950,7 @@ UpdateProgressBar("BuildTransitPaths",)
 									 Opts.Output.[OP Matrix].[File Name]= OutDir + Periods[iper] + AccessModes[iacc] + Modes[imode] + "_pnr_time.mtx"
 									 Opts.Output.[Parking Matrix].Label = "Parking Matrix"
 									 Opts.Output.[Parking Matrix].[File Name] = OutDir + Periods[iper] + AccessModes[iacc] + Modes[imode] + "_pnr_node.mtx"
+									 
                 end
                 
 								Opts.Output.[TPS Table] = outtps

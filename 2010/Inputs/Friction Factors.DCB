@@ -1,8 +1,3 @@
-
-24
-"TIME",I,1,4,0,9,0,,"","",,"Blank",
-"IICOM",I,5,4,0,9,0,,"","",,"Blank",
-"IISU",I,9,4,0,9,0,,"","",,"Blank",
-"IIMU",I,13,4,0,9,0,,"","",,"Blank",
-"IEAUTO",I,21,4,0,9,0,,"","",,"Blank",
-"IESU",I,17,4,0,9,0,,"","",,"Blank",
+version https://git-lfs.github.com/spec/v1
+oid sha256:a144b125d3670e74102be12f309c3976fcf77578e0f5e66fcc49c1636a3020c4
+size 234

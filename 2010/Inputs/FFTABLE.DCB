@@ -1,9 +1,3 @@
-
-100
-"FCLASS",C,1,16,0,16,0,,"","",,"Blank",
-"TOD",C,17,4,0,4,0,,"","",,"Blank",
-"CBD",C,21,16,0,16,0,,"","",,"Blank",
-"URBAN",C,37,16,0,16,0,,"","",,"Blank",
-"SUBURBAN",C,53,16,0,16,0,,"","",,"Blank",
-"RURAL",C,69,16,0,16,0,,"","",,"Blank",
-"CONGESTED",C,85,16,0,16,0,,"","",,"Blank",
+version https://git-lfs.github.com/spec/v1
+oid sha256:8ad086fe9ba4c6fdbff93c12d8cd688da168cc359c164c1dba9264433423305e
+size 295

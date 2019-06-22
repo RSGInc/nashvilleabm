@@ -27,7 +27,7 @@ Macro "Airport" (Args)
     HH_PA_file   = Args.[Household Production]              // Household Production table
     enplanements = Args.[daily enplanements]                // Daily Enplanements
     airport_taz  = Args.[airport taz]                       // Airport TAZ #
-    zones_mtx    = Scen_Dir+"outputs\\zone.mtx"             // zone identity matrix
+    zones_mtx    = Scen_Dir+"outputs\\zone_airport.mtx"             // zone identity matrix
     persons_per_room = Args.[persons_per_room]              // Persons per hotel room
    
     // OUTPUTS
@@ -110,28 +110,53 @@ Macro "Airport" (Args)
     ret_value = RunMacro("TCB Run Procedure", "Balance", Opts)
     if !ret_value then goto quit 
        
+// Make a new zone-zone matrix of 1's - for TransCAD 8
+	taz_table = OpenTable("taz_table", "FFB", {taz_file})
+	CreateMatrix({taz_table+"|","ID_NEW","Rows"}, {taz_table+"|","ID_NEW","Columns"},
+               {{"File Name",zones_mtx}, {"Type" ,"Short"}, {"Tables" ,{"Matrix 1"}}})
+			   
+	CloseView(taz_table)
+			   
+    Opts = null
+    Opts.Input.[Matrix Currency] = {zones_mtx, "Matrix 1", "Rows", "Columns"}
+    Opts.Global.Method = 1
+    Opts.Global.Value = 1
+    Opts.Global.[Cell Range] = 2
+    Opts.Global.[Matrix Range] = 1
+    Opts.Global.[Matrix List] = {"Matrix 1"}
+    ret_value = RunMacro("TCB Run Operation", 1, "Fill Matrices", Opts)		   
+	   
 //**** GRAVITY MODEL FOR AIRPORT TRIP DISTRIBUTION ****
     Opts = null
     Opts.Input.[PA View Set] = {air_PA, "airportPA"}
-    Opts.Input.[FF Matrix Currencies] = {{zones_mtx, "Matrix 1",,}, {zones_mtx, "Matrix 1",,}, {zones_mtx, "Matrix 1",,}}
-    Opts.Input.[Imp Matrix Currencies]= {{zones_mtx, "Matrix 1",,}, {zones_mtx, "Matrix 1",,}, {zones_mtx, "Matrix 1",,}}
-    Opts.Input.[KF Matrix Currencies] = {{zones_mtx, "Matrix 1",,}, {zones_mtx, "Matrix 1",,}, {zones_mtx, "Matrix 1",,}}
+    //Opts.Input.[FF Matrix Currencies] = {{zones_mtx, "Matrix 1",,}, {zones_mtx, "Matrix 1",,}, {zones_mtx, "Matrix 1",,}}
+    //Opts.Input.[Imp Matrix Currencies]= {{zones_mtx, "Matrix 1",,}, {zones_mtx, "Matrix 1",,}, {zones_mtx, "Matrix 1",,}}
+    //Opts.Input.[KF Matrix Currencies] = {{zones_mtx, "Matrix 1",,}, {zones_mtx, "Matrix 1",,}, {zones_mtx, "Matrix 1",,}}
+	Opts.Input.[FF Matrix Currencies] = {, , }  // transCAD 8.0 
+    Opts.Input.[Imp Matrix Currencies]= {{zones_mtx, "Matrix 1", "Rows", "columns"}, {zones_mtx, "Matrix 1", "Rows", "columns"}, {zones_mtx, "Matrix 1", "Rows", "columns"}} // transCAD 8.0 
+    Opts.Input.[KF Matrix Currencies] = {{zones_mtx, "Matrix 1", "Rows", "columns"}, {zones_mtx, "Matrix 1", "Rows", "columns"}, {zones_mtx, "Matrix 1", "Rows", "columns"}} // transCAD 8.0 
     Opts.Input.[FF Tables] = {{air_PA}, {air_PA}, {air_PA}}
-    Opts.Field.[Prod Fields] = {"airportPA.AIR_HBO_P", "airportPA.AIR_NHBW_P", "airportPA.AIR_VISIT_P"}
-    Opts.Field.[Attr Fields] = {"airportPA.AIR_HBO_A", "airportPA.AIR_NHBW_A", "airportPA.AIR_VISIT_A"}
-    Opts.Field.[FF Table Fields] = {"airportPA.ID1", "airportPA.ID1", "airportPA.ID1"}
-    Opts.Field.[FF Table Times] =  {"airportPA.ID1", "airportPA.ID1", "airportPA.ID1"}
+    //Opts.Field.[Prod Fields] = {"airportPA.AIR_HBO_P", "airportPA.AIR_NHBW_P", "airportPA.AIR_VISIT_P"}
+    //Opts.Field.[Attr Fields] = {"airportPA.AIR_HBO_A", "airportPA.AIR_NHBW_A", "airportPA.AIR_VISIT_A"}
+	Opts.Field.[Prod Fields] = {"AIR_HBO_P", "AIR_NHBW_P", "AIR_VISIT_P"} // transCAD 8.0 
+    Opts.Field.[Attr Fields] = {"AIR_HBO_A", "AIR_NHBW_A", "AIR_VISIT_A"} // transCAD 8.0 
+    //Opts.Field.[FF Table Fields] = {"airportPA.ID1", "airportPA.ID1", "airportPA.ID1"}
+    Opts.Field.[FF Table Times] = {"airportPA.ID1", "airportPA.ID1", "airportPA.ID1"}
+	Opts.Field.[FF Table Fields] = {"ID1", "ID1", "ID1"} // transCAD 8.0
     Opts.Global.[Purpose Names] = {"AIR_HBO", "AIR_NHBW", "AIR_VISIT"}
     Opts.Global.Iterations = {10, 10, 10}
     Opts.Global.Convergence = {0.01, 0.01, 0.01}
-    Opts.Global.[Constraint Type] = {"Columns", "Columns", "Columns"}
-    Opts.Global.[Fric Factor Type] = {"Matrix", "Matrix", "Matrix"}
+    //Opts.Global.[Constraint Type] = {"Columns", "Columns", "Columns"}
+	Opts.Global.[Constraint Type] = {"Doubly", "Doubly", "Doubly"} // transCAD 8.0 
+    //Opts.Global.[Fric Factor Type] = {"Matrix", "Matrix", "Matrix"}
+	Opts.Global.[Fric Factor Type] = {"Gamma", "Gamma", "Gamma"} // transCAD 8.0
     Opts.Global.[A List] = {1, 1, 1}
     Opts.Global.[B List] = {0.3, 0.3, 0.3}
     Opts.Global.[C List] = {0.01, 0.01, 0.01}
-    Opts.Flag.[Use K Factors] = {0, 0, 0}
+	Opts.Global.[Minimum Friction Value] = {0, 0, 0} // transCAD 8.0
+    //Opts.Flag.[Use K Factors] = {0, 0, 0}
     Opts.Output.[Output Matrix].Label = "Airport Trip Distribution, Daily"
-    Opts.Output.[Output Matrix].Compression = 1
+    //Opts.Output.[Output Matrix].Compression = 1
     Opts.Output.[Output Matrix].[File Name] = air_TD
 
     ret_value = RunMacro("TCB Run Procedure", 1, "Gravity", Opts)
