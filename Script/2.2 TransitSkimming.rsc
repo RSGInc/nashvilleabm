@@ -2,13 +2,16 @@
  Transit Skimming
 */
 Macro "Transit Skimming" (Args)
-
-    RunMacro("SetTransitParameters",Args)  
+	starttime = RunMacro("RuntimeLog", {"Transit Skimming ", null})
+	RunMacro("HwycadLog", {"2.1 TransitSkimming.rsc", "  ****** Transit Skimming ****** "})
+	
+    RunMacro("SetTransitParameters",Args)
     RunMacro("PrepareInputs")
-    RunMacro("BuildDriveConnectors")
+    RunMacro("BuildDriveConnectors")	
     RunMacro("BuildTransitPaths")
     RunMacro("ProcessTransitSkimsforMC", Args)  //2.3 FormatSkims.rsc
-    //RunMacro("CopyTransitSkims", Args)
+	
+	endtime = RunMacro("RuntimeLog", {"Transit Skimming ", starttime})
 
     Return(1)
 EndMacro
@@ -17,7 +20,9 @@ EndMacro
 // 04/24/2013 - Incorporated the Transit Model code from the MTA Model
 Macro "SetTransitParameters" (Args)
 	
+	RunMacro("HwycadLog", {"Set transit paramters", null})
 	UpdateProgressBar("SetTransitParameters",)
+	
     shared scen_data_dir
     shared InDir, OutDir
     shared Periods, Modes, AccessModes, AccessAssgnModes
@@ -103,11 +108,13 @@ EndMacro
 
 // STEP 1: Prepare inputs required by the transit model in the subsequent steps
 Macro "PrepareInputs"
-UpdateProgressBar("SetTransitParameters",)
+	RunMacro("HwycadLog", {"Prepare inputs", null})	
+	UpdateProgressBar("SetTransitParameters",)
     shared OutDir
     shared Periods, Modes, AccessModes, TransitTimeFactor, WalkSpeed, TransitOnlyLinkDefaultSpeed, DwellTimebyMode
     shared highway_dbd, highway_link_bin, zone_dbd, zone_bin, route_stop, route_stop_bin, route_bin, SpeedFactorTable, IDTable, modetable // input files
     shared OutMarketSegment, runtime // output files
+	shared highway_node_bin
 
     stime=GetDateAndTime()
     WriteLine(runtime,"\n Begin Model Run                      - "+SubString(stime,1,3)+","+SubString(stime,4,7)+""+SubString(stime,20,5)+" ("+SubString(stime,12,8)+") ")
@@ -124,7 +131,7 @@ UpdateProgressBar("SetTransitParameters",)
     parkingfile = OpenFile(OutDir + "ParkingCost.csv", "w")
     jv11=JoinViews("JV11","MATID.NEWID","zones.ID_NEW",)
 
-		rec=GetFirstRecord(jv11+"|",)
+	rec=GetFirstRecord(jv11+"|",)
     WriteLine(parkingfile, JoinStrings({"TAZ","dailyParkingCost","CBD"},","))
     while (rec<>null) do
     
@@ -517,8 +524,14 @@ end
 		
 		
 // STEP 1.7: Make a zone-zone matrix of 1's to conduct Preassignment
-    zonefile=OpenTable("zonedata","FFB",{IDTable,})
-    CreateMatrix({zonefile+"|","NEWID","Rows"}, {zonefile+"|","NEWID","Columns"},
+	//zonefile = OpenTable("zonedata","FFB",{zone_bin,})
+	hnodeview = OpenTable("hnodes","FFB",{highway_node_bin,})
+	SetView("hnodes")
+	qry1 = "Select * where ID < 5000"
+	n1 = SelectByQuery("zones", "Several", qry1,)
+
+    //zonefile=OpenTable("zonedata","FFB",{IDTable,})
+    CreateMatrix({hnodeview+"|zones","ID","Rows"}, {hnodeview+"|zones","ID","Columns"},
                  {{"File Name",OutDir + "zone.mtx"}, {"Type" ,"Short"}, {"Tables" ,{"Matrix 1"}}})
     Opts = null
     Opts.Input.[Matrix Currency] = {OutDir + "zone.mtx", "Matrix 1", "Rows", "Columns"}
@@ -542,7 +555,8 @@ EndMacro
 
 // STEP 3: Create weighted drive connectors
 Macro "BuildDriveConnectors"
-UpdateProgressBar("BuildDriveConnectors",)
+	RunMacro("HwycadLog", {"Build drive connectors", null})
+	UpdateProgressBar("BuildDriveConnectors",)
     shared Periods, Modes
     shared ValueofTime, AutoOperatingCost, AOCC_PNR, PNR_TerminalTime, MaxPNR_DriveTime
     shared highway_dbd, highway_node_bin, zone_bin
@@ -614,7 +628,7 @@ UpdateProgressBar("BuildDriveConnectors",)
         Opts.Output.[Output Type] = "Matrix"
         Opts.Output.[Output Matrix].Label = "Shortest Path"
         Opts.Output.[Output Matrix].[File Name] = outmat
-        ret_value = RunMacro("TCB Run Procedure", 3, "TCSPMAT", Opts)
+        ret_value = RunMacro("TCB Run Procedure", 3, "TCSPMAT", Opts, &Ret)
         if !ret_value then goto quit
 
         vws = GetViewNames()
@@ -639,7 +653,7 @@ UpdateProgressBar("BuildDriveConnectors",)
             drive_distance   = GetMatrixVector(dacc_dist_cur,  {{"Row", StringToInt(rowID[i])}})
             DriveTime    = Vector(drive_time.length, "Float",)
             // identify production area type
-            rh1 = LocateRecord(tazview+"|", "ID_NEW", {StringToInt(rowID[i])}, {{"Exact", "True"}})
+            rh1 = LocateRecord(tazview+"|", "ID_NEW_new", {StringToInt(rowID[i])}, {{"Exact", "True"}})
             if rh1 <> null then ProdAType=tazview.Predict
             if ProdAType = "CBD" then DrWt = 99       // no connector from CBD
             if (ProdAType = "URBAN" | ProdAType = "SU" | ProdAType = "RURAL") then DrWt = 1.5
@@ -687,11 +701,13 @@ EndMacro
 
 // STEP 4: Build transit paths
 Macro "BuildTransitPaths"
-UpdateProgressBar("BuildTransitPaths",)
+	RunMacro("HwycadLog", {"Build transit paths", null})
+	UpdateProgressBar("BuildTransitPaths",)
+	
     shared OutDir, Periods, Modes, AccessModes, ValueofTime, highway_dbd, route_system
     shared route_stop, route_stop_bin, IDTable, TerminalTimeMtx, modetable, modexfertable     // input files
     shared pnr_time_mat_op, pnr_time_mat_pd, runtime // output files
-		shared iper_count, iacc_count, imode_count // for quick transit skim
+	shared iper_count, iacc_count, imode_count // for quick transit skim
 	
     RunMacro("TCB Init")
 
@@ -710,8 +726,8 @@ UpdateProgressBar("BuildTransitPaths",)
     for iper=1 to Periods.Length do
         for iacc=1 to AccessModes.Length do
             for imode=1 to Modes.Length do
-            
-								UpdateProgressBar("Build transit paths Loop - "+ Periods[iper] +" - " + AccessModes[iacc] + " - "+  Modes[imode] + " -" +i2s(count)+" of " +i2s(counter),)
+				RunMacro("HwycadLog", {"Build transit paths", "Build transit paths Loop - "+ Periods[iper] +" - " + AccessModes[iacc] + " - "+  Modes[imode] + " -" +i2s(count)+" of " +i2s(counter)})
+				UpdateProgressBar("Build transit paths Loop - "+ Periods[iper] +" - " + AccessModes[iacc] + " - "+  Modes[imode] + " -" +i2s(count)+" of " +i2s(counter),)
                 outtnw= OutDir + Periods[iper] + "_" + AccessModes[iacc] + Modes[imode] + ".tnw"
                 outskim = OutDir + Periods[iper] + "_" + AccessModes[iacc] + Modes[imode] + ".mtx"
                 outtps  = OutDir + Periods[iper] + "_" + AccessModes[iacc] + Modes[imode] + ".tps"
@@ -724,6 +740,7 @@ UpdateProgressBar("BuildTransitPaths",)
 
 
             // STEP 4.1: Build Transit Network
+				RunMacro("HwycadLog", {"Build transit paths", "Build tranist network"})
                 Opts = null
                 Opts.Input.[Transit RS] = route_system
                 Opts.Input.[RS Set] = {route_system + "|Route System", "Route System", "Routes", "Select * where HW_" + Periods[iper] + ">0 & " + selmode}
@@ -784,6 +801,8 @@ UpdateProgressBar("BuildTransitPaths",)
 
                 ret_value = RunMacro("TCB Run Operation", "Build Transit Network", Opts, &Ret)
                 if !ret_value then goto quit
+				
+				RunMacro("HwycadLog", {"Build transit paths", "Tranist network settings"})
 
             // STEP 3.2: Transit Network Setting PF
                 Opts = null
@@ -885,6 +904,7 @@ UpdateProgressBar("BuildTransitPaths",)
                 if !ret_value then goto quit
 
             // STEP 4.3: Update the transit network with layover times / dwell times
+				RunMacro("HwycadLog", {"Build transit paths", "Transit assignment PF"})
                 Opts = null
                 Opts.Input.[Transit RS] = route_system
                 Opts.Input.Network = outtnw
@@ -895,6 +915,7 @@ UpdateProgressBar("BuildTransitPaths",)
                 if !ret_value then goto quit
 
             // STEP 4.3.1 Fill Stop layer BaseIVTT variable with results of preload ivtt (add the layover time coded in the stop layer)
+				RunMacro("HwycadLog", {"Build transit paths", "Fill stop layer with base ivtt"})
                 Opts = null
                 Opts.Input.[Dataview Set] = {{route_stop + "|Route Stops", OutDir + Periods[iper]+AccessModes[iacc]+Modes[imode]+"PreloadFlow.bin", "ID", "FROM_STOP"}, "Route Stops"+"RouteSystem"+Periods[iper]+"Prel"}
                 Opts.Global.Fields = {Periods[iper] + AccessModes[iacc] + Modes[imode] + "IVTT"}
@@ -909,6 +930,7 @@ UpdateProgressBar("BuildTransitPaths",)
 				// Calculate dwell time as = (2*distance). Note : 2 mins/mile
 
             // STEP 4.3.2: Now Update the Time Layer with the Correct Time Information
+				RunMacro("HwycadLog", {"Build transit paths", "Update transit links with correct ivtt"})
                 ActiveTransitNetwork=ReadNetwork(outtnw)
                 
 								StopTable=OpenTableEx("StopTable","FFB", {route_stop_bin,},{"Shared","False"})
@@ -921,6 +943,7 @@ UpdateProgressBar("BuildTransitPaths",)
             //     : dwelling time just once in the generalized cost
 
             // STEP 4.4: Transit Skim PF
+				RunMacro("HwycadLog", {"Build transit paths", "Transit skim PF"})
                 timevar = "TransitTime"+Periods[iper]+"_*"
 
                 Opts = null
@@ -976,6 +999,7 @@ UpdateProgressBar("BuildTransitPaths",)
                 // this is done so that the assignment BaseIVTT gives total IVTT
  */              
             // STEP 5: Calculate boardings as xfers+1 - DaySim uses boardings for OD pairs with IVT>0. Therefore, adding 1 to all xfers is fine.
+				RunMacro("HwycadLog", {"Build transit paths", "Calculate boardings in transfers field"})
 
                 Opts = null
                 Opts.Input.[Matrix Currency] = { outskim, "Number of Transfers",,}
@@ -1009,6 +1033,7 @@ EndMacro
 
 // STEP 6: Create percent walk for TCMS
 Macro "PercentWalk"(Args)
+	RunMacro("HwycadLog", {"Create percent walk for TCMS", null})
     shared scen_data_dir
     shared OutDir, Periods, Modes, WalkBufferDistance, zone_dbd, route_stop, IDTable
     shared runtime // output files

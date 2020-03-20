@@ -1,0 +1,25 @@
+INFO: DaySim Buffering Tool Log Started: Monday, February 24, 2020 @ 2:01:05 PM
+INFO: Started buffering process: Monday, February 24, 2020 @ 2:01:05 PM
+INFO: Started buffering process: Monday, February 24, 2020 @ 2:01:05 PM
+INFO: Started reading node data: Monday, February 24, 2020 @ 2:01:05 PM
+INFO: Finished reading node data: Monday, February 24, 2020 @ 2:01:05 PM
+INFO: Started reading parcel data: Monday, February 24, 2020 @ 2:01:05 PM
+INFO: Finished reading parcel data: Monday, February 24, 2020 @ 2:01:05 PM
+INFO: Started reading intersection data: Monday, February 24, 2020 @ 2:01:05 PM
+INFO: Finished reading intersection data: Monday, February 24, 2020 @ 2:01:06 PM
+INFO: Started reading transit stops data: Monday, February 24, 2020 @ 2:01:06 PM
+INFO: Finished reading transit stops data: Monday, February 24, 2020 @ 2:01:06 PM
+INFO: Started reading open spaces data: Monday, February 24, 2020 @ 2:01:06 PM
+INFO: Finished reading open spaces data: Monday, February 24, 2020 @ 2:01:06 PM
+INFO: Started creating node correspondences: Monday, February 24, 2020 @ 2:01:06 PM
+INFO: Started creating parcel-node correspondence: Monday, February 24, 2020 @ 2:01:06 PM
+INFO: Finished creating parcel-node correspondence: Monday, February 24, 2020 @ 2:01:15 PM
+INFO: Started creating intersection-node correspondence: Monday, February 24, 2020 @ 2:01:15 PM
+INFO: Started creating stop-node correspondence: Monday, February 24, 2020 @ 2:02:24 PM
+INFO: Finished creating node correspondences: Monday, February 24, 2020 @ 2:02:25 PM
+INFO: Started precalculating distance decay weights: Monday, February 24, 2020 @ 2:02:25 PM
+INFO: Finished precalculating distance decay weights: Monday, February 24, 2020 @ 2:02:25 PM
+INFO: Started writing out buffered parcel data: Monday, February 24, 2020 @ 2:02:25 PM
+INFO: Reading node-node distance information from E:\Projects\Clients\Nashville\Model\BaseYear\Development\ABM_TCAD8_TAZSPLIT\ParcelInputs\BufferTool\2018\node_node_distances.dat: Monday, February 24, 2020 @ 2:02:25 PM
+INFO: Finished writing out buffered parcel data: Monday, February 24, 2020 @ 2:07:01 PM
+INFO: Finished buffering process: Monday, February 24, 2020 @ 2:07:01 PM

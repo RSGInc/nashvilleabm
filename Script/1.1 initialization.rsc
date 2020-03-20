@@ -13,6 +13,8 @@
 Macro "Initialization" (Args)// Initialization
    // shared prj_dry_run  if prj_dry_run then return(1)
    shared Scen_Dir, loop, loop_n, run_type 
+   starttime = RunMacro("RuntimeLog", {"Initialization", null})	
+   RunMacro("HwycadLog", {"1.1 Initialization.rsc", "Initialization"})
    
    // Input Files
    hwy_db = Args.[hwy db]
@@ -319,7 +321,7 @@ Macro "Initialization" (Args)// Initialization
 		if !ret_value then goto quit		
    end 
 
- 
+	endtime = RunMacro("RuntimeLog", {"Initialization", starttime})	
 	ret_value = 1
 	quit:
 	CloseMap("temp")
@@ -339,6 +341,8 @@ EndMacro
 Macro "AREATYPE" (Args)// Initialization 1 - Area Type
   shared prj_dry_run, Scen_Dir
 	
+	starttime = RunMacro("RuntimeLog", {"Initialization - Area Type", null})	
+	RunMacro("HwycadLog", {"1.1 Initialization.rsc", "Area Type"})
 	UpdateProgressBar("Area Type - Initialization", )
 	
 // Input highway and TAZ files. 
@@ -378,7 +382,7 @@ Macro "AREATYPE" (Args)// Initialization 1 - Area Type
 	
 	
 	// aggregate 0.5 mile area, pop, and emp
-	ColumnAggregate(tazname+"|", 0.5, "Centroids|", {{"Area05", "Sum", "Area2", },{"POP05", "Sum", "POP10", },{"EMP05", "Sum", "EMP10", },{"HH05", "Sum", "HH10", }}, null)
+	ColumnAggregate(tazname+"|", 0.5, "Centroids|", {{"Area05", "Sum", "Area2", },{"POP05", "Sum", "POP", },{"EMP05", "Sum", "EMP", },{"HH05", "Sum", "HH", }}, null)
 	
 	//calculate the density
 	Opts = null
@@ -470,7 +474,7 @@ Macro "AREATYPE" (Args)// Initialization 1 - Area Type
     tag_set = RunMacro("TCB Create View Set", taz_db+"|"+tazname,  tazname)
     ok = (tag_set <> null)
     if !ok then goto quit
-    TagLayer("Value", vw_set, nlayer+".TAZID_Stop_New", tag_set, tazname+".ID_NEW")
+    TagLayer("Value", vw_set, nlayer+".TAZID_Stop_New", tag_set, tazname+".ID")
 
 	UpdateProgressBar("Area Type - Tagging Area Type to Network (outside of the TAZs)", )
 	SetLayer(llayer)
@@ -569,6 +573,7 @@ Macro "AREATYPE" (Args)// Initialization 1 - Area Type
 	if !ret_value then goto quit
 	end
 
+	endtime = RunMacro("RuntimeLog", {"Initialization - Area Type", starttime})
 	ret_value = 1
 	quit:
 	CloseMap("temp")
@@ -582,8 +587,11 @@ endMacro
 // 4. Alpha and beta
 macro "CAP_FF" (Args)// Initialization 2 - Capacity and FF speed
 	shared prj_dry_run,  Scen_Dir
-	
+		
 	if prj_dry_run then return(1)
+
+	starttime = RunMacro("RuntimeLog", {"Initialization - Capacity and FF speed", null})
+	RunMacro("HwycadLog", {"1.1 Initialization.rsc", "Capacity and FF Speed"})
 
 	// Input highway
    hwy_db = Args.[hwy db]
@@ -1011,6 +1019,7 @@ macro "CAP_FF" (Args)// Initialization 2 - Capacity and FF speed
 		end
 	end	
 
+endtime = RunMacro("RuntimeLog", {"Initialization - Capacity and FF speed", starttime})
 ret_value = 1
 quit:
 CloseMap("temp")

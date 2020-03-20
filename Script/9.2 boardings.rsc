@@ -1,6 +1,9 @@
 Macro "Stop_Summary" (Args)
 
-shared Scen_Dir
+	shared Scen_Dir
+	
+	starttime = RunMacro("RuntimeLog", {"Transit Stop Summary ", null})
+	RunMacro("HwycadLog", {"9.2 boardings.rsc", "  ****** Tranist Stop Summary ****** "})
 
    // Inputs
 	net_file = Args.[hwy db]                  // highway network
@@ -154,7 +157,7 @@ shared Scen_Dir
 	
 	
 	//reads taz ID
-	v_ID=GetDataVector(tazname+"|", "ID_NEW", ) 
+	v_ID=GetDataVector(tazname+"|", "ID", ) 
 	
 	//join node and all boarding table
 	aggr = {{"ON", {{"Sum"}}},{"OFF", {{"Sum"}}} }
@@ -184,7 +187,7 @@ shared Scen_Dir
 	
 	//setdatavector to the TAZ ID for on and OFF
 	SetDataVectors(tazname+"|", {{"ALLON", v_on},{"ALLOFF",v_off}},)
-	
+	endtime = RunMacro("RuntimeLog", {"Transit Stop Summary ", starttime})
 	ret_value=1
 quit:
 	CloseMap(temp_map)

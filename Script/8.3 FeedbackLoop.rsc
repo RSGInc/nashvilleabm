@@ -3,6 +3,8 @@
 */
 Macro "UpdateTravelTimes" (Args)
 	shared Scen_Dir, loop
+	starttime = RunMacro("RuntimeLog", {"Update Travel Times ", null})
+	RunMacro("HwycadLog", {"8.3 FeedbackLoop.rsc", "  ****** Update Travel Times ****** "})
 
   // Open Highway network
   hwy_db = Args.[hwy db]	
@@ -50,7 +52,9 @@ Macro "UpdateTravelTimes" (Args)
     RunMacro("Compute Rmse",asgn_binFile)
     RunMacro ("Convergence")
     RunMacro("Copy mat files",ODMAT_File, loop) 
-  end       
+  end     
+
+	endtime = RunMacro("RuntimeLog", {"Update Travel Times ", starttime})  
    
    quit:   
    return(1)

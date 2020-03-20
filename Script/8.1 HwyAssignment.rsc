@@ -8,6 +8,10 @@
 Macro "Pre_Assignment" (Args)
 	shared prj_dry_run  if prj_dry_run then return(1)
 	shared Scen_Dir, feedback_iteration
+	shared periods1
+	
+	starttime = RunMacro("RuntimeLog", {"Highay Pre Assignment ", null})
+	RunMacro("HwycadLog", {"8.1 HwyAssignment.rsc", "  ****** Pre Assignment ****** "})
 	
 	// Input highway layer
 	hwy_db = Args.[hwy db]	
@@ -37,11 +41,11 @@ Macro "Pre_Assignment" (Args)
 	db_linklyr = highway_layer + "|" + llayer
 
 	// Create temp maps and matrices  
-	temp_map = CreateMap("temp",{{"scope",Scope(Coord(-80000000, 44500000), 200.0, 100.0, 0)}})
-	temp_layer = AddLayer(temp_map,llayer,hwy_db,llayer)
-	temp_layer = AddLayer(temp_map,nlayer,hwy_db,nlayer)
-	temp_hh_pa_mtx= Scen_Dir+ "outputs\\temp_hh_pa.mtx"
-	temp_hh_od_mtx= Scen_Dir+ "outputs\\temp_hh_od.mtx"
+	//temp_map = CreateMap("temp",{{"scope",Scope(Coord(-80000000, 44500000), 200.0, 100.0, 0)}})
+	//temp_layer = AddLayer(temp_map,llayer,hwy_db,llayer)
+	//temp_layer = AddLayer(temp_map,nlayer,hwy_db,nlayer)
+	//temp_hh_pa_mtx= Scen_Dir+ "outputs\\temp_hh_pa.mtx"
+	//temp_hh_od_mtx= Scen_Dir+ "outputs\\temp_hh_od.mtx"
 	
 	// 1 open freight OD
 	// 2 open non-household OD
@@ -55,9 +59,26 @@ Macro "Pre_Assignment" (Args)
 	periods1 = {"AM","MD","PM","OP"}
 	periods2 = {0,1,2,3}
 
-    // Fill airport trips
-    RunMacro("Fill Highway Airport Trips", Args)
- 
+    // Fill airport trips - TODO: Include airport trips in special generators?
+    //RunMacro("Fill Highway Airport Trips", Args)
+	
+	RunMacro("HwycadLog", {"Add visitor trips ", ""})
+	RunMacro("Add Visitor Demand", Args)	   //AUTO by 4 time periods
+	
+	RunMacro("HwycadLog", {"Add internal truck demand ", null})
+	RunMacro("Add Internal Truck Demand", Args)  	  //SUT, MUT by 4 time periods - one matrix
+	
+	RunMacro("HwycadLog", {"Add internal commercial vehicle demand ", null})
+	RunMacro("Add Commercial Vehicle Demand", Args)  //CV by 4 time periods - one matrix
+	
+	RunMacro("HwycadLog", {"Add external truck demand ", null})
+	RunMacro("Add External Truck Demand", Args) 	//SUT, MUT by 4 time periods - four matrices
+	
+	RunMacro("HwycadLog", {"Add external auto demand ", ""})
+	RunMacro("Add External Auto Demand", Args)	   //AUTO by 4 time periods
+		
+	
+ /*
 	// Convert PA to OD
 	Hourly=OpenTable("Hourly","FFB",{HourlyTable,})    
     
@@ -107,11 +128,11 @@ Macro "Pre_Assignment" (Args)
 	    ret_value = RunMacro("TCB Run Procedure", "PA2OD", Opts, &Ret)
 		if !ret_value then goto quit
 	end
-   
+*/   
     // Fill daysim person trips To PA matrix
-    RunMacro("Fill Person Trips", Args)   
+    //RunMacro("Fill Person Trips", Args)   
    
-	periods2={" (0-1)"," (1-2)"," (2-3)"," (3-4)"} //for the name in the OD matrix files
+	//periods2={" (0-1)"," (1-2)"," (2-3)"," (3-4)"} //for the name in the OD matrix files
 	
 	am_od_matrix = OpenMatrix(Args.[AM OD Matrix],)
 	pm_od_matrix = OpenMatrix(Args.[PM OD Matrix],)
@@ -126,32 +147,39 @@ Macro "Pre_Assignment" (Args)
 	for p=1 to periods1.length do
 		
 		UpdateProgressBar("Assignment - Processing Matrices for Assignments -"+ periods1[p], )
+		RunMacro("HwycadLog", {"Highway Assignment - Processing Matrices for ", periods1[p]})
 		
 		for i=1 to labels_vehicle.length do
+			matrix_cores = GetMatrixCoreNames(allod[p])
+				
+			for core=1 to matrix_cores.Length do
+				if matrix_cores[core]=labels_vehicle[i] then DropMatrixCore(allod[p], labels_vehicle[i])
+			end
+		
 			AddMatrixCore(allod[p], labels_vehicle[i])
 		end
         
         // temp matrix
-        FileInfo = GetFileInfo(OD[p])
-        temp_matrix = Scen_Dir + "outputs\\temp_" + FileInfo[1]
+        //FileInfo = GetFileInfo(OD[p])
+        //temp_matrix = Scen_Dir + "outputs\\temp_" + FileInfo[1]
                     
         RunMacro("TCB Init")
         mc1 = RunMacro("TCB Create Matrix Currency", OD[p], "Passenger", "Rows", "Cols")
         ok = (mc1 <> null)
         if !ok then goto quit
         
-        mc2 = RunMacro("TCB Create Matrix Currency", OD[p], "IEAUTO"+periods2[p], "Rows", "Cols")
+        mc2 = RunMacro("TCB Create Matrix Currency", OD[p], "IEAUTO", "Rows", "Cols")
         ok = (mc2 <> null)
         if !ok then goto quit
 
-        mc3 = RunMacro("TCB Create Matrix Currency", OD[p], "EEAUTO"+periods2[p], "Rows", "Cols")
+        mc3 = RunMacro("TCB Create Matrix Currency", OD[p], "EEAUTO", "Rows", "Cols")
         ok = (mc3 <> null)
         if !ok then goto quit
         
         mc4 = RunMacro("TCB Create Matrix Currency", OD[p], "Preload_PASS", "Rows", "Cols")
         ok = (mc4 <> null)
         if !ok then goto quit
-
+/*
         mc5 = RunMacro("TCB Create Matrix Currency", OD[p], "HBO_DA"+periods2[p], "Rows", "Cols")
         ok = (mc5 <> null)
         if !ok then goto quit
@@ -187,16 +215,16 @@ Macro "Pre_Assignment" (Args)
         mc13 = RunMacro("TCB Create Matrix Currency", OD[p], "NHBW_SR3"+periods2[p], "Rows", "Cols")        
         ok = (mc13 <> null)
         if !ok then goto quit
-        
-        mc14 = RunMacro("TCB Create Matrix Currency", temp_matrix, "Passenger_SOV", "Rows", "Cols")
+ */       
+        mc14 = RunMacro("TCB Create Matrix Currency", OD[p], "Passenger_SOV", "Rows", "Cols")
         ok = (mc14 <> null)
         if !ok then goto quit
         
-        mc15 = RunMacro("TCB Create Matrix Currency", temp_matrix, "Passenger_HOV2", "Rows", "Cols")
+        mc15 = RunMacro("TCB Create Matrix Currency", OD[p], "Passenger_HOV2", "Rows", "Cols")
         ok = (mc15 <> null)
         if !ok then goto quit
 		
-        mc16 = RunMacro("TCB Create Matrix Currency", temp_matrix, "Passenger_HOV3", "Rows", "Cols")
+        mc16 = RunMacro("TCB Create Matrix Currency", OD[p], "Passenger_HOV3", "Rows", "Cols")
         ok = (mc16 <> null)
         if !ok then goto quit			
         
@@ -248,7 +276,7 @@ Macro "Pre_Assignment" (Args)
         ok = (mc1 <> null)
         if !ok then goto quit
 
-        mc2 = RunMacro("TCB Create Matrix Currency", OD[p], "IICOM"+periods2[p], "Rows", "Cols")
+        mc2 = RunMacro("TCB Create Matrix Currency", OD[p], "IICOM", "Rows", "Cols")
         ok = (mc2 <> null)
         if !ok then goto quit
         
@@ -260,15 +288,15 @@ Macro "Pre_Assignment" (Args)
         ok = (mc1 <> null)
         if !ok then goto quit
 
-        mc2 = RunMacro("TCB Create Matrix Currency", OD[p], "IISU"+periods2[p], "Rows", "Cols")
+        mc2 = RunMacro("TCB Create Matrix Currency", OD[p], "IISU", "Rows", "Cols")
         ok = (mc2 <> null)
         if !ok then goto quit
 
-        mc3 = RunMacro("TCB Create Matrix Currency", OD[p], "IESU"+periods2[p], "Rows", "Cols")
+        mc3 = RunMacro("TCB Create Matrix Currency", OD[p], "IESU", "Rows", "Cols")
         ok = (mc3 <> null)
         if !ok then goto quit
 
-        mc4 = RunMacro("TCB Create Matrix Currency", OD[p], "EESU"+periods2[p], "Rows", "Cols")
+        mc4 = RunMacro("TCB Create Matrix Currency", OD[p], "EESU", "Rows", "Cols")
         ok = (mc4 <> null)
         if !ok then goto quit
             
@@ -297,33 +325,36 @@ Macro "Pre_Assignment" (Args)
         ok = (mc1 <> null)
         if !ok then goto quit
 
-        mc2 = RunMacro("TCB Create Matrix Currency", OD[p], "IIMU"+periods2[p], "Rows", "Cols")
+        mc2 = RunMacro("TCB Create Matrix Currency", OD[p], "IIMU", "Rows", "Cols")
         ok = (mc2 <> null)
         if !ok then goto quit
-            
-        mc3 = RunMacro("TCB Create Matrix Currency",  Freight_Matrix, "MUEE_"+periods1[p], "Zones", "Zones")
+           
+        mc3 = RunMacro("TCB Create Matrix Currency",  OD[p], "EEMU", "Rows", "Cols")
         ok = (mc3 <> null)
         if !ok then goto quit
         
-        mc4 = RunMacro("TCB Create Matrix Currency",  Freight_Matrix, "MUEI_"+periods1[p], "Zones", "Zones")
+        mc4 = RunMacro("TCB Create Matrix Currency",  OD[p], "EIMU", "Rows", "Cols")
         ok = (mc4 <> null)
         if !ok then goto quit
         
-        mc5 = RunMacro("TCB Create Matrix Currency",  Freight_Matrix, "MUIE_"+periods1[p], "Zones", "Zones")
+        mc5 = RunMacro("TCB Create Matrix Currency",  OD[p], "IEMU", "Rows", "Cols")
         ok = (mc5 <> null)
         if !ok then goto quit
-        
+       
         mc6 = RunMacro("TCB Create Matrix Currency", OD[p], "Preload_EIMU", "Rows", "Cols")
         ok = (mc6 <> null)
         if !ok then goto quit
+		mc6 := nz(mc6)
 
         mc7 = RunMacro("TCB Create Matrix Currency", OD[p], "Preload_IEMU", "Rows", "Cols")
         ok = (mc7 <> null)
-        if !ok then goto quit        
+        if !ok then goto quit
+		mc7 := nz(mc7)        
         
         mc8 = RunMacro("TCB Create Matrix Currency", OD[p], "Preload_EEMU", "Rows", "Cols")
         ok = (mc8 <> null)
-        if !ok then goto quit        
+        if !ok then goto quit
+		mc8 := nz(mc8)        
         
         // IIMU
         if(IIMU_include[p]=1) then mc1 := nz(mc2)
@@ -345,9 +376,156 @@ Macro "Pre_Assignment" (Args)
 
 	ok=1
 	
+	endtime = RunMacro("RuntimeLog", {"Highay Pre Assignment ", starttime})
+	
 	quit:
-	CloseMap(temp_map)
+	//CloseMap(temp_map)
 	return(ok)
+	
+endMacro
+
+Macro "Add Visitor Demand" (Args)
+	shared periods1, Scen_Dir
+	//SOV_AM, SR2_AM, SR3_AM
+	//SOV_MD, SR2_MD, SR3_MD
+	//SOV_PM, SR2_PM, SR3_PM
+	//SOV_OP, SR2_OP, SR3_OP
+		
+	OD = {Args.[AM OD Matrix], Args.[MD OD Matrix], Args.[PM OD Matrix], Args.[OP OD Matrix]}
+	//II_Visitor = Args.[II Visitor OD Matrix]
+	II_Visitor = Scen_Dir + "outputs\\Visitor_OD.mtx"
+	
+	cores_source = {"SOV_", "SR2_", "SR3_"} //visitor matrix cored
+	cores_target = {"Passenger_SOV","Passenger_HOV2","Passenger_HOV3"} //OD Tables
+	
+	for p=1 to periods1.length do				
+		for core=1 to cores_source.length do
+			mc_target = RunMacro("TCB Create Matrix Currency", OD[p], cores_target[core], "Rows", "Cols")
+			mc_source = RunMacro("TCB Create Matrix Currency", II_Visitor, cores_source[core] + periods1[p], "TAZID", "TAZID")
+			
+			mc_target := mc_target + nz(mc_source)
+		end
+	end 
+	
+	mc_target = null
+	mc_source = null
+
+endMacro
+
+Macro "Add Internal Truck Demand" (Args)
+	shared periods1, Scen_Dir
+	//AM_SUT, MD_SUT, PM_SUT, OP_SUT
+	//AM_MUT, MD_MUT, PM_MUT, OP_MUT
+	
+	OD = {Args.[AM OD Matrix], Args.[MD OD Matrix], Args.[PM OD Matrix], Args.[OP OD Matrix]}
+	//II_Truck = Args.[II Truck OD Matrix]
+	II_Truck = Scen_Dir + "outputs\\Truck_OD.mtx"
+	
+	cores_source = {"_SUT", "_MUT"} //external truck demand tables
+	cores_target = {"IISU", "IIMU"} //OD Tables
+	
+	for p=1 to periods1.length do				
+		for core=1 to cores_source.length do
+			mc_target = RunMacro("TCB Create Matrix Currency", OD[p], cores_target[core], "Rows", "Cols")
+			mc_source = RunMacro("TCB Create Matrix Currency", II_Truck, periods1[p] + cores_source[core], "Rows", "Cols")
+			
+			mc_target := nz(mc_source)
+		end
+	end 
+	
+	mc_target = null
+	mc_source = null
+
+endMacro
+
+Macro "Add Commercial Vehicle Demand" (Args)
+	shared periods1, Scen_Dir
+	//AM_CV, MD_CV, PM_CV, OP_CV
+	
+	OD = {Args.[AM OD Matrix], Args.[MD OD Matrix], Args.[PM OD Matrix], Args.[OP OD Matrix]}
+	//II_CV = Args.[CV OD Matrix]
+	II_CV = Scen_Dir + "outputs\\CV_OD.mtx"
+	
+	cores_source = {"_CV"} //external truck demand tables
+	cores_target = {"IICOM"} //OD Tables
+	
+	for p=1 to periods1.length do				
+		for core=1 to cores_source.length do
+			mc_target = RunMacro("TCB Create Matrix Currency", OD[p], cores_target[core], "Rows", "Cols")
+			mc_source = RunMacro("TCB Create Matrix Currency", II_CV, periods1[p] + cores_source[core], "Rows", "Cols")
+			
+			mc_target := nz(mc_source)
+		end
+	end 
+	
+	mc_target = null
+	mc_source = null
+	
+endMacro
+
+Macro "Add External Truck Demand" (Args)
+	shared periods1, Scen_Dir
+
+	//Nashville_ExtTruck_AM.mtx, Nashville_ExtTruck_MD.mtx, Nashville_ExtTruck_PM.mtx, Nashville_ExtTruck_OP.mtx
+	//cores by {SU, MU} and (IE, EI, EE}
+	OD = {Args.[AM OD Matrix], Args.[MD OD Matrix], Args.[PM OD Matrix], Args.[OP OD Matrix]}
+	
+	//Ext_Truck = {Args.[AM ExtTruck Matrix], Args.[MD ExtTruck Matrix], Args.[PM ExtTruck Matrix], Args.[OP ExtTruck Matrix]}
+	Ext_Truck = {Scen_Dir + "Inputs\\Nashville_ExtTrucks_AM.mtx", Scen_Dir + "Inputs\\Nashville_ExtTrucks_MD.mtx", Scen_Dir + "Inputs\\Nashville_ExtTrucks_PM.mtx", Scen_Dir + "Inputs\\Nashville_ExtTrucks_OP.mtx"}
+	
+	cores_source = {"SU_IE", "SU_EI", "SU_EE", "MU_IE", "MU_EI", "MU_EE"} //external truck demand tables
+	cores_target = {"IESU", "IESU", "EESU", "IEMU", "EIMU", "EEMU"} //OD Tables
+	
+	for p=1 to periods1.length do
+		od_matrix = OpenMatrix(OD[p],)
+		
+		matrix_cores = GetMatrixCoreNames(od_matrix)
+		for core=1 to matrix_cores.Length do
+			if matrix_cores[core]="IEMU" then DropMatrixCore(od_matrix, "IEMU")
+			if matrix_cores[core]="EIMU" then DropMatrixCore(od_matrix, "EIMU")
+			if matrix_cores[core]="EEMU" then DropMatrixCore(od_matrix, "EEMU")
+		end
+		
+		AddMatrixCore(od_matrix, "IEMU")
+		AddMatrixCore(od_matrix, "EIMU")
+		AddMatrixCore(od_matrix, "EEMU")
+		
+		for core=1 to cores_source.length do
+			mc_target = RunMacro("TCB Create Matrix Currency", OD[p], cores_target[core], "Rows", "Cols")
+			mc_source = RunMacro("TCB Create Matrix Currency", Ext_Truck[p], cores_source[core], "Rows", "Cols")
+			
+			mc_target := nz(mc_target) + nz(mc_source)
+		end
+	
+	end 
+	
+	mc_target = null
+	mc_source = null
+	
+endMacro
+
+Macro "Add External Auto Demand" (Args)
+	shared periods1, Scen_Dir
+	
+	OD = {Args.[AM OD Matrix], Args.[MD OD Matrix], Args.[PM OD Matrix], Args.[OP OD Matrix]}
+	//Ext_Auto = {Args.[AM ExtAuto Matrix], Args.[MD ExtAuto Matrix], Args.[PM ExtAuto Matrix], Args.[OP ExtAuto Matrix]}
+	Ext_Auto = {Scen_Dir + "Inputs\\Nashville_ExtAutos_AM.mtx", Scen_Dir + "Inputs\\Nashville_ExtAutos_MD.mtx", Scen_Dir + "Inputs\\Nashville_ExtAutos_PM.mtx", Scen_Dir + "Inputs\\Nashville_ExtAutos_OP.mtx"}
+	
+	cores_source = {"AUTO_IE", "AUTO_EI", "AUTO_EE"} //external auto demand tables
+	cores_target = {"IEAUTO", "IEAUTO", "EEAUTO"} //OD Tables
+	
+	for p=1 to periods1.length do				
+		for core=1 to cores_source.length do
+			mc_target = RunMacro("TCB Create Matrix Currency", OD[p], cores_target[core], "Rows", "Cols")
+			mc_source = RunMacro("TCB Create Matrix Currency", Ext_Auto[p], cores_source[core], "Rows", "Cols")
+			
+			mc_target := nz(mc_target) + nz(mc_source)
+		end
+	
+	end 
+	
+	mc_target = null
+	mc_source = null
 	
 endMacro
 
@@ -355,6 +533,9 @@ Macro "Traffic Assignment" (Args)// Trip Assignment
 
 	shared Scen_Dir, feedback_iteration
 	//shared auto_assign_Classes
+	
+	starttime = RunMacro("RuntimeLog", {"Highay Assignment ", null})
+	RunMacro("HwycadLog", {"Highway Assignment - Network Settings", null})
     
 	periods1={"AM","MD","PM","OP"}
 	
@@ -389,19 +570,23 @@ Macro "Traffic Assignment" (Args)// Trip Assignment
 	temp_layer = AddLayer(temp_map,nlayer,hwy_db,nlayer)	    
     
     // Runs AM traffic assignment -preload
+	RunMacro("HwycadLog", {"Highway Assignment - Preload Assignment for AM", null})
 	UpdateProgressBar("Assignment - Preload Assignments", )
 	ok = RunMacro("PreloadAssignment", Args, Args.[AM OD Matrix],"AM")
 	if !ok then goto quit 
 
     // Runs MD traffic assignment -preload
+	RunMacro("HwycadLog", {"Highway Assignment - Preload Assignment for MD", null})
 	ok = RunMacro("PreloadAssignment", Args, Args.[MD OD Matrix],"MD")
 	if !ok then goto quit 
 
     // Runs PM traffic assignment -preload
+	RunMacro("HwycadLog", {"Highway Assignment - Preload Assignment for PM", null})
 	ok = RunMacro("PreloadAssignment", Args, Args.[PM OD Matrix],"PM")
 	if !ok then goto quit 
 	  
     // Runs OP traffic assignment -preload
+	RunMacro("HwycadLog", {"Highway Assignment - Preload Assignment for OP", null})
 	ok = RunMacro("PreloadAssignment", Args, Args.[OP OD Matrix],"OP")
 	if !ok then goto quit 
 
@@ -429,21 +614,27 @@ Macro "Traffic Assignment" (Args)// Trip Assignment
 	end
  
     // Runs AM traffic assignment
+	RunMacro("HwycadLog", {"Highway Assignment - General Assignment for AM", null})
     ok = RunMacro("GeneralAssignment", Args, Args.[AM OD Matrix],"AM")
 	if !ok then goto quit 
 
     // Runs MD traffic assignment
+	RunMacro("HwycadLog", {"Highway Assignment - General Assignment for MD", null})
     ok = RunMacro("GeneralAssignment", Args, Args.[MD OD Matrix],"MD")
 	if !ok then goto quit 
 
     // Runs PM traffic assignment
+	RunMacro("HwycadLog", {"Highway Assignment - General Assignment for PM", null})
     ok = RunMacro("GeneralAssignment", Args, Args.[PM OD Matrix],"PM")
 	if !ok then goto quit 
 	  
     // Runs OP traffic assignment
+	RunMacro("HwycadLog", {"Highway Assignment - General Assignment for OP", null})
     ok = RunMacro("GeneralAssignment", Args, Args.[OP OD Matrix],"OP")
 	if !ok then goto quit 
  
+	endtime = RunMacro("RuntimeLog", {"Highay Assignment ", starttime})
+	
 	quit:
 	CloseMap(temp_map)
 	Return(ok)
@@ -543,17 +734,18 @@ Macro "GeneralAssignment"(Args, allod, periods1)
     db_linklyr = hwy_db + "|" + llayer
     db_nodelyr = hwy_db + "|" + nlayer
     
-    exclude_hov={db_linklyr, llayer, "hov", "Select * where hov = 1"}
+	query_hov = "Select * where (Lanes>0 and Assignment_LOC=1) and (hov = 1)"
+    exclude_hov={db_linklyr, llayer, "hov", query_hov}
     
     // the exclusion set should not have links that are not in the network file, therefore add network link set condition as well.
-    if Args.TruckProhibit =1 then query="Select * where (Lanes>0 and Assignment_LOC=1) and (hov=1|TRUCKNET=2)"
-    else query="Select * where (hov=1)"
+    if Args.TruckProhibit =1 then query_truck="Select * where (Lanes>0 and Assignment_LOC=1) and (hov=1|TRUCKNET=2)"
+    else query_truck=query_hov
 
-    exclude_hov_truck={db_linklyr, llayer, "hov_truck", query}    
+    exclude_truck={db_linklyr, llayer, "hov_truck", query_truck}    
     
     SetView(llayer)    
-    num_select = SelectByQuery("truck","Several",query,)
-    if num_select=0 then exclude_hov_truck=null    
+    num_select = SelectByQuery("truck","Several",query_truck,)
+    if num_select=0 then exclude_truck=null    
     
     trucktoll = "n/a"
     if Args.TruckPreferred =1 then do
@@ -573,7 +765,7 @@ Macro "GeneralAssignment"(Args, allod, periods1)
 		//17 pass 18 com 19 su 20 MU
 		//autos = sov+hov2+hov3
 		assign_num_classes = 4
-		assign_exclusion_link_sets = {, exclude_hov, exclude_hov_truck ,exclude_hov_truck }
+		assign_exclusion_link_sets = {, exclude_hov, exclude_truck ,exclude_truck }
 		assign_turn_Attributes = {, , , }
 		assign_veh_classes = {17, 18, 19, 20}
 		assign_toll_fields = {"n/a", "n/a", trucktoll, trucktoll}
@@ -587,7 +779,7 @@ Macro "GeneralAssignment"(Args, allod, periods1)
 		//passenger = sov
 		//hov = hov2+hov3
 		assign_num_classes = 5
-		assign_exclusion_link_sets = {exclude_hov, exclude_hov, exclude_hov_truck ,exclude_hov_truck , }
+		assign_exclusion_link_sets = {exclude_hov, exclude_hov, exclude_truck ,exclude_truck , }
 		assign_turn_Attributes = {, , , , }
 		assign_veh_classes = {17, 18, 19, 20, 27}
 		assign_toll_fields = {"n/a", "n/a", trucktoll, trucktoll, "n/a"}
@@ -602,7 +794,7 @@ Macro "GeneralAssignment"(Args, allod, periods1)
 		//hov2 = hov2
 		//hov3 = hov3
 		assign_num_classes = 6
-		assign_exclusion_link_sets = {exclude_hov, exclude_hov, exclude_hov_truck ,exclude_hov_truck , , }
+		assign_exclusion_link_sets = {exclude_hov, exclude_hov, exclude_truck ,exclude_truck , , }
 		assign_turn_Attributes = {, , , , , }
 		assign_veh_classes = {17, 18, 19, 20, 28, 29}
 		assign_toll_fields = {"n/a", "n/a", trucktoll, trucktoll, "n/a", "n/a"}
@@ -655,6 +847,8 @@ EndMacro
 Macro "PostProcessor" (Args)
 
 	shared Scen_Dir, feedback_iteration, loop
+	starttime = RunMacro("RuntimeLog", {"Highway Post Processing ", null})
+	RunMacro("HwycadLog", {"8.1 HwyAssignment.rsc", "  ****** Highway Post Processor ****** "})
 
 	//crit analysis result. 
 	if Args.crit_flag=1 then do
@@ -1309,6 +1503,8 @@ Macro "PostProcessor" (Args)
 	CopyFile(Scen_Dir+ "outputs\\assignment_result.bin",Scen_Dir+ "outputs\\assignment_result_"+String(loop)+".bin")
 	CopyFile(Scen_Dir+ "outputs\\assignment_result.DCB",Scen_Dir+ "outputs\\assignment_result_"+String(loop)+".DCB")
 
+	endtime = RunMacro("RuntimeLog", {"Highway Post Processing ", starttime})
+	
 	ret_value=1
 	quit:
 	return(ret_value)

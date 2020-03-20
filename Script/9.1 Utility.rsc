@@ -14,6 +14,7 @@ utility that process the moe for scenarios
 
 macro "MOE1" (Args) //MOE 1 for the table
 	RunMacro("TCB Init")
+	RunMacro("HwycadLog", {"9.1 Utility.rsc", " Running MOE1"})
 	
 	shared Scen_Dir
 	//create an MOE file
@@ -43,9 +44,13 @@ macro "MOE1" (Args) //MOE 1 for the table
 		
 	//join view
 	net_rslt = JoinViews("net_rslt", llayer+".ID", "Result.ID",)
+
+	//prepare daily trip table
+	daily_matrix_file = Scen_Dir + "outputs\\DAILYOD.mtx"
+	RunMacro("Build Daily Trip Table", daily_matrix_file, Args)
 		
 	//process matrix
-	pa_matrix = OpenMatrix(Args.[PA Matrix],)
+	pa_matrix = OpenMatrix(daily_matrix_file,)
 	
 	//determine how many district fields are there (up to 10)
 	taz_fields=GetViewStructure(tazname)
@@ -74,6 +79,7 @@ macro "MOE1" (Args) //MOE 1 for the table
 	// ******************* district set loop ******************
 	for n_dist_set=1 to districts.length do
         UpdateProgressBar("District Set "+ i2s(n_dist_set) +" of " +i2s(districts.length),)
+		RunMacro("HwycadLog", {"              ", "District Set "+ i2s(n_dist_set) +" of " +i2s(districts.length)})
 		
 		if districts[n_dist_set]=0 then goto skip
 		
@@ -122,7 +128,7 @@ macro "MOE1" (Args) //MOE 1 for the table
 		//Sum the Cores
 		RunMacro("TCB Init")
 		Opts = null
-		Opts.Input.[Input Currency] = {Args.[PA Matrix], "IICOM", "Row", "Columns"}
+		Opts.Input.[Input Currency] = {daily_matrix_file, "IICOM", "Rows", "Cols"}
 		ret_value = RunMacro("TCB Run Operation", "Matrix QuickSum", Opts, &Ret)
 		if !ret_value then goto quit
 	
@@ -131,7 +137,7 @@ macro "MOE1" (Args) //MOE 1 for the table
 		for i=1 to core_names.length do
 			if core_names[i]="temp" then do 
 				check_temp=1
-				mc_temp = RunMacro("TCB Create Matrix Currency", Args.[PA Matrix], "temp", ,)
+				mc_temp = RunMacro("TCB Create Matrix Currency", daily_matrix_file, "temp", ,)
 				mc_temp := 0
 			end
 		end
@@ -139,10 +145,12 @@ macro "MOE1" (Args) //MOE 1 for the table
 		if check_temp=0 then AddMatrixCore(pa_matrix, "temp")
 		
 		// ******** main loop  ********
-		if  n_dist_set=1 then WriteLine(MOE, "DistID"+"\t"+"DistName"+"\t"+ "Value")
+		//if  n_dist_set=1 then WriteLine(MOE, "DistID"+"\t"+"DistName"+"\t"+ "Value")
+		if  n_dist_set=1 then WriteLine(MOE, "Measure,"+"\t"+ "Value")
 		
 		for n_dist=1 to moe_names.length do
 			UpdateProgressBar("Step "+i2s(n_dist)+" of " + i2s(moe_names.length) +" - "+ moe_names[n_dist],)
+			RunMacro("HwycadLog", {"              ", "Step "+i2s(n_dist)+" of " + i2s(moe_names.length) +" - "+ moe_names[n_dist]})
 			WriteLine(MOE, "*************"+moe_names[n_dist]+"*************")
 		
 			// Delete the new Index if it already exist
@@ -155,11 +163,11 @@ macro "MOE1" (Args) //MOE 1 for the table
 			//create the new index	if n_dist>=2
 			if n_dist>=2 then do
 				Opts = null
-				Opts.Input.[Current Matrix] = Args.[PA Matrix]
+				Opts.Input.[Current Matrix] = daily_matrix_file
 				Opts.Input.[Index Type] = "Both"
 				Opts.Input.[View Set] = {taz_db+"|"+tazname, tazname, moe_names[n_dist], "Select * where MOE_DIST"+i2s(n_dist_set)+"='"+moe_names[n_dist]+"'"}
-				Opts.Input.[Old ID Field] = {taz_db+"|"+tazname, "ID_NEW"}
-				Opts.Input.[New ID Field] = {taz_db+"|"+tazname, "ID_NEW"}
+				Opts.Input.[Old ID Field] = {taz_db+"|"+tazname, "ID"}
+				Opts.Input.[New ID Field] = {taz_db+"|"+tazname, "ID"}
 				Opts.Output.[New Index] = moe_names[n_dist]
 				ret_value = RunMacro("TCB Run Operation", "Add Matrix Index", Opts, &Ret)
 				if !ret_value then goto quit
@@ -168,15 +176,15 @@ macro "MOE1" (Args) //MOE 1 for the table
 				//check if quicksum exisits in the PA matrix
 	
 				//calculate the total trips start or end at the location
-				mc1 = RunMacro("TCB Create Matrix Currency", Args.[PA Matrix], "QuickSum", moe_names[n_dist],"Columns") //113099
-				mc2 = RunMacro("TCB Create Matrix Currency", Args.[PA Matrix], "QuickSum", "Row",moe_names[n_dist])  //202768
-				mc3 = RunMacro("TCB Create Matrix Currency", Args.[PA Matrix], "QuickSum", moe_names[n_dist], moe_names[n_dist]) //28001
+				mc1 = RunMacro("TCB Create Matrix Currency", daily_matrix_file, "QuickSum", moe_names[n_dist],"Cols") //113099
+				mc2 = RunMacro("TCB Create Matrix Currency", daily_matrix_file, "QuickSum", "Rows",moe_names[n_dist])  //202768
+				mc3 = RunMacro("TCB Create Matrix Currency", daily_matrix_file, "QuickSum", moe_names[n_dist], moe_names[n_dist]) //28001
 				
-				mc1a = RunMacro("TCB Create Matrix Currency", Args.[PA Matrix], "temp", moe_names[n_dist],"Columns")
-				mc2a = RunMacro("TCB Create Matrix Currency", Args.[PA Matrix], "temp", "Row",moe_names[n_dist])
-				mc3a = RunMacro("TCB Create Matrix Currency", Args.[PA Matrix], "temp", moe_names[n_dist], moe_names[n_dist])
+				mc1a = RunMacro("TCB Create Matrix Currency", daily_matrix_file, "temp", moe_names[n_dist],"Cols")
+				mc2a = RunMacro("TCB Create Matrix Currency", daily_matrix_file, "temp", "Rows",moe_names[n_dist])
+				mc3a = RunMacro("TCB Create Matrix Currency", daily_matrix_file, "temp", moe_names[n_dist], moe_names[n_dist])
 				
-				mcfinal=RunMacro("TCB Create Matrix Currency", Args.[PA Matrix], "temp","Row" ,"Columns" ) //113099+202768-28001=287866
+				mcfinal=RunMacro("TCB Create Matrix Currency", daily_matrix_file, "temp","Rows" ,"Cols" ) //113099+202768-28001=287866
 				mcfinal :=0
 				
 				mc1a:= nz(mc1a)+nz(mc1)
@@ -186,19 +194,19 @@ macro "MOE1" (Args) //MOE 1 for the table
 			end
 			
 			//reset the index
-			mc0 = RunMacro("TCB Create Matrix Currency", Args.[PA Matrix], "IICOM","Row" ,"Columns") //to reset the matrix
+			mc0 = RunMacro("TCB Create Matrix Currency", daily_matrix_file, "IICOM","Rows" ,"Cols") //to reset the matrix
 			
 			//regional and district
 			if n_dist=1 then do 
-				SetMatrixIndex(pa_matrix, "Row", "Columns") //reset index
+				SetMatrixIndex(pa_matrix, "Rows", "Cols") //reset index
 				stat_array = MatrixStatistics(pa_matrix, {"QuickSum"}) 
-				WriteLine(MOE, "Total Trips\t"+r2s(stat_array.QuickSum.Sum))
+				WriteLine(MOE, "Total Trips," + "\t" + r2s(stat_array.QuickSum.Sum))
 			end
 				
 			if n_dist<>1 then do
-				SetMatrixIndex(pa_matrix, "Row", "Columns") //reset index 
+				SetMatrixIndex(pa_matrix, "Rows", "Cols") //reset index 
 				stat_array = MatrixStatistics(pa_matrix, {"Temp"})
-				WriteLine(MOE, "Total Trips" + "\t" +i2s(r2i(stat_array.Temp.Sum)))
+				WriteLine(MOE, "Total Trips," + "\t" +i2s(r2i(stat_array.Temp.Sum)))
 			end
 			
 			// *************************** Step 2 : Total Population**************************
@@ -209,35 +217,35 @@ macro "MOE1" (Args) //MOE 1 for the table
 			
 			SelectByQuery(moe_names[n_dist], "Several", qry,)
 					
-			pop=GetDataVector(tazname+"|"+moe_names[n_dist],"POP10",)
+			pop=GetDataVector(tazname+"|"+moe_names[n_dist],"POP",)
 			
 			POPSUM=0
 			for i=1 to pop.length do
 				POPSUM=POPSUM+nz(pop[i])
 			end
 			
-			WriteLine(MOE, "Total Population"+"\t"+i2s(POPSUM))
+			WriteLine(MOE, "Total Population,"+"\t"+i2s(POPSUM))
 	
 				v_taz=GetDataVectors(tazname+"|"+moe_names[n_dist],
 			{
 				"ALLON",
 				"ALLOFF",
-				"EMP10"
+				"EMP"
 			},)
 	
 				// *************************** Step 3 : EMP **************************
 			tot_emp=VectorStatistic(v_taz[3],"Sum",)
-			WriteLine(MOE, "Total Employment"+"\t"+r2s(tot_emp))
+			WriteLine(MOE, "Total Employment,"+"\t"+r2s(tot_emp))
 	
 			// *************************** Step 4 : Trips/person **************************
 			if n_dist=1 then Trips_Person= stat_array.QuickSum.Sum/POPSUM
 			if n_dist<>1 then Trips_Person= stat_array.Temp.Sum/POPSUM
-			WriteLine(MOE, "Trips Per Person"+"\t"+r2s(Trips_Person))
+			WriteLine(MOE, "Trips Per Person,"+"\t"+r2s(Trips_Person))
 
 			// *************************** Step 5 : Trips/person+emp **************************
 			if n_dist=1 then Trips_PersonEMP= stat_array.QuickSum.Sum/(POPSUM+tot_emp)
 			if n_dist<>1 then Trips_PersonEMP= stat_array.Temp.Sum/(POPSUM+tot_emp)
-			WriteLine(MOE, "Trips Per Person + EMP"+"\t"+r2s(Trips_PersonEMP))
+			WriteLine(MOE, "Trips Per Person + EMP,"+"\t"+r2s(Trips_PersonEMP))
 	
 			// *************************** Step 6 : Total VMT **************************
 			//select links associate to the district
@@ -324,11 +332,11 @@ macro "MOE1" (Args) //MOE 1 for the table
 			VMTSUM=VMTSUM+nz(v_rslt[2][i])
 			end
 			
-			WriteLine(MOE, "Total VMT"+"\t"+r2s(VMTSUM))
+			WriteLine(MOE, "Total VMT,"+"\t"+r2s(VMTSUM))
 			
 			// *************************** Step 7 : VMT per Person **************************
 			VMT_Person= VMTSUM/POPSUM
-			WriteLine(MOE, "VMT Per Person"+"\t"+r2s(VMT_Person))
+			WriteLine(MOE, "VMT Per Person,"+"\t"+r2s(VMT_Person))
 			
 			// *************************** Step 8 : VHT **************************
 			
@@ -337,12 +345,12 @@ macro "MOE1" (Args) //MOE 1 for the table
 			VHTSUM=VHTSUM+nz(v_rslt[3][i])
 			end
 			
-			WriteLine(MOE, "Total VHT" + "\t" +r2s(VHTSUM))
+			WriteLine(MOE, "Total VHT," + "\t" +r2s(VHTSUM))
 	
 			// *************************** Step 9 : VHT Per person **************************
 
 			VHT_Person= VHTSUM/POPSUM
-			WriteLine(MOE, "VHT Per Person"+"\t"+r2s(VHT_Person))
+			WriteLine(MOE, "VHT Per Person,"+"\t"+r2s(VHT_Person))
 			
 			
 			// *************************** Step 10 : average vehicle speed=SPD_VMT_SUM/VMTSUM **************************
@@ -354,7 +362,7 @@ macro "MOE1" (Args) //MOE 1 for the table
 			
 			AVG_VEH_SPD=SPD_VMT_SUM/VMTSUM
 		
-			WriteLine(MOE, "Average Speed"+"\t"+ r2s(AVG_VEH_SPD))
+			WriteLine(MOE, "Average Speed,"+"\t"+ r2s(AVG_VEH_SPD))
 			
 			// *************************** Step 11 : VMT at LOS F or worse(Congested) **************************
 			VMT_LOSF=0
@@ -369,12 +377,12 @@ macro "MOE1" (Args) //MOE 1 for the table
 				if v_rslt[20][i]="F" then VMT_LOSF=VMT_LOSF+v_rslt[12][i]	
 			end
 			
-			WriteLine(MOE, "VMT at LOS F	"+ r2s(VMT_LOSF))
+			WriteLine(MOE, "VMT at LOS F,	"+ r2s(VMT_LOSF))
 			
 			// *************************** Step 12 percent vmt over F **************************
 	
 			VMT_pct_LOSF=r2s(100*VMT_LOSF/VMTSUM)+"%"
-			WriteLine(MOE, "Percent VMT at LOS F"+"\t"+VMT_pct_LOSF)
+			WriteLine(MOE, "Percent VMT at LOS F,"+"\t"+VMT_pct_LOSF)
 			
 			// *************************** Step 13 VMT with less than 0.7 pct_FF **************************
 			VMT_70FF=0
@@ -389,12 +397,12 @@ macro "MOE1" (Args) //MOE 1 for the table
 				if v_rslt[28][i]<0.7 then VMT_70FF=VMT_70FF+v_rslt[12][i]	
 			end
 			
-			WriteLine(MOE, "VMT at less than 0.7FF"+"\t" + r2s(VMT_70FF))
+			WriteLine(MOE, "VMT at less than 0.7FF,"+"\t" + r2s(VMT_70FF))
 			
 			// *************************** Step 14 Pct VMT at 0.7 pct_FF **************************
 			
 			VMT_pct_70FF=r2s(100*VMT_70FF/VMTSUM)+"%"
-			WriteLine(MOE, "Percent VMT at 70pct FF"+"\t"+VMT_pct_70FF)
+			WriteLine(MOE, "Percent VMT at 70pct FF,"+"\t"+VMT_pct_70FF)
 			
 			// *************************** Step 15 MU VMT **************************
 			VMT_MU=0
@@ -403,7 +411,7 @@ macro "MOE1" (Args) //MOE 1 for the table
 				VMT_MU=VMT_MU+(nz(v_rslt[29][i])*nz(v_rslt[30][i]))
 			end
 			
-			WriteLine(MOE, "MU VMT"+"\t"+r2s(VMT_MU))
+			WriteLine(MOE, "MU VMT,"+"\t"+r2s(VMT_MU))
 			
 			// *************************** Step 16 MU VMT @ LOSF **************************
 			VMT_MU_LOSF=0
@@ -418,13 +426,13 @@ macro "MOE1" (Args) //MOE 1 for the table
 				if v_rslt[20][i]="F" then VMT_MU_LOSF=VMT_MU_LOSF+nz(v_rslt[29][i])*nz(v_rslt[38][i])
 			end
 			
-			WriteLine(MOE, "MU VMT at LOS F"+"\t"+r2s(VMT_MU_LOSF))
+			WriteLine(MOE, "MU VMT at LOS F,"+"\t"+r2s(VMT_MU_LOSF))
 			
 			// *************************** Step 17 Pct MU VMT @ LOSF **************************
 			if (VMT_MU>0) then VMT_pct_MU_LOSF=r2s(100*VMT_MU_LOSF/VMT_MU)+"%"
             else VMT_pct_MU_LOSF=r2s(0)+"%"
 			
-			WriteLine(MOE, "Percent MU VMT at LOS F"+"\t"+VMT_pct_MU_LOSF)
+			WriteLine(MOE, "Percent MU VMT at LOS F,"+"\t"+VMT_pct_MU_LOSF)
 			
 			// *************************** Step 18 MU VMT with less than 0.7 pct_FF **************************
 			MUVMT_70FF=0
@@ -439,14 +447,14 @@ macro "MOE1" (Args) //MOE 1 for the table
 				if v_rslt[28][i]<0.7 then MUVMT_70FF=MUVMT_70FF+nz((v_rslt[38][i]*v_rslt[29][i]))
 			end
 			
-			WriteLine(MOE, "MU VMT at less than 0.7FF"+"\t" + r2s(MUVMT_70FF))
+			WriteLine(MOE, "MU VMT at less than 0.7FF,"+"\t" + r2s(MUVMT_70FF))
 			
 			// *************************** Step 19 MU Pct VMT at 0.7 pct_FF **************************
 			
 			if (VMT_MU>0) then MUVMT_pct_70FF=r2s(100*MUVMT_70FF/VMT_MU)+"%"
             else MUVMT_pct_70FF=r2s(0)+"%"
             
-			WriteLine(MOE, "Percent MU VMT at 70pct FF"+"\t"+MUVMT_pct_70FF)
+			WriteLine(MOE, "Percent MU VMT at 70pct FF,"+"\t"+MUVMT_pct_70FF)
 			
 			// *************************** Step 18 MU VHT **************************
 			VHT_MU=0
@@ -455,7 +463,7 @@ macro "MOE1" (Args) //MOE 1 for the table
 				VHT_MU=VHT_MU+nz(v_rslt[48][i])
 			end
 			
-			WriteLine(MOE, "MU VHT"+"\t"+r2s(VHT_MU))
+			WriteLine(MOE, "MU VHT,"+"\t"+r2s(VHT_MU))
 			
 			// *************************** Step 19 MU VHT @ LOSF **************************
 			VHT_MU_LOSF=0
@@ -469,14 +477,14 @@ macro "MOE1" (Args) //MOE 1 for the table
 				if v_rslt[19][i]="F" then VHT_MU_LOSF=VHT_MU_LOSF+nz(v_rslt[46][i])
 				if v_rslt[20][i]="F" then VHT_MU_LOSF=VHT_MU_LOSF+nz(v_rslt[47][i])
 			end
-			WriteLine(MOE, "MU VHT at LOS F"+"\t"+r2s(VHT_MU_LOSF))
+			WriteLine(MOE, "MU VHT at LOS F,"+"\t"+r2s(VHT_MU_LOSF))
 
 			// *************************** Step 20 Pct MU VHT @ LOSF **************************
 			
 			if (VHT_MU>0) then VHT_pct_MU_LOSF=r2s(100*VHT_MU_LOSF/VHT_MU)+"%"
             else VHT_pct_MU_LOSF=r2s(0)+"%"
             
-			WriteLine(MOE, "Percent MU VHT at LOS F"+"\t"+VHT_pct_MU_LOSF)
+			WriteLine(MOE, "Percent MU VHT at LOS F,"+"\t"+VHT_pct_MU_LOSF)
 			
 			// *************************** Step 21 MU VHT @ 0.7FF **************************
 			MUVHT_70FF=0
@@ -491,26 +499,26 @@ macro "MOE1" (Args) //MOE 1 for the table
 				if v_rslt[28][i]<0.7 then MUVHT_70FF=MUVHT_70FF+nz(v_rslt[47][i])
 			end
 			
-			WriteLine(MOE, "MU VHT at 0.7FF"+"\t"+r2s(MUVHT_70FF))
+			WriteLine(MOE, "MU VHT at 0.7FF,"+"\t"+r2s(MUVHT_70FF))
 
 			// *************************** Step 22 Pct MU VHT @ 0.7FF **************************
 			
 			if (VHT_MU>0) then VHT_pct_MU_70FF=r2s(100*MUVHT_70FF/VHT_MU)+"%"
             else VHT_pct_MU_70FF=r2s(0)+"%"
             
-			WriteLine(MOE, "Percent MU VHT at 0.7FF"+"\t"+VHT_pct_MU_70FF)
+			WriteLine(MOE, "Percent MU VHT at 0.7FF,"+"\t"+VHT_pct_MU_70FF)
 			
 			// *************************** Step 23 Transit onboard **************************
             // for now - comment this out as network is not getting updated for ALLON and ALLOFF.
             
 			transit_on=VectorStatistic(v_taz[1],"Sum",)
-			WriteLine(MOE, "Total Transit Production"+"\t"+r2s(transit_on))
+			WriteLine(MOE, "Total Transit Production,"+"\t"+r2s(transit_on))
 			
 			transit_off=VectorStatistic(v_taz[2],"Sum",)
-			WriteLine(MOE, "Total Transit Attraction"+"\t"+r2s(transit_off))
+			WriteLine(MOE, "Total Transit Attraction,"+"\t"+r2s(transit_off))
 			
 			transit_onbard=(transit_off+transit_on)/2
-			WriteLine(MOE, "Total Transit onboard"+"\t"+r2s(transit_onbard))
+			WriteLine(MOE, "Total Transit onboard,"+"\t"+r2s(transit_onbard))
 		
 			// *************************** Step 24 LaneMile **************************
 			SetLayer(llayer)
@@ -526,7 +534,7 @@ macro "MOE1" (Args) //MOE 1 for the table
 			Lanemile=Lanemile+nz(v_lanemile[1][i])
 			end
 			
-			WriteLine(MOE, "LaneMile"+"\t"+r2s(Lanemile))
+			WriteLine(MOE, "LaneMile,"+"\t"+r2s(Lanemile))
 			
 		end
 		
@@ -574,19 +582,111 @@ macro "MOE2" (Args) //MOE 2 for the MAP
 	return(ret_value)
 endMacro
 
+
+Macro "Build Daily Trip Table" (daily_matrix_file, Args)
+	shared Scen_Dir
+	
+	periods = {"AM","MD","PM","OP"}
+
+	// Assignment trip Tables by time period
+	OD = {Args.[AM OD Matrix], Args.[MD OD Matrix], Args.[PM OD Matrix], Args.[OP OD Matrix]}
+
+	am_od_matrix = OpenMatrix(Args.[AM OD Matrix],)
+	pm_od_matrix = OpenMatrix(Args.[PM OD Matrix],)
+	md_od_matrix = OpenMatrix(Args.[MD OD Matrix],)
+	op_od_matrix = OpenMatrix(Args.[OP OD Matrix],)
+	allod={am_od_matrix,md_od_matrix,pm_od_matrix,op_od_matrix}
+	
+	//daily_matrix_file = Scen_Dir + "outputs\\DAILYOD.mtx"
+	CopyFile(OD[1], daily_matrix_file)
+	
+	daily_matrix = OpenMatrix(daily_matrix_file,)
+	matrix_cores = GetMatrixCoreNames(daily_matrix)
+	
+	RunMacro("TCB Init")
+	for p=1 to periods.length do
+		for core=1 to matrix_cores.Length do
+			if (p=1) then do 
+				mc_daily = RunMacro("TCB Create Matrix Currency", daily_matrix_file, matrix_cores[core], "Rows", "Cols")
+			end
+			else do
+				mc_period = RunMacro("TCB Create Matrix Currency", OD[p], matrix_cores[core], "Rows", "Cols")
+				mc_daily := mc_daily + mc_period
+			end
+			
+		end	
+	end
+	
+	mc_daily = null
+	mc_perio = null
+
+endMacro
+
+
+
 Macro "HwycadLog"(arr)
   shared Scen_Dir
+  
   fprlog=null
   log1=arr[1]
   log2=arr[2]
   dif2=GetDirectoryInfo(Scen_Dir+"\\hwycadx.log","file")
   if dif2.length>0 then fprlog=OpenFile(Scen_Dir+"\\hwycadx.log","a") 
-  else fprlog=OpenFile(Scen_Dir+"\\hwycadx.log","w")
-  mytime=GetDateAndTime() 
-  writeline(fprlog,mytime+", "+log1+", "+log2)
+  else do 
+	fprlog=OpenFile(Scen_Dir+"\\hwycadx.log","w")
+  end
+  mytime=GetDateAndTime()  
+  if log2=null then writeline(fprlog,mytime+", "+log1)
+  else writeline(fprlog,mytime+", "+log1+", "+log2)
   CloseFile(fprlog)
   fprlog = null
   return()
-EndMacro
+endMacro
+
+Macro "RuntimeLog"(arr)
+  shared Scen_Dir
+  
+  fprlog=null
+  
+  log1=arr[1]
+  starttime=arr[2]
+  
+  dif2=GetDirectoryInfo(Scen_Dir+"\\runtime.log","file")
+  if dif2.length>0 then fprlog=OpenFile(Scen_Dir+"\\runtime.log","a") 
+  else do 
+	fprlog=OpenFile(Scen_Dir+"\\runtime.log","w")
+  end
+  
+  mytime=GetDateAndTime()  
+  
+  if starttime <> null then do
+	{sDay, sMonth, sDate, sTime, sYear} = ParseString(starttime, " ")
+	{eDay, eMonth, eDate, eTime, eYear} = ParseString(mytime, " ")
+	
+	{sH, sM, sS} = ParseString(sTime, ":")
+	{eH, eM, eS} = ParseString(eTime, ":")
+	
+	if (CompareArrays({sMonth, sYear}, {eMonth, eYear},)) then do
+		start_min = 1440 * StringToInt(sDate) + 60 * StringToInt(sH) + StringToInt(sM)
+		end_min =1440 * StringToInt(eDate) + 60 * StringToInt(eH) + StringToInt(eM)
+	end
+	else do
+		//assuming that model wouldn't take multiple days to finish
+		start_min = 60 * StringToInt(sH) + StringToInt(sM)
+		end_min = 1440 + 60 * StringToInt(eH) + StringToInt(eM)
+	end
+	
+	elapsed = end_min - start_min
+  
+	writeline(fprlog,mytime+", Finished "+log1+" in " + i2s(elapsed) + " mins")
+  end
+  //else writeline(fprlog, mytime+", Started "+log1)
+  
+  CloseFile(fprlog)
+  fprlog = null
+  
+  Return(mytime)
+  
+endMacro
 
  

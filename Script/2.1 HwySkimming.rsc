@@ -15,6 +15,9 @@ Skim_4: Intrazonal Travel Time
 Macro "Highway Skimming" (Args)    // Highway Skimming
 	shared  Scen_Dir, loop
    
+	starttime = RunMacro("RuntimeLog", {"Highway Skimming - Feedback Loop " + i2s(loop), null})
+   	RunMacro("HwycadLog", {"2.1 HwySkimming.rsc", "  ****** Highway Skimming ****** "})
+
     feedback_iteration = loop
    
     // skim_0:
@@ -54,6 +57,7 @@ Macro "Highway Skimming" (Args)    // Highway Skimming
 	//*      Skim_1: Build Highway Network - build it only once          *
 	//**************************************   
 	// skim_1:
+	RunMacro("HwycadLog", {"Build highway network", null})
     RunMacro("Build Hwy Network", Args)
 
     //Add TAZ layer
@@ -66,6 +70,7 @@ Macro "Highway Skimming" (Args)    // Highway Skimming
 	//*      Skim_2: Shortest path using Length     *
 	//**************************************   
 	// skim_2:
+	RunMacro("HwycadLog", {"Shortest path using length", null})
    Opts = null
    Opts.Input.Network = network_file
    Opts.Input.[Origin Set] = {db_nodelyr, nlayer, "Selection", "Select * where CCSTYLE=97 or CCSTYLE=98 or CCSTYLE=99"}
@@ -80,8 +85,9 @@ Macro "Highway Skimming" (Args)    // Highway Skimming
 
     //**************************************
 	//*      Skim_4: Terminal Time			               
-	//**************************************   	
-	CreateMatrix({tazname +"|", tazname  + ".ID_NEW","TAZ_ID"},{tazname +"|", tazname  + ".ID_NEW","TAZ_ID"},
+	//**************************************  
+	RunMacro("HwycadLog", {"Terminal time", null}) 	
+	CreateMatrix({tazname +"|", tazname  + ".ID","TAZ_ID"},{tazname +"|", tazname  + ".ID","TAZ_ID"},
              {{"File Name",Scen_Dir + "//outputs//terminal_time.mtx"},{"Type","Float"},
              {"Tables",{"origin_time","destination_time","total_time"}}})
 
@@ -97,8 +103,8 @@ Macro "Highway Skimming" (Args)    // Highway Skimming
 		Opts.Input.[Current Matrix] = Scen_Dir + "//outputs//terminal_time.mtx"
 		Opts.Input.[Index Type] = "Both"
 		Opts.Input.[View Set] = {taz_db+"|"+tazname, tazname, "Selection", "Select * where Predict='"+terminal[i][1]+"'"}
-		Opts.Input.[Old ID Field] = {taz_db+"|"+tazname, "ID_NEW"}
-		Opts.Input.[New ID Field] = {taz_db+"|"+tazname, "ID_NEW"}
+		Opts.Input.[Old ID Field] = {taz_db+"|"+tazname, "ID"}
+		Opts.Input.[New ID Field] = {taz_db+"|"+tazname, "ID"}
 		Opts.Output.[New Index] = terminal[i][1]
 		ret_value = RunMacro("TCB Run Operation", "Add Matrix Index", Opts, &Ret)
 		if !ret_value then goto quit
@@ -138,7 +144,8 @@ Macro "Highway Skimming" (Args)    // Highway Skimming
    
     //**************************************
 	//*      Create TOD Skim Matrices & Add Intrazonal and Terminal 
-	//**************************************   
+	//************************************** 
+	RunMacro("HwycadLog", {"Build HOV skims", null})	
     // Build HOV skims
     for i=1 to hov_skims.length do
 
@@ -156,6 +163,7 @@ Macro "Highway Skimming" (Args)    // Highway Skimming
         RunMacro("Add Intrazonal & Terminal Times",  hov_skims[i],skim_field)
     end
 
+	RunMacro("HwycadLog", {"Build SOV skims", null})
     // Build SOV skims
     for i=1 to sov_skims.length do  
         // Disable HOV links
@@ -193,9 +201,13 @@ Macro "Highway Skimming" (Args)    // Highway Skimming
         RunMacro("AddCore", hov_skims, 4)
     end
     
+	RunMacro("HwycadLog", {"Save and copy skims", null})
     //Save and copy skims
     RunMacro("SaveAndCopySkims", sov_skims)
-    RunMacro("SaveAndCopySkims", hov_skims)      
+    RunMacro("SaveAndCopySkims", hov_skims)
+
+	RunMacro("HwycadLog", {"2.1 HwySkimming.rsc", "Finished Highway Skimming"})
+	endtime = RunMacro("RuntimeLog", {"Highway Skimming - Feedback Loop " + i2s(loop), starttime})	
     
     ret_value = 1
     quit:
@@ -251,7 +263,8 @@ Macro "Build Hwy Network" (Args)
         {"alpha", {llayer+".alpha", llayer+".alpha", , , "False"}}, 
         {"beta", {llayer+".beta", llayer+".beta", , , "False"}},
         {"TRUCKNET", {llayer+".TRUCKNET", llayer+".TRUCKNET", , , "False"}},
-        {"TRUCKCOST", {llayer+".TRUCKCOST", llayer+".TRUCKCOST", , , "False"}}}
+        {"TRUCKCOST", {llayer+".TRUCKCOST", llayer+".TRUCKCOST", , , "False"}},
+		{"RiverX", {llayer+".RiverX", llayer+".RiverX", , , "False"}}}
         Opts.Global.[Length Units] = "Miles"
         Opts.Global.[Time Units] = "Minutes"
         Opts.Output.[Network File] = network_file
@@ -284,11 +297,26 @@ Macro "Build Hwy Skims"(network_file, db_nodelyr, nlayer, skim, SkimField)
     Opts.Input.[Destination Set] = {db_nodelyr, nlayer, "Selection"}
     Opts.Input.[Via Set] = {db_nodelyr, nlayer}
     Opts.Field.Minimize = SkimField
+	Opts.Field.[Skim Fields] = {{"RiverX","All"}}  //added for internal truck model
     Opts.Field.Nodes = nlayer + ".ID"
     Opts.Output.[Output Matrix].Label = "Shortest Path"
     Opts.Output.[Output Matrix].[File Name] = skim[1]
     ret_value = RunMacro("TCB Run Procedure","TCSPMAT", Opts, &Ret)
-    if !ret_value then goto quit 
+    if !ret_value then goto quit
+
+    // Add Matrix Core "Shortest Path - "+SkimField. After adding new skim "RiverX", output matrix core name was different. 
+	// So, this step was added to add a consistent core name and avoid breaking the model code.
+    Opts = null
+    Opts.Input.[Input Matrix] = skim[1]
+    Opts.Input.[New Core] = "Shortest Path - " + SkimField
+    ret_value = RunMacro("TCB Run Operation", "Add Matrix Core", Opts, &Ret)
+    if !ret_value then goto quit
+	
+	// set the new matrix core to skimmed field
+	m = OpenMatrix(skim[1],)
+	mc1 = CreateMatrixCurrency(m, SkimField,,, )
+	mc2 = CreateMatrixCurrency(m, "Shortest Path - "+SkimField,,, )
+    mc2 := mc1
 
     //add taz index
     Opts = null

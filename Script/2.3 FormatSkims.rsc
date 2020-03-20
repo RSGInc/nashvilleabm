@@ -1,6 +1,7 @@
 
  // Post Process Transit Skim Matrices for Mode Choice Model & Compress Skims
  Macro "ProcessTransitSkimsforMC"(Args)
+ 	RunMacro("HwycadLog", {"Process transit skims", null})
     shared scen_data_dir  
     
     //  Define Parameters                                          

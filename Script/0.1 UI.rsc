@@ -168,11 +168,12 @@ dbox "MMC Model"
       // Check scenario info array and get scenario directory
       RunMacro("TCP Check Model Table Value Changes", model_title, model_table, ScenArr, ScenSel)
       Scen_Dir=ScenArr[ScenSel[1]][3]
-      
+      RunMacro("HwycadLog", {" ******************* STARTED Nashville ABM 2019 - Version 19.1.0 ******************* ", null})
       // Check if to run single stage or not       
       if run_type = 1 then single_stage = 1 else single_stage = 0
       if RunMacro("TCP Check Stage Files", cur_stage, single_stage, StepFlag, ScenArr, ScenSel) then
          RunMacro("TCP Run Scen Stages", cur_stage, cur_loop, run_type, StepMacro, &StepFlag, ScenArr, ScenSel,)
+	  RunMacro("HwycadLog", {" ******************* FINISHED Nashville ABM 2019 - Version 19.1.0 ******************* ", null})
    enditem
 
 /*      

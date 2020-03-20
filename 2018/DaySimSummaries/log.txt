@@ -1,0 +1,174 @@
+
+R version 3.2.2 (2015-08-14) -- "Fire Safety"
+Copyright (C) 2015 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Previously saved workspace restored]
+
+> ##This is a temporary main control file with lots of TODOs to move 
+> ##this whole effort to a package with project specific config and run files
+> 
+> #Rprof()
+> 
+> #-----------------------
+> #Load packages
+> #-----------------------
+> ##TODO consider local R installation, with predownloaded packages in that library
+> library(foreign)
+> library(reshape)
+> library(XLConnect)
+Loading required package: XLConnectJars
+XLConnect 0.2-11 by Mirai Solutions GmbH [aut],
+  Martin Studer [cre],
+  The Apache Software Foundation [ctb, cph] (Apache POI, Apache Commons
+    Codec),
+  Stephen Colebourne [ctb, cph] (Joda-Time Java library)
+http://www.mirai-solutions.com ,
+http://miraisolutions.wordpress.com
+> library(descr)
+> library(Hmisc)
+Loading required package: grid
+Loading required package: lattice
+Loading required package: survival
+Loading required package: Formula
+Loading required package: ggplot2
+
+Attaching package: 'Hmisc'
+
+The following objects are masked from 'package:base':
+
+    format.pval, round.POSIXt, trunc.POSIXt, units
+
+> library(data.table)
+
+Attaching package: 'data.table'
+
+The following object is masked from 'package:reshape':
+
+    melt
+
+> library(plyr)
+
+Attaching package: 'plyr'
+
+The following object is masked _by_ '.GlobalEnv':
+
+    ozone
+
+The following objects are masked from 'package:Hmisc':
+
+    is.discrete, summarize
+
+The following objects are masked from 'package:reshape':
+
+    rename, round_any
+
+> 
+> #------------------------------------
+> #Source functions and config settings
+> #------------------------------------
+> source("utilfunc.R")
+> #TODO function in package to create template config file in a specified location
+> source("daysim_output_config.R")
+> 
+> progressStart("run DaySim summaries",14)
+> 
+> #-----------------------
+> #Load data
+> #-----------------------
+> 
+> #Geographical correspondence
+> countycorr <- fread(tazcountycorr)
+> 
+> #Load DaySim outputs into Rdata files
+> progressNextStep("reading hh data")
+> if(runWrkSchLocationChoice | runVehAvailability | runDayPattern | runTourDestination | runTourMode)
++ {
++   if(prepDaySim)
++     readSaveRdata(dshhfile,"dshhdata")
++   if(prepSurvey)
++     readSaveRdata(surveyhhfile,"survhhdata")
++ }
+> 
+> progressNextStep("reading person data")
+> if(runWrkSchLocationChoice | runDayPattern | runTourDestination | runTourMode | runTourTOD | runTripMode | runTripTOD)
++ {
++   if(prepDaySim)
++     readSaveRdata(dsperfile,"dsperdata")
++   if(prepSurvey)
++     readSaveRdata(surveyperfile,"survperdata")
++ }
+Read 19.0% of 1475378 rowsRead 31.9% of 1475378 rowsRead 43.4% of 1475378 rowsRead 54.2% of 1475378 rowsRead 65.1% of 1475378 rowsRead 77.3% of 1475378 rowsRead 88.1% of 1475378 rowsRead 99.0% of 1475378 rowsRead 1475378 rows and 24 (of 24) columns from 0.116 GB file in 00:00:10
+> 
+> progressNextStep("reading person day data")
+> if(runDayPattern)
++ {
++   if(prepDaySim)
++     readSaveRdata(dspdayfile,"dspdaydata")
++   if(prepSurvey)
++     readSaveRdata(surveypdayfile,"survpdaydata")
++ }
+Read 42.7% of 1475378 rowsRead 67.1% of 1475378 rowsRead 90.8% of 1475378 rowsRead 1475378 rows and 31 (of 31) columns from 0.114 GB file in 00:00:05
+> 
+> progressNextStep("reading person day tour data")
+> if(runDayPattern | runTourDestination | runTourMode | runTourTOD | runTripMode)
++ {
++   if(prepDaySim)
++     readSaveRdata(dstourfile,"dstourdata")
++   if(prepSurvey)
++     readSaveRdata(surveytourfile,"survtourdata")
++ }
+Read 9.8% of 1832257 rowsRead 15.8% of 1832257 rowsRead 21.8% of 1832257 rowsRead 28.4% of 1832257 rowsRead 35.5% of 1832257 rowsRead 42.0% of 1832257 rowsRead 48.6% of 1832257 rowsRead 54.6% of 1832257 rowsRead 63.3% of 1832257 rowsRead 74.2% of 1832257 rowsRead 81.9% of 1832257 rowsRead 89.0% of 1832257 rowsRead 96.1% of 1832257 rowsRead 1832257 rows and 33 (of 33) columns from 0.227 GB file in 00:00:16
+> 
+> progressNextStep("reading person day trip data")
+> if(runDayPattern | runTripMode | runTripTOD)
++ {
++   if(prepDaySim)
++     readSaveRdata(dstripfile,"dstripdata")
++   if(prepSurvey)
++     readSaveRdata(surveytripfile,"survtripdata")
++ }
+Read 0.0% of 5042181 rowsRead 2.0% of 5042181 rowsRead 4.2% of 5042181 rowsRead 6.1% of 5042181 rowsRead 8.1% of 5042181 rowsRead 10.1% of 5042181 rowsRead 12.1% of 5042181 rowsRead 14.3% of 5042181 rowsRead 16.3% of 5042181 rowsRead 18.2% of 5042181 rowsRead 20.4% of 5042181 rowsRead 22.6% of 5042181 rowsRead 24.6% of 5042181 rowsRead 26.6% of 5042181 rowsRead 28.6% of 5042181 rowsRead 30.9% of 5042181 rowsRead 32.9% of 5042181 rowsRead 34.9% of 5042181 rowsRead 36.9% of 5042181 rowsRead 39.1% of 5042181 rowsRead 41.5% of 5042181 rowsRead 43.6% of 5042181 rowsRead 45.6% of 5042181 rowsRead 47.6% of 5042181 rowsRead 49.8% of 5042181 rowsRead 52.0% of 5042181 rowsRead 54.3% of 5042181 rowsRead 57.1% of 5042181 rowsRead 59.5% of 5042181 rowsRead 61.5% of 5042181 rowsRead 63.5% of 5042181 rowsRead 65.8% of 5042181 rowsRead 68.0% of 5042181 rowsRead 70.0% of 5042181 rowsRead 72.2% of 5042181 rowsRead 74.2% of 5042181 rowsRead 76.4% of 5042181 rowsRead 78.3% of 5042181 rowsRead 80.3% of 5042181 rowsRead 82.3% of 5042181 rowsRead 84.3% of 5042181 rowsRead 86.7% of 5042181 rowsRead 88.7% of 5042181 rowsRead 90.6% of 5042181 rowsRead 92.8% of 5042181 rowsRead 95.0% of 5042181 rowsRead 97.0% of 5042181 rowsRead 98.8% of 5042181 rowsRead 5042181 rows and 28 (of 28) columns from 0.624 GB file in 00:00:53
+> 
+> #Optional tour weight adjustment
+> if(tourAdj)
++ {
++   touradj <- fread(tourAdjFile)
++ }
+> 
+> #force gc()
+> gc()
+           used  (Mb) gc trigger   (Mb)  max used   (Mb)
+Ncells   576287  30.8     940480   50.3    750400   40.1
+Vcells 59085550 450.8  152854576 1166.2 140296614 1070.4
+> 
+> #-----------------------
+> #Run tabulations
+> #-----------------------
+> ##TODO split between preparing tables in an R object and then putting them somewhere
+> ##TODO e.g. in a spreadsheet, in a pdf report, etc.
+> 
+> #source("nonhwy.R")
+> 
+> progressNextStep("summarizing work location choice")
+> if(runWrkSchLocationChoice)
++ {
++   source("wrkschlocation.R")
++ }
+[1] "Work/School Location Summary...Started"
+Error: FileNotFoundException (Java): File 'WrkLocation.xlsm' could not be found - you may specify to automatically create the file if not existing.
+Execution halted

@@ -17,11 +17,13 @@ Macro "TransitAssignment"(Args)
     shared runtime // output files
     
     //Periods={"AM","MD","PM","OP"} - for four time periods
+	starttime = RunMacro("RuntimeLog", {"Transit Assignment ", null})
+	RunMacro("HwycadLog", {"8.2 TransitAssignment.rsc", "  ****** Transit Assignment ****** "})
     
     RunMacro("TCB Init")
 
     RunMacro("SetTransitParameters",Args)
-    RunMacro("Fill Transit Airport Trips", Args)
+    //RunMacro("Fill Transit Airport Trips", Args)
 
 // STEP 8.1: Perform Transit Assignment
 	i=1
@@ -29,6 +31,7 @@ Macro "TransitAssignment"(Args)
     for iper=1 to Periods.length do
         for iacc=1 to AccessAssgnModes.length do
             for imode=1 to Modes.length do
+				RunMacro("HwycadLog", {"Transit assignment", Periods[iper]})
 				perc = RealToInt(100*i/numiter)
 				UpdateProgressBar("Transit assignment: " + string(i) + " of " + string(numiter), perc)
 								
@@ -37,8 +40,8 @@ Macro "TransitAssignment"(Args)
 								//if (iacc=2) then AccessNet="Walk" //test - assign PNR on walk access network
 								if (iacc=3) then AccessNet="Drive"
 				
-                outtnw= OutDir + Periods[iper] + "_" + AccessNet + Modes[imode] + ".tnw"
-                inmat = OutDir + Periods[iper] + "TripsByMode.mtx"
+								outtnw= OutDir + Periods[iper] + "_" + AccessNet + Modes[imode] + ".tnw"
+								inmat = OutDir + Periods[iper] + "TripsByMode.mtx"
 
 								if (imode=1 & iacc=1) then tablename="WLKLOCBUS"
 								if (imode=2 & iacc=1) then tablename="WLKBRT"
@@ -75,7 +78,7 @@ Macro "TransitAssignment"(Args)
             end
         end
     end
-
+	endtime = RunMacro("RuntimeLog", {"Transit Assignment ", starttime})
     stime=GetDateAndTime()
     WriteLine(runtime,"\n End Transit Assignment               - "+SubString(stime,1,3)+","+SubString(stime,4,7)+""+SubString(stime,20,5)+" ("+SubString(stime,12,8)+") ")
     Return(1)
@@ -89,10 +92,13 @@ EndMacro
 // STEP 9: Transit reporting
 Macro "TransitReport" (Args)
     shared OutDir, Modes, AccessAssgnModes, route_system, MovementTable, Periods // input files
-		shared runtime
+	shared runtime
+	
+	starttime = RunMacro("RuntimeLog", {"Transit Report ", null})
+	RunMacro("HwycadLog", {"8.2 TransitAssignment.rsc", "  ****** Transit Reporting ****** "})
     RunMacro("TCB Init")
 		
-		RunMacro("SetTransitParameters",Args)
+	RunMacro("SetTransitParameters",Args)
 
 // STEP 10.1: Macro to fill the Transit Flow files with PH and PM
     ret_value = RunMacro("Fill_TASN_FLW_File",)
@@ -146,6 +152,8 @@ Macro "TransitReport" (Args)
         RunProgram(OutDir + "deletefiles.bat", )
         PutInRecycleBin(OutDir + "deletefiles.bat")
     end
+	
+	endtime = RunMacro("RuntimeLog", {"Transit Report ", starttime})
 
 quit:
     stime=GetDateAndTime()
