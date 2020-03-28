@@ -19,6 +19,47 @@ Macro "SetParameters" (Args)
     RunMacro("SetHighwayParameters", Args)
     RunMacro("SetDaySimParameters", Args)
 	RunMacro("SetAirportParameter")
+endMacro
+
+Macro "ConverSkimsToOMX" (Args)
+	shared Scen_Dir, OutDir, loop
+	shared DaySimDir, Periods, iteration
+
+	auto_modes = {"sov", "hov"}
+	transit_modes = {"Local", "ExpBus", "Brt", "UrbRail", "ComRail"}
+	transit_access = {"Walk", "Drive"}
+	
+	matrix_name = "hwyskim_ff"
+	RunMacro("ExportToOMX", matrix_name, "Length", OutDir, OutDir)
+	
+	for p=1 to Periods.length do
+		for m=1 to auto_modes.length do
+			matrix_name = "hwyskim_" + Lower(Periods[p]) + "_" + auto_modes[m]
+			RunMacro("ExportToOMX", matrix_name, "Length", OutDir, OutDir)
+		end
+		
+		for m=1 to transit_modes.length do
+			for a=1 to transit_access.length do
+				matrix_name = Periods[p] + "_" + transit_access[a] + transit_modes[m] + "Skim" 
+				RunMacro("ExportToOMX", matrix_name, "Generalized Cost", OutDir, OutDir)
+			end
+		end
+	
+	end
+
+endMacro
+
+Macro "ExportToOMX" (mat, core, inDir, outDir)
+
+    m = OpenMatrix(inDir + mat + ".mtx", )
+    mc = CreateMatrixCurrency(m,core,,,)
+    
+	CopyMatrix(mc, {
+        {"File Name", outDir + mat + ".omx"},
+        {"OMX", "True"}
+      } 
+    )
+
 EndMacro
 
 Macro "Run DaySim" (Args)
@@ -41,6 +82,7 @@ STEPS:
 
 	RunMacro("HwycadLog", {"7.1 RunDaySim.rsc", "  ****** Run DaySim ****** "})
 	RunMacro("SetParameters", Args)
+	//RunMacro("ConverSkimsToOMX", Args) //TODO: do not use yet
     
     // number of daysim iterations
     itercount = 3

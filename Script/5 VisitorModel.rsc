@@ -13,9 +13,6 @@ Macro "Visitor_Model" (Args)
 	RunMacro("Settings", Args)
 	RunMacro("TCB Init")
 
-	//info.modcfg = "E:\\Projects\\Clients\\Nashville\\Tasks\\Task6_VisitorModel\\Nashville_Visitor_Model\\VisitorModel\\Nashville_VisConfig.csv"
-	//mf = RunMacro("LoadConfig", info.modcfg)
-
 	tazvw    = RunMacro("AddLayer", mf.tazfile, "Area")
 	linevw   = RunMacro("AddLayer", mf.linefile, "Line")
 	nodevw   = GetNodeLayer(linevw)

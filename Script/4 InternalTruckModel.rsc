@@ -1,5 +1,6 @@
 Macro "InternalTruckModel" (Args)
 	
+	
 	starttime = RunMacro("RuntimeLog", {"Internal Truck Model", null})
 	RunMacro("HwycadLog", {"4 InternalTruckModel.rsc", "Run Internal Truck and Commercial Vehicle Model"})
 
@@ -21,6 +22,10 @@ Macro "InternalTruckModel" (Args)
 	RunMacro("HwycadLog", {"Run Commercial Vehicle Model", null})
 	ok = RunMacro("4TCV_Model")
 	if (ok<>1) then goto quit
+	
+	RunMacro("HwycadLog", {"Run Trip Length Summaries", null})
+	ok = RunMacro("Run_Summaries")
+	if (ok<>1) then goto quit	
 	
 	RunMacro("HwycadLog", {"Close All Views", null})
 	ok = RunMacro("CloseAllViews")
@@ -272,7 +277,7 @@ Macro "Truck_Model"
 	mckIM = RunMacro("CheckMatrixCore", kmat, "kIM", "TAZ_ID", "TAZ_ID",)
 	
     // TAZ portion of utilities
-    k_IS = exp(-0.4923*GenAccess)
+    k_IS = exp(-0.4923*GenAccess)    //exp(-0.4923*GenAccess) - from Chattanooga
     k_IM = exp(-1.5682*GenAccess)
 
     // Exponentiated utilities (less any straight impedance component) by adding OD elements to TAZ component  
@@ -295,7 +300,7 @@ Macro "Truck_Model"
 	Opts.Global.[Fric Factor Type]= {"Exponential"      , "Exponential"      }
 	Opts.Global.[A List]          = {1                  , 1                  }
 	Opts.Global.[B List]          = {0.3                , 0.3                }    
-	Opts.Global.[C List]          = {0.9713             , 0.3126             }
+	Opts.Global.[C List]          = {0.0400             , 0.3126             } //chattanooga - 0.9713 
 	Opts.Flag.[Use K Factors]     = {1                  , 1                  }
 	Opts.Flag.[Post Process] = "False"
 	Opts.Output.[Output Matrix].Label = "Truck Trip Matrix"
@@ -481,8 +486,8 @@ Macro "4TCV_Model"
 	Opts.Global.[Fric Factor Type]= {"Exponential"}
 	Opts.Global.[A List]          = {1            }
 	Opts.Global.[B List]          = {0.3          }    
-	Opts.Global.[C List]          = {0.9713       }
-	Opts.Flag.[Use K Factors]     = {0            }
+	Opts.Global.[C List]          = {0.0471       }
+	Opts.Flag.[Use K Factors]     = {1            }
 	Opts.Flag.[Post Process] = "False"
 	Opts.Output.[Output Matrix].Label = "CV Trip Matrix"
 	Opts.Output.[Output Matrix].Type = "Float"
@@ -617,3 +622,166 @@ Macro "dropfields" (dataview, fldnames)
       ModifyTable(dataview, newstr)
    end
 endMacro
+
+Macro "Run_Summaries"
+	shared skim_truck, od_trk, od_cv
+	
+	//trucks - Avg. TL
+	ok = RunMacro("GenerateTripLengths", od_trk, {"II_SUT", "II_MUT"}, {skim_truck, "Length"}, {"Origin","Destination"}, {"Rows", "Cols"})
+	if (ok<>1) then goto quit
+	
+	//SU - TLFD
+	ok = RunMacro("TLFD", od_trk, "II_SUT", {skim_truck, "Length"}, {"Origin","Destination"}, {"Rows", "Cols"})
+	if (ok<>1) then goto quit
+
+	//MU - TLFD
+	ok = RunMacro("TLFD", od_trk, "II_MUT", {skim_truck, "Length"}, {"Origin","Destination"}, {"Rows", "Cols"})
+	if (ok<>1) then goto quit
+
+	//CV - Avg. TL
+	ok = RunMacro("GenerateTripLengths", od_cv, {"CV_II"}, {skim_truck, "Length"}, {"Origin","Destination"}, {"Rows", "Cols"})
+	if (ok<>1) then goto quit
+	
+	//CV - TLFD
+	ok = RunMacro("TLFD", od_cv, "CV_II", {skim_truck, "Length"}, {"Origin","Destination"}, {"Rows", "Cols"})
+	if (ok<>1) then goto quit
+
+	quit:
+	Return(ok)
+
+endMacro
+
+Macro "TLFD" (trips_mat, core_name, skim_mat, skim_index, trip_index, region)
+	shared Scen_Dir
+	
+	on error, notfound do
+		goto quit
+	end
+	
+	
+	in_dir = Scen_Dir + "outputs\\"
+	out_dir = in_dir
+	
+	filename = SplitPath(trips_mat)
+	inMat = filename[3] + ".mtx"	
+	outMat = filename[3] + "_TLFD_" + core_name + ".mtx"
+	
+	skim_file = skim_mat[1]
+	skim_name = skim_mat[2]
+
+	Opts = null
+
+    Opts.Input.[Base Currency] = {in_dir + inMat, core_name, trip_index[1], trip_index[2]}
+    Opts.Input.[Impedance Currency] = {skim_file, skim_name, skim_index[1], skim_index[2]}
+    Opts.Global.[Start Option] = 2
+    Opts.Global.[Start Value] = 0
+    Opts.Global.[End Option] = 2
+    Opts.Global.[End Value] = 25
+    Opts.Global.Method = 1
+    Opts.Global.[Number of Bins] = 10
+    Opts.Global.Size = 1
+    Opts.Global.[Statistics Option] = 1
+    Opts.Global.[Min Value] = 0
+    Opts.Global.[Max Value] = 0
+	Opts.Global.[Create Chart] = 0
+    Opts.Output.[Output Matrix].Label = "Output Matrix"
+    Opts.Output.[Output Matrix].[File Name] = out_dir + outMat
+    ret_value = RunMacro("TCB Run Procedure", "TLD", Opts) 
+	
+	Return(ret_value)	
+	
+	quit:
+	Return(ret_value)
+
+endMacro
+
+Macro "GenerateTripLengths" (trips_mat, core_names, skim_mat, skim_index, trip_index)
+	shared Scen_Dir
+	
+	on error, notfound do
+		goto quit
+	end	
+	
+	in_dir = Scen_Dir + "outputs\\"
+	out_dir = in_dir
+	
+	filename = SplitPath(trips_mat)
+	inMat = filename[3] + ".mtx"	
+	outMat = filename[3] + "_TL" + ".mtx"
+	
+	CopyFile(in_dir + inMat, out_dir + outMat)
+	
+	skim_file = skim_mat[1]
+	skim_name = skim_mat[2]
+	matSkim = OpenMatrix(skim_file,)
+	mcSkim = CreateMatrixCurrency(matSkim, skim_name, skim_index[1], skim_index[2], )
+
+	for core=1 to core_names.length do
+		matOut = OpenMatrix(out_dir+outMat,) 
+		mcOut = CreateMatrixCurrency(matOut, core_names[core], trip_index[1], trip_index[2], )		
+		mcOut := nz(mcOut) * nz(mcSkim)
+	
+	end
+	
+	sumStats_trips = RunMacro("GetMatrixSum", in_dir, inMat, core_names)
+	sumStats_vmt = RunMacro("GetMatrixSum", out_dir, outMat, core_names)
+	
+	file_writer = RunMacro("Start a File Writer", out_dir + filename[3] + "_TL_" + region + ".csv")
+	WriteLine(file_writer, "core_name,trips,vmt,trip_length")
+	for core=1 to core_names.length do
+		trip_type = sumStats_trips[core][1]
+		trips = sumStats_trips[core][2]
+		vmt = sumStats_vmt[core][2]
+		trip_length = StringToReal(vmt) / StringToReal(trips)
+		
+		out_string = trip_type + "," + trips + "," + vmt + "," + RealToString(trip_length)
+		WriteLine(file_writer, out_string)
+	end
+	
+	CloseFile(file_writer)
+	//DeleteFile(out_dir+outMat)
+	
+	ok=1
+	
+	quit:
+	Return(ok)	
+	
+endMacro
+
+Macro "Start a File Writer" (outfile)
+	shared stats_header
+	
+	if GetFileInfo(outfile) <> null then do
+		DeleteFile(outfile)
+	end
+	
+	fptr = OpenFile(outfile, "a")
+	
+	Return(fptr)
+
+endMacro
+
+Macro "GetMatrixSum" (dir, mat_file, core_names)
+			
+	dim outStats[core_names.length]
+	mat = OpenMatrix(dir + mat_file,)
+	stat_array = MatrixStatistics(mat,)
+	count=1
+	for core=1 to stat_array.length do
+		stats = stat_array[core]
+		if (ArrayPosition(core_names,{stats[1]},)>0) then do
+			out_string = mat_file + "," + stats[1]
+			for stat = 1 to stats[2].length do
+				summary = stats[2][stat]
+				out_string = out_string + "," + RealToString(summary[2])		
+			end
+			sum = stats[2][2]
+			outStats[count] = {stats[1], RealToString(sum[2])}
+			count = count + 1
+		end
+	end
+	
+	Return(outStats)
+	
+endMacro
+
