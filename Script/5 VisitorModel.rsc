@@ -308,7 +308,7 @@ Macro "01_Model_Inputs" (tazvw)
 	sevw = RunMacro("AggregateTable", jnvw+"|", "taz_p", aggflds, zonalfile)
 	CloseView(jnvw)
 
-	hh_file_vw = OpenTable("hh_file_vw", "CSV", {mf.hh_file,})
+	hh_file_vw = OpenTable("hh_file_vw", "CSV", {mf.hh_file},{{"Delimiter", " "}})
 	
 	//Aggregate trips over some custom segments
 	aggflds = {{"hhincome","avg",}}
