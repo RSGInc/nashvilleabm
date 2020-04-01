@@ -925,7 +925,46 @@ Macro "PostProcessor" (Args)
 		{"VOL_PASSOP","Real",8,2,"No"},
 		{"VOL_PASSOPAB","Real",8,2,"No"},
 		{"VOL_PASSOPBA","Real",8,2,"No"},
+
+		{"VOL_HOV2","Real",8,2,"No"},
+		{"VOL_HOV2AB","Real",8,2,"No"},
+		{"VOL_HOV2BA","Real",8,2,"No"},
 		
+		{"VOL_HOV2AM","Real",8,2,"No"},
+		{"VOL_HOV2AMAB","Real",8,2,"No"},
+		{"VOL_HOV2AMBA","Real",8,2,"No"},
+		
+		{"VOL_HOV2MD","Real",8,2,"No"},
+		{"VOL_HOV2MDAB","Real",8,2,"No"},
+		{"VOL_HOV2MDBA","Real",8,2,"No"},
+		
+		{"VOL_HOV2PM","Real",8,2,"No"},
+		{"VOL_HOV2PMAB","Real",8,2,"No"},
+		{"VOL_HOV2PMBA","Real",8,2,"No"},
+		
+		{"VOL_HOV2OP","Real",8,2,"No"},
+		{"VOL_HOV2OPAB","Real",8,2,"No"},
+		{"VOL_HOV2OPBA","Real",8,2,"No"},
+		
+		{"VOL_HOV3","Real",8,2,"No"},
+		{"VOL_HOV3AB","Real",8,2,"No"},
+		{"VOL_HOV3BA","Real",8,2,"No"},
+		
+		{"VOL_HOV3AM","Real",8,2,"No"},
+		{"VOL_HOV3AMAB","Real",8,2,"No"},
+		{"VOL_HOV3AMBA","Real",8,2,"No"},
+		
+		{"VOL_HOV3MD","Real",8,2,"No"},
+		{"VOL_HOV3MDAB","Real",8,2,"No"},
+		{"VOL_HOV3MDBA","Real",8,2,"No"},
+		
+		{"VOL_HOV3PM","Real",8,2,"No"},
+		{"VOL_HOV3PMAB","Real",8,2,"No"},
+		{"VOL_HOV3PMBA","Real",8,2,"No"},
+		
+		{"VOL_HOV3OP","Real",8,2,"No"},
+		{"VOL_HOV3OPAB","Real",8,2,"No"},
+		{"VOL_HOV3OPBA","Real",8,2,"No"},
 		
 		{"VOL_COM","Real",8,2,"No"},
 		{"VOL_COMAB","Real",8,2,"No"},
@@ -1183,8 +1222,8 @@ Macro "PostProcessor" (Args)
 	OpenTable("PM Assignment Result","FFB",{Scen_Dir+ "outputs\\Assignment_PM.bin",})
 	OpenTable("OP Assignment Result","FFB",{Scen_Dir+ "outputs\\Assignment_OP.bin",})
 	
-	vehicles={"PASS","COM","SU","MU"}
-	vehicles2={"Passenger","Commercial","SingleUnit","MU"}
+	vehicles={"PASS","HOV2","HOV3","COM","SU","MU"}
+	vehicles2={"Passenger","HOV2","HOV3","Commercial","SingleUnit","MU"}
 	periods={"AM","MD","PM","OP"}
 	
 	//step 1: update the MU fields in the final assignment result with preload MU and IIMU
@@ -1227,21 +1266,43 @@ Macro "PostProcessor" (Args)
 				"nz("+"VOL_"+vehicles[v]+periods[p]+"AB)+"+"nz("+"VOL_"+vehicles[v]+periods[p]+"BA)"}
            
 			//passenger cars add HOV
-			if vehicles[v]="PASS" then do
+			if vehicles[v]="HOV2" then do
 				//if (auto_assign_classes=1) then no HOV class is available, all is in passenger
 				if (auto_assign_classes=2) then do
 					Opts.Global.Parameter = {
-						"nz("+"VOL_"+vehicles[v]+periods[p]+"AB)+" + "nz(AB_Flow_"+vehicles2[v]+")" + "+nz(AB_Flow_HOV)" ,
-						"nz("+"VOL_"+vehicles[v]+periods[p]+"BA)+" + "nz(BA_Flow_"+vehicles2[v]+")"+ "+nz(BA_Flow_HOV)", 
+						"nz(AB_Flow_HOV)" ,
+						"nz(BA_Flow_HOV)", 
 						"nz("+"VOL_"+vehicles[v]+periods[p]+"AB)+"+"nz("+"VOL_"+vehicles[v]+periods[p]+"BA)"}
-				end				
+				end	
+				else if (auto_assign_classes=3) then do
+					Opts.Global.Parameter = {
+						"nz(AB_Flow_HOV2)" ,
+						"nz(BA_Flow_HOV2)", 
+						"nz("+"VOL_"+vehicles[v]+periods[p]+"AB)+"+"nz("+"VOL_"+vehicles[v]+periods[p]+"BA)"}
+				end	
+				else do
+					Opts.Global.Parameter = {
+						0,
+						0, 
+						0}
+				end										
+			end
+
+			//passenger cars add HOV
+			if vehicles[v]="HOV3" then do
+				//if (auto_assign_classes=1) then no HOV class is available, all is in passenger
 				if (auto_assign_classes=3) then do
 					Opts.Global.Parameter = {
-						"nz("+"VOL_"+vehicles[v]+periods[p]+"AB)+" + "nz(AB_Flow_"+vehicles2[v]+")" + "+nz(AB_Flow_HOV2)" + "+nz(AB_Flow_HOV3)" ,
-						"nz("+"VOL_"+vehicles[v]+periods[p]+"BA)+" + "nz(BA_Flow_"+vehicles2[v]+")"+ "+nz(BA_Flow_HOV2)"+ "+nz(BA_Flow_HOV3)", 
+						"nz(AB_Flow_HOV3)" ,
+						"nz(BA_Flow_HOV3)", 
 						"nz("+"VOL_"+vehicles[v]+periods[p]+"AB)+"+"nz("+"VOL_"+vehicles[v]+periods[p]+"BA)"}
-				end				
-				
+				end	
+				else do
+					Opts.Global.Parameter = {
+						0,
+						0, 
+						0}
+				end										
 			end
                 
 			ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
@@ -1280,8 +1341,8 @@ Macro "PostProcessor" (Args)
 		Opts.Global.Fields = {"VOL_"+periods[p]+"AB","VOL_"+periods[p]+"BA","VOL_"+periods[p]}
 		Opts.Global.Method = "Formula"
 		Opts.Global.Parameter = {
-			"nz(VOL_PASS"+periods[p]+"AB)+nz(VOL_COM"+periods[p]+"AB)+nz(VOL_SU"+periods[p]+"AB)+nz(VOL_MU"+periods[p]+"AB)",
-			"nz(VOL_PASS"+periods[p]+"BA)+nz(VOL_COM"+periods[p]+"BA)+nz(VOL_SU"+periods[p]+"BA)+nz(VOL_MU"+periods[p]+"BA)",
+			"nz(VOL_PASS"+periods[p]+"AB)+nz(VOL_HOV2"+periods[p]+"AB)+nz(VOL_HOV3"+periods[p]+"AB)+nz(VOL_COM"+periods[p]+"AB)+nz(VOL_SU"+periods[p]+"AB)+nz(VOL_MU"+periods[p]+"AB)",
+			"nz(VOL_PASS"+periods[p]+"BA)+nz(VOL_HOV2"+periods[p]+"BA)+nz(VOL_HOV3"+periods[p]+"BA)+nz(VOL_COM"+periods[p]+"BA)+nz(VOL_SU"+periods[p]+"BA)+nz(VOL_MU"+periods[p]+"BA)",
 			"nz(VOL_"+periods[p]+"AB)+nz(VOL_"+periods[p]+"BA)"
 			}
 		ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
