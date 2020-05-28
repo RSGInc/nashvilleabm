@@ -42,6 +42,7 @@ prep_tourdata <- function(tourdata,perdata)
     tourdata <- tourdata[pptyp<8,]
   tourdata[pdpurp==8,pdpurp:=7]
   tourdata[pdpurp==9,pdpurp:=4]
+    
   tourdata[,pdpurp2:=ifelse(parent == 0,pdpurp,8)]
   tourdata[,ocounty:=countycorr$DISTRICT[match(totaz,countycorr$TAZ)]]
   tourdata[,dcounty:=countycorr$DISTRICT[match(tdtaz,countycorr$TAZ)]]
@@ -49,6 +50,7 @@ prep_tourdata <- function(tourdata,perdata)
   {
     tourdata <- merge_skims(tourdata)
   }
+  tourdata <- tourdata[topcl>0 & tdpcl>0,]
   
   tourdata[,distcat:=findInterval(tautodist,0:90)]
   tourdata[,timecat:=findInterval(tautotime,0:90)]
@@ -79,6 +81,18 @@ if(prepSurvey)
   purp <- 8
   write_tables(tourdestwkbmodelout,survtourdata[pdpurp2 == purp],tourdestwkbmodelfile,"survey")
   
+  #Fresno - maintenance and discretionary
+  suff_new <- c('Maintenance', 'Discretionary')
+  survtourdata[,pdpurp3:=pdpurp2]
+  survtourdata[pdpurp3==7,pdpurp3:=6] #discretionary
+  survtourdata[pdpurp3==4,pdpurp3:=5] #maintenance
+  
+  for(i in 1:length(suff_new))
+  {
+    purp <- i+4 
+    write_tables(tourdestmodelout_fresno[i],survtourdata[pdpurp3 == purp],tourdestmodelfile,"survey")
+  }
+  
   rm(survperdata,survtourdata)
   gc()
 }
@@ -102,6 +116,18 @@ if(prepDaySim)
   purp <- 8
   write_tables(tourdestwkbmodelout,dstourdata[pdpurp2 == purp],tourdestwkbmodelfile,"daysim")
 
+  #Fresno - maintenance and discretionary
+  suff_new <- c('Maintenance', 'Discretionary')
+  dstourdata[,pdpurp3:=pdpurp2]
+  dstourdata[pdpurp3==7,pdpurp3:=6] #discretionary
+  dstourdata[pdpurp3==4,pdpurp3:=5] #maintenance
+  
+  for(i in 1:length(suff_new))
+  {
+    purp <- i+4 
+    write_tables(tourdestmodelout_fresno[i],dstourdata[pdpurp3 == purp],tourdestmodelfile,"daysim")
+  }  
+  
   rm(dsperdata,dstourdata)
   gc()
 }

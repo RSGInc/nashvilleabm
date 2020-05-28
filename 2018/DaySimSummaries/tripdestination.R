@@ -22,12 +22,21 @@ prep_tripdata <- function(tripdata,perdata)
   {
     print("Error!!! - Skims information missing.")
   }
+  tripdata <- tripdata[opcl>0 & dpcl>0,]
+  tripdata[dpurp==8,dpurp:=7]
+  tripdata[dpurp==9,dpurp:=4]
+  
+  #tripdata[otaz<=0 | dtaz<=0, travtime:=NA]
+  #tripdata[otaz<=0 | dtaz<=0, travdist:=NA]
+  
   tripdata[,distcat:=findInterval(travdist,0:90)]
   tripdata[,timecat:=findInterval(travtime,0:90)]
   tripdata[,wrkrtyp:=c(1,2,3,3,3,3,3,3)[pptyp]]
   tripdata[travtime<0,travtime:=NA]
   tripdata[travdist<0,travdist:=NA]
-
+  
+  #tripdata[dtaz<=0 | dtaz<=0, distcat:=99]
+  #tripdata[dtaz<=0 | dtaz<=0, timecat:=99]
   return(tripdata)
 }
 
@@ -50,9 +59,11 @@ if(prepSurvey)
   setStyleAction(wb,XLC$"STYLE_ACTION.NONE")
   for(i in 1:length(suff))
   {
-    purp <- i-1  
+    purp <- i-1
+    #purp <- i #for trip lengths by mode
     survtripdestmodfile$outsheet <- paste(survtripdestmodfile$outsheet_orig,suff[i],sep="_")
     tabulate_summaries(survtripdata[survtripdata$dpurp == purp],survtripdestmodfile,"survey",wb)
+    #tabulate_summaries(survtripdata[survtripdata$mode == purp],survtripdestmodfile,"survey",wb) #for trip lengths by mode
   }
   saveWorkbook(wb)
   
@@ -78,9 +89,11 @@ if(prepDaySim)
   setStyleAction(wb,XLC$"STYLE_ACTION.NONE")
   for(i in 1:length(suff))
   {
-    purp <- i-1  
+    purp <- i-1
+    #purp <- i #for trip lengths by mode
     dstripdestmodfile$outsheet <- paste(dstripdestmodfile$outsheet_orig,suff[i],sep="_")
     tabulate_summaries(dstripdata[dstripdata$dpurp == purp],dstripdestmodfile,"daysim",wb)
+    #tabulate_summaries(dstripdata[dstripdata$mode == purp],dstripdestmodfile,"daysim",wb) #for trip lengths by mode
   }
   saveWorkbook(wb)
   

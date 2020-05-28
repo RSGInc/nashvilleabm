@@ -224,8 +224,8 @@ Macro "Truck_Model"
 	//chattanooga = 0.1601 for SUT and 0.0782 for MUT
 	//II_SUT_Gen = 0.1601 * SUT_Gen
 	//II_MUT_Gen = 0.0782 * MUT_Gen
-	II_SUT_Gen = 0.08 * SUT_Gen
-	II_MUT_Gen = 0.78* MUT_Gen
+	II_SUT_Gen = 0.075 * SUT_Gen
+	II_MUT_Gen = 0.91* MUT_Gen
 	
 	//Distribution
 	//Create PA table
@@ -300,7 +300,7 @@ Macro "Truck_Model"
 	Opts.Global.[Fric Factor Type]= {"Exponential"      , "Exponential"      }
 	Opts.Global.[A List]          = {1                  , 1                  }
 	Opts.Global.[B List]          = {0.3                , 0.3                }    
-	Opts.Global.[C List]          = {0.0400             , 0.3126             } //chattanooga - 0.9713 
+	Opts.Global.[C List]          = {0.005             , 0.0926             } //chattanooga - 0.9713 
 	Opts.Flag.[Use K Factors]     = {1                  , 1                  }
 	Opts.Flag.[Post Process] = "False"
 	Opts.Output.[Output Matrix].Label = "Truck Trip Matrix"
@@ -486,7 +486,7 @@ Macro "4TCV_Model"
 	Opts.Global.[Fric Factor Type]= {"Exponential"}
 	Opts.Global.[A List]          = {1            }
 	Opts.Global.[B List]          = {0.3          }    
-	Opts.Global.[C List]          = {0.0471       }
+	Opts.Global.[C List]          = {0.0071       }
 	Opts.Flag.[Use K Factors]     = {1            }
 	Opts.Flag.[Post Process] = "False"
 	Opts.Output.[Output Matrix].Label = "CV Trip Matrix"

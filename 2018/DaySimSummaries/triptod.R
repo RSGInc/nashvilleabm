@@ -13,10 +13,12 @@ prep_tripdata <- function(tripdata,perdata)
   tripdata[,depmin:= deptm - dephr*100]
   if(length(tripdata$depmin[tripdata$depmin>60])>0)
   {
+    print('times are in minutes')
     tripdata[,deptime:= deptm/60]
     tripdata[,arrtime:= arrtm/60]
     tripdata[,durdest:= endacttm - arrtm]
   } else{
+    print('times are in HHMM format')
     tripdata[,deptime:= dephr + depmin/60]
     tripdata[,arrhr:= trunc(arrtm/100)]
     tripdata[,arrmin:= arrtm - arrhr*100]
@@ -50,6 +52,7 @@ prep_tripdata <- function(tripdata,perdata)
 
 if(prepSurvey)
 {
+  print('survey')
   survperdata <- assignLoad(paste0(surveyperfile,".Rdata"))
   survtripdata <- assignLoad(paste0(surveytripfile,".Rdata"))
   survtripdata <- prep_tripdata(survtripdata,survperdata)
@@ -61,6 +64,7 @@ if(prepSurvey)
 
 if(prepDaySim)
 {
+  print('daysim')
   dsperdata <- assignLoad(paste0(dsperfile,".Rdata"))
   dstripdata <- assignLoad(paste0(dstripfile,".Rdata"))
   dstripdata <- prep_tripdata(dstripdata,dsperdata)

@@ -14,15 +14,79 @@ prep_perdata <- function(perdata,hhdata)
   hhdata[hhvehs > 0 & hhvehs == hh16cat,vehsuf:=3]
   hhdata[hhvehs > 0 & hhvehs > hh16cat,vehsuf:=4]
   perdata <- merge(perdata,hhdata[,list(hhno,hhcounty,inccat,vehsuf)],by="hhno",all.x=T)
+
   return(perdata)
 }
 
-prep_pdaydata <- function(pdaydata,perdata)
+#this is added because pday data do not match with tour and trip (stops) files
+#this function overwrrites number of tours and stops by purpose
+update_pdaydata <- function(pdaydata, tourdata, tripdata)
 {
+  #aggregate trips by person and destination purpose
+  aggper_trips_long <- tripdata[,list(trips=sum(trexpfac)),by=c("hhno","pno","dpurp")]
+  aggper_trips_wide <- reshape(aggper_trips_long, timevar = "dpurp", idvar = c("hhno","pno"), direction="wide")
+  aggper_trips_wide[is.na(aggper_trips_wide)] <- 0
+  aggper_trips <- rename(aggper_trips_wide, c("trips.0"="hmtrips","trips.1"="wktrips","trips.2"="sctrips","trips.3"="estrips","trips.4"="pbtrips","trips.5"="shtrips","trips.6"="mltrips","trips.7"="sotrips","trips.10"="cmtrips"))
+  aggper_trips[,tottrips:=hmtrips+wktrips+sctrips+estrips+pbtrips+shtrips+mltrips+sotrips+cmtrips]
+
+  #aggregate non-workbased tours by person and destination purpose
+  tourdata_nowb <- tourdata[tourdata$parent==0,]
+  aggper_tours_long <- tourdata_nowb[,list(tours=sum(toexpfac)),by=c("hhno","pno","pdpurp")]
+  aggper_tours_wide <- reshape(aggper_tours_long, timevar = "pdpurp", idvar = c("hhno","pno"), direction="wide")
+  aggper_tours_wide[is.na(aggper_tours_wide)] <- 0
+  aggper_tours <- rename(aggper_tours_wide, c("tours.1"="wktours","tours.2"="sctours","tours.3"="estours","tours.4"="pbtours","tours.5"="shtours","tours.6"="mltours","tours.7"="sotours"))
+
+  #aggregate workbased subtours by person and destination purpose 
+  tourdata_wb <- tourdata[tourdata$parent==1,]
+  aggper_tours_long <- tourdata_wb[,list(tours=sum(toexpfac)),by=c("hhno","pno","pdpurp")]
+  aggper_tours_wide <- reshape(aggper_tours_long, timevar = "pdpurp", idvar = c("hhno","pno"), direction="wide")
+  aggper_tours_wide[is.na(aggper_tours_wide)] <- 0
+  aggper_tours_wb <- rename(aggper_tours_wide, c("tours.1"="wktours_wb","tours.2"="sctours_wb","tours.3"="estours_wb","tours.4"="pbtours_wb","tours.5"="shtours_wb","tours.6"="mltours_wb","tours.7"="sotours_wb"))
+  aggper_tours_wb[,tottours_wb:=wktours_wb+sctours_wb+estours_wb+pbtours_wb+shtours_wb+mltours_wb+sotours_wb]
+  
+  #merge all into one
+  pdaydata_new <- merge(aggper_tours, aggper_trips, by=c("hhno","pno"), all.x=T)
+  pdaydata_new <- merge(pdaydata_new, aggper_tours_wb, by=c("hhno","pno"), all.x=T)
+  pdaydata_new[is.na(pdaydata_new)] <- 0
+  
+  #calculate number of stops by purpose
+  #for each purpose, remove workbased and non-workbased tours. tours are by destination purpose, tour primary destination isn't a stop so remove that.
+  #exclude all workbased subtours from work stops. workbased subtours always have inbound (return) trip with destination as work. returning to work isn't a stop so remove that.
+  pdaydata_new[,wkstops:=wktrips-wktours-wktours_wb-tottours_wb]
+  pdaydata_new[,scstops:=sctrips-sctours-sctours_wb]
+  pdaydata_new[,esstops:=estrips-estours-estours_wb]
+  pdaydata_new[,pbstops:=pbtrips-pbtours-pbtours_wb]
+  pdaydata_new[,shstops:=shtrips-shtours-shtours_wb]
+  pdaydata_new[,mlstops:=mltrips-mltours-mltours_wb]
+  pdaydata_new[,sostops:=sotrips-sotours-sotours_wb]
+  pdaydata_new[,cmstops:=cmtrips]
+    
+  pdaydata <- merge(pdaydata[,list(hhno,pno,metours,retours,mestops,restops)], pdaydata_new, by=c("hhno","pno"), all.x=T)
+  pdaydata[is.na(pdaydata)] <- 0
+  
+  return(pdaydata)
+
+}
+
+prep_pdaydata <- function(pdaydata,perdata,tourdata,tripdata,datatype)
+{
+  if(datatype=="model")
+	pdaydata <- update_pdaydata(pdaydata, tourdata, tripdata)
+	
   pdaydata <- merge(pdaydata,perdata,by=c("hhno","pno"),all.x=T)
   if(excludeChildren5)
     pdaydata <- pdaydata[pptyp<8]
   
+  #persons with at-least one stop
+  pdaydata[wkstops>0,per_wkstops:=1]
+  pdaydata[scstops>0,per_scstops:=1]
+  pdaydata[esstops>0,per_esstops:=1]
+  pdaydata[pbstops>0,per_pbstops:=1]
+  pdaydata[shstops>0,per_shstops:=1]
+  pdaydata[mlstops>0,per_mlstops:=1]
+  pdaydata[sostops>0,per_sostops:=1]
+  pdaydata[is.na(pdaydata)] <- 0
+
   pdaydata[,pbtours:= pbtours + metours]
   pdaydata[,sotours:= sotours + retours]
   pdaydata[,pbstops:= pbstops + mestops]
@@ -141,22 +205,20 @@ if(prepSurvey)
     survperdata[,psexpfac_orig:=psexpfac]
     survperdata[,psexpfac:=psexpfac*adjfac]
   }
-  else {
-    survperdata[,psexpfac_orig:=psexpfac]
-  }
   rm(survhhdata)
   
   survpdaydata <- assignLoad(paste0(surveypdayfile,".Rdata"))
-  survpdaydata <- prep_pdaydata(survpdaydata,survperdata)
+  survtourdata <- assignLoad(paste0(surveytourfile,".Rdata"))
+  survtripdata <- assignLoad(paste0(surveytripfile,".Rdata"))
+
+  survpdaydata <- prep_pdaydata(survpdaydata,survperdata,survtourdata,survtripdata,"survey")
   write_tables(daypatmodelout,survpdaydata,daypatmodelfile1,"survey")
   rm(survpdaydata)
   
-  survtourdata <- assignLoad(paste0(surveytourfile,".Rdata"))
   survtourdata <- prep_tourdata(survtourdata,survperdata)
   write_tables(daypatmodelout,survtourdata,daypatmodelfile2,"survey")
   rm(survtourdata)
   
-  survtripdata <- assignLoad(paste0(surveytripfile,".Rdata"))
   survtripdata <- prep_tripdata(survtripdata,survperdata)
   write_tables(daypatmodelout,survtripdata,daypatmodelfile3,"survey")
   rm(survperdata,survtripdata)
@@ -172,16 +234,17 @@ if(prepDaySim)
   rm(dshhdata)
   
   dspdaydata <- assignLoad(paste0(dspdayfile,".Rdata"))
-  dspdaydata <- prep_pdaydata(dspdaydata,dsperdata)
+  dstourdata <- assignLoad(paste0(dstourfile,".Rdata"))
+  dstripdata <- assignLoad(paste0(dstripfile,".Rdata"))
+
+  dspdaydata <- prep_pdaydata(dspdaydata,dsperdata,dstourdata,dstripdata,"model")
   write_tables(daypatmodelout,dspdaydata,daypatmodelfile1,"daysim")
   rm(dspdaydata)
 
-  dstourdata <- assignLoad(paste0(dstourfile,".Rdata"))
   dstourdata <- prep_tourdata(dstourdata,dsperdata)
   write_tables(daypatmodelout,dstourdata,daypatmodelfile2,"daysim")
   rm(dstourdata)
   
-  dstripdata <- assignLoad(paste0(dstripfile,".Rdata"))
   dstripdata <- prep_tripdata(dstripdata,dsperdata)
   write_tables(daypatmodelout,dstripdata,daypatmodelfile3,"daysim")
   rm(dsperdata,dstripdata)

@@ -85,39 +85,41 @@ STEPS:
 	//RunMacro("ConverSkimsToOMX", Args) //TODO: do not use yet
     
     // number of daysim iterations
-    itercount = 3
+	//removed shadow pricing runs as districts constants are used in work location. stable shadow prices are used as inputs
+    itercount = 1
     
     path_info = SplitPath(Scen_Dir)
     drive = path_info[1]
+
+	RunMacro("HwycadLog", {"Copy DaySim inputs in feedback loop " + i2s(loop), null})
+	
+	// copy roster file to outputs folder
+	infile = DaySimDir + "inputs\\nashville-roster_matrix.csv"
+	outfile = OutDir + "nashville-roster_matrix.csv"
+	CopyFile(infile,outfile)
+	
+	// copy roster combination file to outputs folder
+	infile = DaySimDir + "inputs\\nashville_roster.combinations.csv"
+	outfile = OutDir + "nashville_roster.combinations.csv"
+	CopyFile(infile,outfile)    
+
+	// copy shadow_prices.txt to working folder
+	infile = DaySimDir + "inputs\\shadow_prices.txt"
+	file_info = GetFileInfo(infile)
+	if file_info != null then do
+		outfile = DaySimDir + "working\\shadow_prices.txt"
+		CopyFile(infile,outfile) 
+	end
+
+	// copy park_and_ride_shadow_prices.txt to working folder
+	infile = DaySimDir + "inputs\\park_and_ride_shadow_prices.txt"
+	file_info = GetFileInfo(infile)
+	if file_info != null then do
+		outfile = DaySimDir + "working\\park_and_ride_shadow_prices.txt"
+		CopyFile(infile,outfile) 
+	end
     
     if loop=1 then do
-		RunMacro("HwycadLog", {"Copy DaySim inputs in feedback loop " + i2s(loop), null})
-        
-		// copy roster file to outputs folder
-        infile = DaySimDir + "inputs\\nashville-roster_matrix.csv"
-        outfile = OutDir + "nashville-roster_matrix.csv"
-        CopyFile(infile,outfile)
-        
-        // copy roster combination file to outputs folder
-        infile = DaySimDir + "inputs\\nashville_roster.combinations.csv"
-        outfile = OutDir + "nashville_roster.combinations.csv"
-        CopyFile(infile,outfile)    
-    
-        // copy shadow_prices.txt to working folder
-        infile = DaySimDir + "inputs\\shadow_prices.txt"
-        file_info = GetFileInfo(infile)
-        if file_info != null then do
-            outfile = DaySimDir + "working\\shadow_prices.txt"
-            CopyFile(infile,outfile) 
-        end
- 
-        // copy park_and_ride_shadow_prices.txt to working folder
-        infile = DaySimDir + "inputs\\park_and_ride_shadow_prices.txt"
-        file_info = GetFileInfo(infile)
-        if file_info != null then do
-            outfile = DaySimDir + "working\\park_and_ride_shadow_prices.txt"
-            CopyFile(infile,outfile) 
-        end
 		
 		// create properties file
 		properties_template = DaySimDir + "Configuration_template.properties"
@@ -330,7 +332,6 @@ Macro "FormatAssignmentInputs" (Args)
 	UpdateProgressBar("Joining trip and tour files ... ", )
 	RunMacro("JoinDaySimTripTourFiles")
 
-	//type = "Transit"
 	Auto = True
 	Transit = True
 
@@ -408,7 +409,8 @@ Macro "FormatAssignmentInputs" (Args)
 		factrips = CreateExpression(tripvw, "factrips", "if MODE = 6 then TREXPFAC*1 else 0", {"Integer", 1, 0})
 
 		//Time of Day
-		trtime = CreateExpression(tripvw, "trtime", "if (HALF = 1) then ARRTM else DEPTM", {"Integer", 4, 0})
+		trtime = CreateExpression(tripvw, "trtime", "if (HALF = 1) then ARRTM else DEPTM", {"Integer", 4, 0})  //causing problems with commute rail. some trips are in MD and OP and aren't being assigned
+		//trtime = CreateExpression(tripvw, "trtime", " 0.5*(DEPTM + ARRTM)", {"Integer", 4, 0}) //didn't work
 		rsgtod = CreateExpression(tripvw, "rsgtod", "if trtime >= 0 and trtime < 360 then 4 else if trtime >= 360 and trtime < 540 then 1 else if trtime >= 540 and trtime < 900 then 2 else if trtime >= 900 and trtime < 1140 then 3 else if trtime >= 1140 and trtime <= 1440 then 4" , {"Integer", 1, 0}) 
 
 		core01= " if TMODETP = 6 and PATHTYPE = 3 then 'WLKLOCBUS'"
@@ -459,6 +461,10 @@ Macro "FormatAssignmentInputs" (Args)
 		arr = GetExpressions(tripvw)
 		for i = 1 to arr.length do DestroyExpression(tripvw+"."+arr[i]) end
 		CloseView(tripvw)
+		
+		//for commuter rail trips - include all CR trips by adding MD to AM and OP to PM. CR is active only in AM and PM periods. This is an issue for PNR.
+		RunMacro("UpdateComuterRailTrips")
+		
 	end
 	
 	endtime = RunMacro("RuntimeLog", {"DaySim Trip Tables", starttime})
@@ -500,18 +506,7 @@ Macro "Read Trips" (tod)
         DeptTime = StringToReal(values[6])
         ArrTime = StringToReal(values[7])
 		TripExpFactor = StringToReal(values[8])
-		TransitAccess = StringToInt(values[9]) //tmodetp - from tour file		
-		
-		//with only trip file - old method
-        //Half = StringToInt(values[7]) // 1-outbound, 2-inbound
-        //OTaz = StringToInt(values[15])
-        //DTaz = StringToInt(values[17])
-        //Mode = StringToInt(values[18])
-        //PathType = StringToInt(values[19])
-        //DeptTime = StringToReal(values[21])
-        //ArrTime = StringToReal(values[22])
-		//TripExpFactor = StringToReal(values[28])
-		//TransitAccess = StringToInt(values[50]) //tmodetp - from tour file
+		TransitAccess = StringToInt(values[9]) //tmodetp - from tour file				
         Trip = 0
         
         if (Half = 1) then TripTime = ArrTime
@@ -828,5 +823,34 @@ STEPS:
             end
         end 
     end
+
+EndMacro
+
+Macro "UpdateComuterRailTrips" (Args)
+    shared Scen_Dir, OutDir, Modes, AccessAssgnModes, Periods // input files
+	shared mc_hbo, mc_nhbw, mc_nhbo,purposes, purposesPeriod, AirPeriodFactors 
+
+/*
+PURPOSE:
+- Add MD trip to AM and OP trips to PM
+*/
+		
+	RunMacro("SetParameters", Args)	
+	tablenames = {"WLKCOMRAIL","PNRCOMRAIL","KNRCOMRAIL"}
+	for i=1 to tablenames.length do	
+		tablename = tablenames[i]
+		RunMacro("TCB Init")
+		//AM
+		mc1 = RunMacro("TCB Create Matrix Currency", OutDir + "AMTripsByMode.mtx", tablename,,)
+		mc2 = RunMacro("TCB Create Matrix Currency", OutDir + "MDTripsByMode.mtx", tablename,,)
+		mc1 := nz(mc1) + nz(mc2)
+		mc2 := 0
+	
+		//PM
+		mc3 = RunMacro("TCB Create Matrix Currency", OutDir + "PMTripsByMode.mtx", tablename,,)
+		mc4 = RunMacro("TCB Create Matrix Currency", OutDir + "OPTripsByMode.mtx", tablename,,)
+		mc3 := nz(mc3) + nz(mc4)
+		mc4 := 0
+	end
 
 EndMacro

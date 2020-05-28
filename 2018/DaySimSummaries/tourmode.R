@@ -6,7 +6,14 @@ print("Tour Mode Summary...Started")
 prep_perdata <- function(perdata,hhdata)
 {
   hhdata[,vehcat:=ifelse(hhvehs>0,1,0)]
-  perdata <- merge(perdata,hhdata[,list(hhno,vehcat)],by="hhno",all.x=T)
+  perdata[,hh16cat:=ifelse(pagey>=16,1,0)]
+  aggper <- perdata[,list(hh16cat=sum(hh16cat)),by=hhno]
+  hhdata <- merge(hhdata,aggper,by="hhno")
+  
+  hhdata[,carsLessThnWrks:=ifelse((hhvehs>0) & (hhvehs<hhwkrs),1,0)]
+  hhdata[,carsLessThnDrivers:=ifelse((hhvehs>0) & (hhvehs<hh16cat),1,0)]
+  
+  perdata <- merge(perdata,hhdata[,list(hhno,vehcat,carsLessThnWrks,carsLessThnDrivers)],by="hhno",all.x=T)
   return(perdata)
 }
 
@@ -84,7 +91,7 @@ if(prepSurvey)
   survperdata <- assignLoad(paste0(surveyperfile,".Rdata"))
   survhhdata <- assignLoad(paste0(surveyhhfile,".Rdata"))
   survperdata <- prep_perdata(survperdata,survhhdata)
-  survperdata <- survperdata[,c("hhno","pno","pptyp","vehcat","psexpfac"),with=F]
+  survperdata <- survperdata[,c("hhno","pno","pptyp","vehcat","carsLessThnWrks","carsLessThnDrivers","psexpfac"),with=F]
   rm(survhhdata)
   
   survtourdata <- assignLoad(paste0(surveytourfile,".Rdata"))
@@ -102,7 +109,7 @@ if(prepDaySim)
   dsperdata <- assignLoad(paste0(dsperfile,".Rdata"))
   dshhdata <- assignLoad(paste0(dshhfile,".Rdata"))
   dsperdata <- prep_perdata(dsperdata,dshhdata)
-  dsperdata <- dsperdata[,c("hhno","pno","pptyp","vehcat","psexpfac"),with=F]
+  dsperdata <- dsperdata[,c("hhno","pno","pptyp","vehcat","carsLessThnWrks","carsLessThnDrivers","psexpfac"),with=F]
   rm(dshhdata)
   
   dstourdata <- assignLoad(paste0(dstourfile,".Rdata"))

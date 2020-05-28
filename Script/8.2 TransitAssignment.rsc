@@ -378,7 +378,8 @@ Macro "Rte_boarding"
 			route_modeid_list[num_routes] = route_info_view.Mode
 			route_fare_list[num_routes] = route_info_view.Fare
 			route_dir_list[num_routes] = route_info_view.Direction
-			route_track_list[num_routes] = route_info_view.Track
+			//route_track_list[num_routes] = route_info_view.Track
+			route_track_list[num_routes] = route_info_view.RouteNum
 
 			rec1 = GetNextRecord(view_set1, null, null)
     end

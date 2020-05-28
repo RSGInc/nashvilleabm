@@ -114,28 +114,25 @@ Macro "02_VTripGen" (tazvw)
 	zonevw = OpenTable("zonevw", "FFB", {mf.output_path + "ZonalSE.bin",})
 	SetView(zonevw)
 
-	{TAZID,HH,Tot_Emp,SpecGen,IntDens,AvgInc,Hospital,Hotel,UgStd,SpecCoeff} = GetDataVectors(zonevw + "|", {"TAZID","hh_p","emptot_p","Spec_Gen","IntDensx1000000","AvgInc","HOSPITAL_BEDS","HOTEL_BEDS","ENROLL_UG","SpecGen_Coeff"}, {{"Sort Order",{{"TAZID","Ascending"}}}} )
+
+	{TAZID,HH,Tot_Emp,SpecGen,IntDens,AvgInc,Hospital,UgStd,SpecCoeff} = GetDataVectors(zonevw + "|", {"TAZID","hh_p","emptot_p","Spec_Gen","IntDensx1000000","AvgInc","HOSPITAL_BEDS","ENROLL_UG","SpecGen_Coeff"}, {{"Sort Order",{{"TAZID","Ascending"}}}} )
 
 	SetView(tazvw)
 	
 	//Trip production coefficients
-	
-	HH_Coef = 0.02144777
-	Inc_Coef = 0.000072305
-	Emp_Low_Coef = 0.04634144
-	Emp_High_Coef = 0.0044984915
-	Hotel_Coef = 0.018180335
-	Hospital_Coef = 0.2816103
-	StdUg_Coef = 0.009067285
-	IntDens_Coef = 12980.165
+	HH_Coef = 0.0189
+	Inc_Coef = 0.0000748
+	Emp_Low_Coef = 0.0468
+	Emp_High_Coef = 0.00573			 
+	Hospital_Coef = 0.274
+	StdUg_Coef = 0.00887
+	IntDens_Coef = 13759
 
 	//Productions & Attractions
-
-	Visitor_Prod = if Tot_Emp < 5000 then (HH_Coef * HH + Emp_Low_Coef * Tot_Emp + Inc_Coef * AvgInc + Hotel_Coef * Hotel + Hospital_Coef * Hospital + IntDens * IntDens_Coef/1000000 + StdUg_Coef * UgStd + SpecGen*Tot_Emp*SpecCoeff) else 
-				  (HH_Coef * HH + Emp_High_Coef * Tot_Emp + Inc_Coef * AvgInc + Hotel_Coef * Hotel + Hospital_Coef * Hospital + IntDens * IntDens_Coef/1000000 + StdUg_Coef * UgStd + SpecGen*Tot_Emp*SpecCoeff) 	
+	Visitor_Prod = if Tot_Emp < 5000 then (HH_Coef * HH + Emp_Low_Coef * Tot_Emp + Inc_Coef * AvgInc + Hospital_Coef * Hospital + IntDens * IntDens_Coef/1000000 + StdUg_Coef * UgStd + SpecGen*Tot_Emp*SpecCoeff) else 
+			  (HH_Coef * HH + Emp_High_Coef * Tot_Emp + Inc_Coef * AvgInc + Hospital_Coef * Hospital + IntDens * IntDens_Coef/1000000 + StdUg_Coef * UgStd + SpecGen*Tot_Emp*SpecCoeff) 	
 
 	Visitor_Attr = Visitor_Prod
-			   
 
 	SetDataVectors(V_TG + "|", {{"V_Prod",Visitor_Prod},{"V_Attr",Visitor_Attr}},{{"Sort Order",{{"TAZID","Ascending"}}}})
 

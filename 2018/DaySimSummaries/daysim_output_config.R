@@ -1,13 +1,11 @@
 #DaySim Version - DelPhi or C#
 dsVersion                                 = "C#"
 
-parcelfile                                = "../DaySim/Nashville_mzbuffer_allstreets.dat"
 dshhfile                                  = "../DaySim/outputs/_household.tsv"
 dsperfile                                 = "../DaySim/outputs/_person.tsv"
 dspdayfile                                = "../DaySim/outputs/_person_day.tsv"
 dstourfile                                = "../DaySim/outputs/_tour.tsv"
 dstripfile                                = "../DaySim/outputs/_trip.tsv"
-dstriplistfile                            = "../DaySim/outputs/Tdm_trip_list.csv"
 
 # Nashville Survey
 surveyhhfile                              = "./data/nash_hrecx_rewt.dat"
@@ -15,11 +13,6 @@ surveyperfile                             = "./data/nash_precx_rewt.dat"
 surveypdayfile                            = "./data/nash_pdayx.dat"
 surveytourfile                            = "./data/nash_tourx.dat"
 surveytripfile                            = "./data/nash_tripx.dat"
-
-amskimfile                                = "../DaySim/hwyskim_am.TXT"
-mdskimfile                                = "../DaySim/hwyskim_md.TXT"
-pmskimfile                                = "../DaySim/hwyskim_pm.TXT"
-evskimfile                                = "../DaySim/hwyskim_op.TXT"
 
 tazcountycorr                             = "./data/county_districts_nash.csv"
 
@@ -43,6 +36,7 @@ vehavmodelout                             = "VehAvailability.xlsm"
 daypatmodelout                            = "DayPattern.xlsm"
 tourdestmodelout                          = c("TourDestination_Escort.xlsm","TourDestination_PerBus.xlsm","TourDestination_Shop.xlsm",
                                               "TourDestination_Meal.xlsm","TourDestination_SocRec.xlsm")
+tourdestmodelout_fresno                   = c("TourDestination_Maintenance.xlsm","TourDestination_Discretionary.xlsm")											  
 tourdestwkbmodelout                       = "TourDestination_WrkBased.xlsm"
 tourmodemodelout                          = "TourMode.xlsm"
 tourtodmodelout                           = "TourTOD.xlsm"

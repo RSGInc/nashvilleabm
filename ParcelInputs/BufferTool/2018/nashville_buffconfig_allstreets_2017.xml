@@ -4,7 +4,7 @@
     <FILEPATHS>
       <ParcelFile>E:\Projects\Clients\Nashville\Model\BaseYear\Development\ABM_TCAD8_TAZSPLIT\ParcelInputs\BufferTool\2018\nashville_landuse_2017.csv</ParcelFile>
       <IntersectionFile>E:\Projects\Clients\Nashville\Model\BaseYear\Development\ABM_TCAD8_TAZSPLIT\ParcelInputs\BufferTool\2018\intersections_nashville.txt</IntersectionFile>
-      <TransitStopsFile>E:\Projects\Clients\Nashville\Model\BaseYear\Development\ABM_TCAD8_TAZSPLIT\ParcelInputs\BufferTool\2018\transit_stops_2018.csv</TransitStopsFile>
+      <TransitStopsFile>E:\Projects\Clients\Nashville\Model\BaseYear\Development\ABM_TCAD8_TAZSPLIT\ParcelInputs\BufferTool\2018\transit_stops_2017.csv</TransitStopsFile>
       <OpenSpacesFile />
       <CircuityFile />
       <NodeDistanceType>DaySim Format</NodeDistanceType>

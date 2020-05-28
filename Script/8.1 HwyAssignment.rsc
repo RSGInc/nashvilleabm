@@ -40,17 +40,6 @@ Macro "Pre_Assignment" (Args)
 	nlayer = layers[1]
 	db_linklyr = highway_layer + "|" + llayer
 
-	// Create temp maps and matrices  
-	//temp_map = CreateMap("temp",{{"scope",Scope(Coord(-80000000, 44500000), 200.0, 100.0, 0)}})
-	//temp_layer = AddLayer(temp_map,llayer,hwy_db,llayer)
-	//temp_layer = AddLayer(temp_map,nlayer,hwy_db,nlayer)
-	//temp_hh_pa_mtx= Scen_Dir+ "outputs\\temp_hh_pa.mtx"
-	//temp_hh_od_mtx= Scen_Dir+ "outputs\\temp_hh_od.mtx"
-	
-	// 1 open freight OD
-	// 2 open non-household OD
-	// 3 open mode choice PA 
-	// 4 mode choice PA to OD
 	// combine all OD 
 	intitialization:
 	nonhh    = {"IICOM", "IISU", "IIMU","IEAUTO", "IESU","EEMU","EESU"}
@@ -76,64 +65,7 @@ Macro "Pre_Assignment" (Args)
 	
 	RunMacro("HwycadLog", {"Add external auto demand ", ""})
 	RunMacro("Add External Auto Demand", Args)	   //AUTO by 4 time periods
-		
-	
- /*
-	// Convert PA to OD
-	Hourly=OpenTable("Hourly","FFB",{HourlyTable,})    
-    
-    for p=1 to periods2.length do
-        UpdateProgressBar("Assignment - Time of day PA2OD- "+ periods1[p], )
-	
-		Opts = null
-	    Opts.Input.[PA Matrix Currency] = {PA_Matrix, , , }
-	    Opts.Input.[Lookup Set] = {HourlyTable, Hourly}
-	    Opts.Field.[Matrix Cores] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 23, 24, 25, 26, 27, 28}
-	    Opts.Field.[Adjust Fields] = {, , , , , , , , , , , , , , , }
-	    Opts.Field.[Peak Hour Field] = {, , , , , , , , , , , , , , ,}
-	    Opts.Field.[Hourly AB Field] = {
-            "DEP_IICOM", "DEP_IISU", "DEP_IIMU", "DEP_IEAUTO", "DEP_IESU", "DEP_EEAUTO", "DEP_EESU",
-            "DEP_HBO", "DEP_HBO", "DEP_HBO", 
-	    	"DEP_NHBO", "DEP_NHBO", "DEP_NHBO", 
-	    	"DEP_NHBW", "DEP_NHBW", "DEP_NHBW"}
-	    Opts.Field.[Hourly BA Field] = {
-            "RET_IICOM", "RET_IISU", "RET_IIMU", "RET_IEAUTO", "RET_IESU", "RET_EEAUTO", "RET_EESU",
-            "RET_HBO", "RET_HBO", "RET_HBO",  
-	    	"RET_NHBO", "RET_NHBO", "RET_NHBO", 
-	    	"RET_NHBW", "RET_NHBW", "RET_NHBW"}
-	    Opts.Global.[Method Type] = "PA to OD"
-	    Opts.Global.[Start Hour] = periods2[p]
-	    Opts.Global.[End Hour] = periods2[p]
-	    Opts.Global.[Cache Size] = 500000
-	    Opts.Global.[Average Occupancies] = {
-            1, 1, 1, 1, 1, 1, 1,
-            1, 2, 3.5, 
-	    	1, 2, 3.5, 
-	    	1, 2, 3.5}
-	    	
-	    Opts.Global.[Adjust Occupancies] = {"No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No"}
-	    Opts.Global.[Peak Hour Factor] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-	    Opts.Flag.[Separate Matrices] = "Yes"
-        Opts.Flag.[Convert to Vehicles] = {
-            "No", "No", "No", "No", "No", "No", "No", 
-            "No", "Yes", "Yes", 
-            "No", "Yes", "Yes", 
-            "No", "Yes", "Yes"}
-
-	    Opts.Flag.[Include PHF] = {"No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No"}
-	    Opts.Flag.[Adjust Peak Hour] = {"No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No"}
-	    Opts.Output.[Output Matrix].Label = "PA to OD"
-	    Opts.Output.[Output Matrix].Compression = 1
-	    Opts.Output.[Output Matrix].[File Name] = OD[p]
-	    ret_value = RunMacro("TCB Run Procedure", "PA2OD", Opts, &Ret)
-		if !ret_value then goto quit
-	end
-*/   
-    // Fill daysim person trips To PA matrix
-    //RunMacro("Fill Person Trips", Args)   
-   
-	//periods2={" (0-1)"," (1-2)"," (2-3)"," (3-4)"} //for the name in the OD matrix files
-	
+			
 	am_od_matrix = OpenMatrix(Args.[AM OD Matrix],)
 	pm_od_matrix = OpenMatrix(Args.[PM OD Matrix],)
 	md_od_matrix = OpenMatrix(Args.[MD OD Matrix],)
@@ -141,7 +73,6 @@ Macro "Pre_Assignment" (Args)
 	allod={am_od_matrix,md_od_matrix,pm_od_matrix,op_od_matrix}
     
 	// add 4+4 cores to the OD matrix for the vehicle classes assignment
-	//labels_vehicle={"Passenger","Commercial","SingleUnit","MU","Preload_EIMU","Preload_IEMU","Preload_EEMU","Preload_IESU","Preload_EESU","Preload_Pass","HOV"}
 	labels_vehicle={"Passenger","Commercial","SingleUnit","MU","Preload_EIMU","Preload_IEMU","Preload_EEMU","Preload_IESU","Preload_EESU","Preload_Pass","HOV","HOV2","HOV3","Autos"}
   
 	for p=1 to periods1.length do
@@ -158,11 +89,7 @@ Macro "Pre_Assignment" (Args)
 		
 			AddMatrixCore(allod[p], labels_vehicle[i])
 		end
-        
-        // temp matrix
-        //FileInfo = GetFileInfo(OD[p])
-        //temp_matrix = Scen_Dir + "outputs\\temp_" + FileInfo[1]
-                    
+                            
         RunMacro("TCB Init")
         mc1 = RunMacro("TCB Create Matrix Currency", OD[p], "Passenger", "Rows", "Cols")
         ok = (mc1 <> null)
@@ -179,43 +106,7 @@ Macro "Pre_Assignment" (Args)
         mc4 = RunMacro("TCB Create Matrix Currency", OD[p], "Preload_PASS", "Rows", "Cols")
         ok = (mc4 <> null)
         if !ok then goto quit
-/*
-        mc5 = RunMacro("TCB Create Matrix Currency", OD[p], "HBO_DA"+periods2[p], "Rows", "Cols")
-        ok = (mc5 <> null)
-        if !ok then goto quit
-
-        mc6 = RunMacro("TCB Create Matrix Currency", OD[p], "HBO_SR2"+periods2[p], "Rows", "Cols")
-        ok = (mc6 <> null)
-        if !ok then goto quit
-
-        mc7 = RunMacro("TCB Create Matrix Currency", OD[p], "HBO_SR3"+periods2[p], "Rows", "Cols")
-        ok = (mc7 <> null)
-        if !ok then goto quit
-
-        mc8 = RunMacro("TCB Create Matrix Currency", OD[p], "NHBO_DA"+periods2[p], "Rows", "Cols")
-        ok = (mc8 <> null)
-        if !ok then goto quit
-
-        mc9 = RunMacro("TCB Create Matrix Currency", OD[p], "NHBO_SR2"+periods2[p], "Rows", "Cols")
-        ok = (mc9 <> null)
-        if !ok then goto quit
-
-        mc10 = RunMacro("TCB Create Matrix Currency", OD[p], "NHBO_SR3"+periods2[p], "Rows", "Cols")
-        ok = (mc10 <> null)
-        if !ok then goto quit
-
-        mc11 = RunMacro("TCB Create Matrix Currency", OD[p], "NHBW_DA"+periods2[p], "Rows", "Cols")
-        ok = (mc11 <> null)
-        if !ok then goto quit
-
-        mc12 = RunMacro("TCB Create Matrix Currency", OD[p], "NHBW_SR2"+periods2[p], "Rows", "Cols")
-        ok = (mc12 <> null)
-        if !ok then goto quit
-
-        mc13 = RunMacro("TCB Create Matrix Currency", OD[p], "NHBW_SR3"+periods2[p], "Rows", "Cols")        
-        ok = (mc13 <> null)
-        if !ok then goto quit
- */       
+		       
         mc14 = RunMacro("TCB Create Matrix Currency", OD[p], "Passenger_SOV", "Rows", "Cols")
         ok = (mc14 <> null)
         if !ok then goto quit
@@ -251,13 +142,13 @@ Macro "Pre_Assignment" (Args)
         HOVF2=1-HOVF
 		
 		// Passenger not using HOV lane
-		mc1 := nz(mc5) + HOVF*nz(mc6) + HOVF*nz(mc7) + nz(mc8) + HOVF*nz(mc9) + HOVF*nz(mc10) + nz(mc11) + HOVF*nz(mc12) + HOVF*nz(mc13) + nz(mc14) + HOVF*nz(mc15) + HOVF*nz(mc16)
+		mc1 := nz(mc14) + HOVF*nz(mc15) + HOVF*nz(mc16)
 		
 		//HOV2
-		mc17:=HOVF2*(nz(mc6)+ nz(mc9)+ nz(mc12)+ nz(mc15))
+		mc17:=HOVF2*(nz(mc15))
 		
 		//HOV3+
-		mc18:=HOVF2*(nz(mc7)+ nz(mc10)+ nz(mc13)+ nz(mc16))
+		mc18:=HOVF2*(nz(mc16))
 		
 		//HOV = HOV2+HOV3
 		mc19 := mc17 + mc18
@@ -1141,7 +1032,8 @@ Macro "PostProcessor" (Args)
 		})
 	
 	SetView(llayer)
-	qry="Select * where Assignment_Loc=1 and (County='47037' or County='47119' or County='47147' or County='47149' or County='47165' or County='47187' or County='47189')"
+	qry="Select * where Assignment_Loc=1"   //keep all links used in assignment
+	//qry="Select * where Assignment_Loc=1 and (County='47037' or County='47119' or County='47147' or County='47149' or County='47165' or County='47187' or County='47189')"
 	n=SelectByQuery("Selection", "Several", qry,)
 	if n=0 then goto quit
 	

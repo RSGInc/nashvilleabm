@@ -837,8 +837,8 @@ Macro "BuildTransitPaths"
                 end
 								
                 Opts.Field.[Route Headway] 		  = Periods[iper] + "_HDWY"
-                //Opts.Field.[Mode Fare]            = "FARE"
-				Opts.Field.[Route Fare] 		  = "Fare"
+                Opts.Field.[Mode Fare]            = "FARE"
+				//Opts.Field.[Route Fare] 		  = "Fare"
                 Opts.Field.[Mode Imp Weight]      = Periods[iper]+"_LNKIMP"
                 Opts.Field.[Mode IWait Weight]    = "WAIT_IW"
                 Opts.Field.[Mode XWait Weight]    = "WAIT_XW"

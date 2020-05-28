@@ -1,25 +1,25 @@
-INFO: DaySim Buffering Tool Log Started: Thursday, March 26, 2020 @ 1:59:10 AM
-INFO: Started buffering process: Thursday, March 26, 2020 @ 1:59:10 AM
-INFO: Started buffering process: Thursday, March 26, 2020 @ 1:59:10 AM
-INFO: Started reading node data: Thursday, March 26, 2020 @ 1:59:10 AM
-INFO: Finished reading node data: Thursday, March 26, 2020 @ 1:59:11 AM
-INFO: Started reading parcel data: Thursday, March 26, 2020 @ 1:59:11 AM
-INFO: Finished reading parcel data: Thursday, March 26, 2020 @ 1:59:11 AM
-INFO: Started reading intersection data: Thursday, March 26, 2020 @ 1:59:11 AM
-INFO: Finished reading intersection data: Thursday, March 26, 2020 @ 1:59:11 AM
-INFO: Started reading transit stops data: Thursday, March 26, 2020 @ 1:59:11 AM
-INFO: Finished reading transit stops data: Thursday, March 26, 2020 @ 1:59:11 AM
-INFO: Started reading open spaces data: Thursday, March 26, 2020 @ 1:59:11 AM
-INFO: Finished reading open spaces data: Thursday, March 26, 2020 @ 1:59:11 AM
-INFO: Started creating node correspondences: Thursday, March 26, 2020 @ 1:59:11 AM
-INFO: Started creating parcel-node correspondence: Thursday, March 26, 2020 @ 1:59:11 AM
-INFO: Finished creating parcel-node correspondence: Thursday, March 26, 2020 @ 1:59:21 AM
-INFO: Started creating intersection-node correspondence: Thursday, March 26, 2020 @ 1:59:21 AM
-INFO: Started creating stop-node correspondence: Thursday, March 26, 2020 @ 2:00:29 AM
-INFO: Finished creating node correspondences: Thursday, March 26, 2020 @ 2:00:31 AM
-INFO: Started precalculating distance decay weights: Thursday, March 26, 2020 @ 2:00:31 AM
-INFO: Finished precalculating distance decay weights: Thursday, March 26, 2020 @ 2:00:31 AM
-INFO: Started writing out buffered parcel data: Thursday, March 26, 2020 @ 2:00:31 AM
-INFO: Reading node-node distance information from E:\Projects\Clients\Nashville\Model\BaseYear\Development\ABM_TCAD8_TAZSPLIT\ParcelInputs\BufferTool\2018\node_node_distances.dat: Thursday, March 26, 2020 @ 2:00:32 AM
-INFO: Finished writing out buffered parcel data: Thursday, March 26, 2020 @ 2:05:21 AM
-INFO: Finished buffering process: Thursday, March 26, 2020 @ 2:05:21 AM
+INFO: DaySim Buffering Tool Log Started: Thursday, May 28, 2020 @ 3:14:48 PM
+INFO: Started buffering process: Thursday, May 28, 2020 @ 3:14:48 PM
+INFO: Started buffering process: Thursday, May 28, 2020 @ 3:14:48 PM
+INFO: Started reading node data: Thursday, May 28, 2020 @ 3:14:48 PM
+INFO: Finished reading node data: Thursday, May 28, 2020 @ 3:14:48 PM
+INFO: Started reading parcel data: Thursday, May 28, 2020 @ 3:14:48 PM
+INFO: Finished reading parcel data: Thursday, May 28, 2020 @ 3:14:48 PM
+INFO: Started reading intersection data: Thursday, May 28, 2020 @ 3:14:48 PM
+INFO: Finished reading intersection data: Thursday, May 28, 2020 @ 3:14:49 PM
+INFO: Started reading transit stops data: Thursday, May 28, 2020 @ 3:14:49 PM
+INFO: Finished reading transit stops data: Thursday, May 28, 2020 @ 3:14:49 PM
+INFO: Started reading open spaces data: Thursday, May 28, 2020 @ 3:14:49 PM
+INFO: Finished reading open spaces data: Thursday, May 28, 2020 @ 3:14:49 PM
+INFO: Started creating node correspondences: Thursday, May 28, 2020 @ 3:14:49 PM
+INFO: Started creating parcel-node correspondence: Thursday, May 28, 2020 @ 3:14:49 PM
+INFO: Finished creating parcel-node correspondence: Thursday, May 28, 2020 @ 3:14:58 PM
+INFO: Started creating intersection-node correspondence: Thursday, May 28, 2020 @ 3:14:58 PM
+INFO: Started creating stop-node correspondence: Thursday, May 28, 2020 @ 3:16:07 PM
+INFO: Finished creating node correspondences: Thursday, May 28, 2020 @ 3:16:08 PM
+INFO: Started precalculating distance decay weights: Thursday, May 28, 2020 @ 3:16:08 PM
+INFO: Finished precalculating distance decay weights: Thursday, May 28, 2020 @ 3:16:08 PM
+INFO: Started writing out buffered parcel data: Thursday, May 28, 2020 @ 3:16:08 PM
+INFO: Reading node-node distance information from E:\Projects\Clients\Nashville\Model\BaseYear\Development\ABM_TCAD8_TAZSPLIT\ParcelInputs\BufferTool\2018\node_node_distances.dat: Thursday, May 28, 2020 @ 3:16:08 PM
+INFO: Finished writing out buffered parcel data: Thursday, May 28, 2020 @ 3:20:46 PM
+INFO: Finished buffering process: Thursday, May 28, 2020 @ 3:20:46 PM
