@@ -3,35 +3,35 @@ Created by ALOGIT version 4                             14:02:09 on  2 Apr 12
 END
    1  costutil  F   0.528792256000
    2  timeutil  F   0.558792764000
-  10  dt-const  F   -2.678814293661
-  11 dt-nocars  T   -1.629585381763
-  13 dt-carsltw F   0.713267861973
-  20  wt-const  F   -2.149966558945
-  21 wt-nocars  F   1.431791909664
+  10  dt-const  F   -3.000720271630
+  11 dt-nocars  T   -1.442858441531
+  13 dt-carsltw F   0.339128989031
+  20  wt-const  F   -2.214458371515
+  21 wt-nocars  F   1.542129991534
   22 wt-carsltd F   1.016680004923
-  30  s3-const  F   -1.328387216245
+  30  s3-const  F   -1.318469147062
   31  sr-hhcu5  F   0.323318837000
   32  sr-hh515  F   0.278826269000
   35 sr-lndist  F   -0.135816440000
-  36 s3-nocars  F   0.401180437587
+  36 s3-nocars  F   0.221506127287
   37 s3-carsltd F   -0.389347227373
   38 s3-onephh  F   -0.617533638000
   39 s3-twophh  F   -1.245328343000
-  40  s2-const  F   -0.656422089010
-  41 sr-nocars  F   -4.437994125309
+  40  s2-const  F   -0.658759180503
+  41 sr-nocars  F   -4.489794706050
   42 sr-carsltd F   0.462420295470
   48 s2-onephh  F   -0.393323275000
-  50  da-const  F   2.256190432823
-  53 da-carsltw F   -2.016136903229
+  50  da-const  F   2.258981640270
+  53 da-carsltw F   -2.040881144907
   54 da-incu25  F   -0.174154677000
-  60  bi-const  F   -8.359448864724
+  60  bi-const  F   -8.415603120522
   61  bi-male   F   0.766172386000
   63 bi-ageo50  F   -0.661876145000
-  67 bi-nocars  F   -1.932053183256
+  67 bi-nocars  F   -2.126864700992
   68 bi-carsltd F   0.755865637503
-  70 wk-const   F   1.032846442858
+  70 wk-const   F   1.043171365831
   71  wk-male   F   -0.659709011000
-  77 wk-nocars  F   0.896884017729
+  77 wk-nocars  F   0.611419654425
   78 wk-carsltd F   5.394860025078
  100 wt-inc75p  F   -5.002310731000
  124 tr-omixed  F   2.002310731000
