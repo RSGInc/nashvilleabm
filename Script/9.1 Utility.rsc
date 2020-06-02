@@ -603,17 +603,20 @@ Macro "Build Daily Trip Table" (daily_matrix_file, Args)
 	daily_matrix = OpenMatrix(daily_matrix_file,)
 	matrix_cores = GetMatrixCoreNames(daily_matrix)
 	
+	//set all cores to 0
 	RunMacro("TCB Init")
+	for core=1 to matrix_cores.Length do
+		mc_daily = RunMacro("TCB Create Matrix Currency", daily_matrix_file, matrix_cores[core], "Rows", "Cols")
+		mc_daily := 0
+	end
+	
+	//add all time periods
+	matrix_cores = {"Passenger", "Commercial", "SingleUnit", "MU", "Preload_EIMU", "Preload_IEMU", "Preload_EEMU","Preload_IESU","Preload_EESU","Preload_Pass","HOV","HOV2","HOV3"}
 	for p=1 to periods.length do
 		for core=1 to matrix_cores.Length do
-			if (p=1) then do 
-				mc_daily = RunMacro("TCB Create Matrix Currency", daily_matrix_file, matrix_cores[core], "Rows", "Cols")
-			end
-			else do
-				mc_period = RunMacro("TCB Create Matrix Currency", OD[p], matrix_cores[core], "Rows", "Cols")
-				mc_daily := mc_daily + mc_period
-			end
-			
+			mc_daily = RunMacro("TCB Create Matrix Currency", daily_matrix_file, matrix_cores[core], "Rows", "Cols")
+			mc_period = RunMacro("TCB Create Matrix Currency", OD[p], matrix_cores[core], "Rows", "Cols")
+			mc_daily := nz(mc_daily) + nz(mc_period)
 		end	
 	end
 	
