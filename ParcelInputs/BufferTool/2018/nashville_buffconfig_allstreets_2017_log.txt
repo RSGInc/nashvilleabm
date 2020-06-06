@@ -1,25 +1,25 @@
-INFO: DaySim Buffering Tool Log Started: Sunday, May 31, 2020 @ 9:59:58 PM
-INFO: Started buffering process: Sunday, May 31, 2020 @ 9:59:58 PM
-INFO: Started buffering process: Sunday, May 31, 2020 @ 9:59:58 PM
-INFO: Started reading node data: Sunday, May 31, 2020 @ 9:59:58 PM
-INFO: Finished reading node data: Sunday, May 31, 2020 @ 9:59:58 PM
-INFO: Started reading parcel data: Sunday, May 31, 2020 @ 9:59:58 PM
-INFO: Finished reading parcel data: Sunday, May 31, 2020 @ 9:59:58 PM
-INFO: Started reading intersection data: Sunday, May 31, 2020 @ 9:59:58 PM
-INFO: Finished reading intersection data: Sunday, May 31, 2020 @ 9:59:59 PM
-INFO: Started reading transit stops data: Sunday, May 31, 2020 @ 9:59:59 PM
-INFO: Finished reading transit stops data: Sunday, May 31, 2020 @ 9:59:59 PM
-INFO: Started reading open spaces data: Sunday, May 31, 2020 @ 9:59:59 PM
-INFO: Finished reading open spaces data: Sunday, May 31, 2020 @ 9:59:59 PM
-INFO: Started creating node correspondences: Sunday, May 31, 2020 @ 9:59:59 PM
-INFO: Started creating parcel-node correspondence: Sunday, May 31, 2020 @ 9:59:59 PM
-INFO: Finished creating parcel-node correspondence: Sunday, May 31, 2020 @ 10:00:08 PM
-INFO: Started creating intersection-node correspondence: Sunday, May 31, 2020 @ 10:00:08 PM
-INFO: Started creating stop-node correspondence: Sunday, May 31, 2020 @ 10:01:17 PM
-INFO: Finished creating node correspondences: Sunday, May 31, 2020 @ 10:01:18 PM
-INFO: Started precalculating distance decay weights: Sunday, May 31, 2020 @ 10:01:18 PM
-INFO: Finished precalculating distance decay weights: Sunday, May 31, 2020 @ 10:01:18 PM
-INFO: Started writing out buffered parcel data: Sunday, May 31, 2020 @ 10:01:18 PM
-INFO: Reading node-node distance information from E:\Projects\Clients\Nashville\Model\BaseYear\Development\ABM_TCAD8_TAZSPLIT\ParcelInputs\BufferTool\2018\node_node_distances.dat: Sunday, May 31, 2020 @ 10:01:18 PM
-INFO: Finished writing out buffered parcel data: Sunday, May 31, 2020 @ 10:06:04 PM
-INFO: Finished buffering process: Sunday, May 31, 2020 @ 10:06:04 PM
+INFO: DaySim Buffering Tool Log Started: Friday, June 5, 2020 @ 4:19:25 AM
+INFO: Started buffering process: Friday, June 5, 2020 @ 4:19:25 AM
+INFO: Started buffering process: Friday, June 5, 2020 @ 4:19:25 AM
+INFO: Started reading node data: Friday, June 5, 2020 @ 4:19:25 AM
+INFO: Finished reading node data: Friday, June 5, 2020 @ 4:19:25 AM
+INFO: Started reading parcel data: Friday, June 5, 2020 @ 4:19:25 AM
+INFO: Finished reading parcel data: Friday, June 5, 2020 @ 4:19:25 AM
+INFO: Started reading intersection data: Friday, June 5, 2020 @ 4:19:25 AM
+INFO: Finished reading intersection data: Friday, June 5, 2020 @ 4:19:25 AM
+INFO: Started reading transit stops data: Friday, June 5, 2020 @ 4:19:25 AM
+INFO: Finished reading transit stops data: Friday, June 5, 2020 @ 4:19:25 AM
+INFO: Started reading open spaces data: Friday, June 5, 2020 @ 4:19:25 AM
+INFO: Finished reading open spaces data: Friday, June 5, 2020 @ 4:19:25 AM
+INFO: Started creating node correspondences: Friday, June 5, 2020 @ 4:19:25 AM
+INFO: Started creating parcel-node correspondence: Friday, June 5, 2020 @ 4:19:25 AM
+INFO: Finished creating parcel-node correspondence: Friday, June 5, 2020 @ 4:19:35 AM
+INFO: Started creating intersection-node correspondence: Friday, June 5, 2020 @ 4:19:35 AM
+INFO: Started creating stop-node correspondence: Friday, June 5, 2020 @ 4:20:43 AM
+INFO: Finished creating node correspondences: Friday, June 5, 2020 @ 4:20:44 AM
+INFO: Started precalculating distance decay weights: Friday, June 5, 2020 @ 4:20:44 AM
+INFO: Finished precalculating distance decay weights: Friday, June 5, 2020 @ 4:20:44 AM
+INFO: Started writing out buffered parcel data: Friday, June 5, 2020 @ 4:20:44 AM
+INFO: Reading node-node distance information from E:\Projects\Clients\Nashville\Model\BaseYear\Development\ABM_TCAD8_TAZSPLIT\ParcelInputs\BufferTool\2018\node_node_distances.dat: Friday, June 5, 2020 @ 4:20:44 AM
+INFO: Finished writing out buffered parcel data: Friday, June 5, 2020 @ 4:25:16 AM
+INFO: Finished buffering process: Friday, June 5, 2020 @ 4:25:16 AM
