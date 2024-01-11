@@ -1,6 +1,6 @@
 
-R version 3.2.2 (2015-08-14) -- "Fire Safety"
-Copyright (C) 2015 The R Foundation for Statistical Computing
+R version 3.4.4 (2018-03-15) -- "Someone to Lean On"
+Copyright (C) 2018 The R Foundation for Statistical Computing
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -17,8 +17,6 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
-[Previously saved workspace restored]
-
 > ##This is a temporary main control file with lots of TODOs to move 
 > ##this whole effort to a package with project specific config and run files
 > 
@@ -32,16 +30,14 @@ Type 'q()' to quit R.
 > library(reshape)
 > library(XLConnect)
 Loading required package: XLConnectJars
-XLConnect 0.2-11 by Mirai Solutions GmbH [aut],
+XLConnect 0.2-13 by Mirai Solutions GmbH [aut],
   Martin Studer [cre],
-  The Apache Software Foundation [ctb, cph] (Apache POI, Apache Commons
-    Codec),
-  Stephen Colebourne [ctb, cph] (Joda-Time Java library)
+  The Apache Software Foundation [ctb, cph] (Apache POI),
+  Graph Builder [ctb, cph] (Curvesapi Java library)
 http://www.mirai-solutions.com ,
 http://miraisolutions.wordpress.com
 > library(descr)
 > library(Hmisc)
-Loading required package: grid
 Loading required package: lattice
 Loading required package: survival
 Loading required package: Formula
@@ -51,7 +47,7 @@ Attaching package: 'Hmisc'
 
 The following objects are masked from 'package:base':
 
-    format.pval, round.POSIXt, trunc.POSIXt, units
+    format.pval, units
 
 > library(data.table)
 
@@ -65,10 +61,6 @@ The following object is masked from 'package:reshape':
 
 Attaching package: 'plyr'
 
-The following object is masked _by_ '.GlobalEnv':
-
-    ozone
-
 The following objects are masked from 'package:Hmisc':
 
     is.discrete, summarize
@@ -78,12 +70,15 @@ The following objects are masked from 'package:reshape':
     rename, round_any
 
 > 
+> setwd("U:/Projects/Clients/Nashville_storage/nashvilleabm_tcad9_test/2018/DaySimSummaries")
+> 
 > #------------------------------------
 > #Source functions and config settings
 > #------------------------------------
 > source("utilfunc.R")
 > #TODO function in package to create template config file in a specified location
 > source("daysim_output_config.R")
+> #source("daysim_output_config_nhts.R")
 > 
 > progressStart("run DaySim summaries",14)
 > 
@@ -112,7 +107,6 @@ The following objects are masked from 'package:reshape':
 +   if(prepSurvey)
 +     readSaveRdata(surveyperfile,"survperdata")
 + }
-Read 19.0% of 1475378 rowsRead 31.9% of 1475378 rowsRead 43.4% of 1475378 rowsRead 54.2% of 1475378 rowsRead 65.1% of 1475378 rowsRead 77.3% of 1475378 rowsRead 88.1% of 1475378 rowsRead 99.0% of 1475378 rowsRead 1475378 rows and 24 (of 24) columns from 0.116 GB file in 00:00:10
 > 
 > progressNextStep("reading person day data")
 > if(runDayPattern)
@@ -122,7 +116,6 @@ The following objects are masked from 'package:reshape':
 +   if(prepSurvey)
 +     readSaveRdata(surveypdayfile,"survpdaydata")
 + }
-Read 42.7% of 1475378 rowsRead 67.1% of 1475378 rowsRead 90.8% of 1475378 rowsRead 1475378 rows and 31 (of 31) columns from 0.114 GB file in 00:00:05
 > 
 > progressNextStep("reading person day tour data")
 > if(runDayPattern | runTourDestination | runTourMode | runTourTOD | runTripMode)
@@ -132,7 +125,6 @@ The following objects are masked from 'package:reshape':
 +   if(prepSurvey)
 +     readSaveRdata(surveytourfile,"survtourdata")
 + }
-Read 9.8% of 1832257 rowsRead 15.8% of 1832257 rowsRead 21.8% of 1832257 rowsRead 28.4% of 1832257 rowsRead 35.5% of 1832257 rowsRead 42.0% of 1832257 rowsRead 48.6% of 1832257 rowsRead 54.6% of 1832257 rowsRead 63.3% of 1832257 rowsRead 74.2% of 1832257 rowsRead 81.9% of 1832257 rowsRead 89.0% of 1832257 rowsRead 96.1% of 1832257 rowsRead 1832257 rows and 33 (of 33) columns from 0.227 GB file in 00:00:16
 > 
 > progressNextStep("reading person day trip data")
 > if(runDayPattern | runTripMode | runTripTOD)
@@ -142,7 +134,6 @@ The following objects are masked from 'package:reshape':
 +   if(prepSurvey)
 +     readSaveRdata(surveytripfile,"survtripdata")
 + }
-Read 0.0% of 5042181 rowsRead 2.0% of 5042181 rowsRead 4.2% of 5042181 rowsRead 6.1% of 5042181 rowsRead 8.1% of 5042181 rowsRead 10.1% of 5042181 rowsRead 12.1% of 5042181 rowsRead 14.3% of 5042181 rowsRead 16.3% of 5042181 rowsRead 18.2% of 5042181 rowsRead 20.4% of 5042181 rowsRead 22.6% of 5042181 rowsRead 24.6% of 5042181 rowsRead 26.6% of 5042181 rowsRead 28.6% of 5042181 rowsRead 30.9% of 5042181 rowsRead 32.9% of 5042181 rowsRead 34.9% of 5042181 rowsRead 36.9% of 5042181 rowsRead 39.1% of 5042181 rowsRead 41.5% of 5042181 rowsRead 43.6% of 5042181 rowsRead 45.6% of 5042181 rowsRead 47.6% of 5042181 rowsRead 49.8% of 5042181 rowsRead 52.0% of 5042181 rowsRead 54.3% of 5042181 rowsRead 57.1% of 5042181 rowsRead 59.5% of 5042181 rowsRead 61.5% of 5042181 rowsRead 63.5% of 5042181 rowsRead 65.8% of 5042181 rowsRead 68.0% of 5042181 rowsRead 70.0% of 5042181 rowsRead 72.2% of 5042181 rowsRead 74.2% of 5042181 rowsRead 76.4% of 5042181 rowsRead 78.3% of 5042181 rowsRead 80.3% of 5042181 rowsRead 82.3% of 5042181 rowsRead 84.3% of 5042181 rowsRead 86.7% of 5042181 rowsRead 88.7% of 5042181 rowsRead 90.6% of 5042181 rowsRead 92.8% of 5042181 rowsRead 95.0% of 5042181 rowsRead 97.0% of 5042181 rowsRead 98.8% of 5042181 rowsRead 5042181 rows and 28 (of 28) columns from 0.624 GB file in 00:00:53
 > 
 > #Optional tour weight adjustment
 > if(tourAdj)
@@ -153,8 +144,8 @@ The following objects are masked from 'package:reshape':
 > #force gc()
 > gc()
            used  (Mb) gc trigger   (Mb)  max used   (Mb)
-Ncells   576287  30.8     940480   50.3    750400   40.1
-Vcells 59085550 450.8  152854576 1166.2 140296614 1070.4
+Ncells  1725758  92.2    2637877  140.9   2164898  115.7
+Vcells 52614444 401.5  167357741 1276.9 139816924 1066.8
 > 
 > #-----------------------
 > #Run tabulations
@@ -170,5 +161,93 @@ Vcells 59085550 450.8  152854576 1166.2 140296614 1070.4
 +   source("wrkschlocation.R")
 + }
 [1] "Work/School Location Summary...Started"
-Error: FileNotFoundException (Java): File 'WrkLocation.xlsm' could not be found - you may specify to automatically create the file if not existing.
-Execution halted
+WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by org.apache.poi.openxml4j.util.ZipSecureFile$1 (file:/U:/Projects/Clients/Nashville_storage/nashvilleabm_tcad9_test/2018/DaySimSummaries/software/R/R-3.4.4/library/XLConnect/java/poi-ooxml-3.16.jar) to field java.io.FilterInputStream.in
+WARNING: Please consider reporting this to the maintainers of org.apache.poi.openxml4j.util.ZipSecureFile$1
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+[1] "Work/School Location Summary...Finished"
+> progressNextStep("summarizing vehicle ownership choice")
+> if(runVehAvailability)
++ {
++   source("vehavailability.R")
++ }
+[1] "Vehicle Availabililty Summary...Started"
+[1] "Vehicle Availabililty Summary...Finished"
+> progressNextStep("summarizing Day pattern")
+> if(runDayPattern)
++ {
++   source("daypattern.R")
++ }
+[1] "Day Pattern Summary...Started"
+[1] "Day Pattern Summary...Finished"
+> progressNextStep("summarizing Destination Choice")
+> if(runTourDestination)
++ {
++   source("tourdestination.R")
++ }
+[1] "Tour Destination Summary...Started"
+[1] "Tour Destination Summary...Finished"
+> progressNextStep("summarizing Trip Destination Choice")
+> if(runTourDestination)
++ {
++   source("tripdestination.R")
++ }
+[1] "Trip Destination Summary...Started"
+[1] "Trip Destination Summary...Finished"
+> progressNextStep("summarizing Tour Mode Choice") 
+> if(runTourMode)
++ {
++   source("tourmode.R")
++ }
+[1] "Tour Mode Summary...Started"
+[1] "Tour Mode Summary...Finished"
+> progressNextStep("summarizing Tour Time of Day Choice") 
+> if(runTourTOD)
++ {
++   source("tourtod.R")
++ }
+[1] "Tour Time of Day Summary...Started"
+[1] "Tour Time of Day Summary...Finished"
+> progressNextStep("summarizing Trip Mode Choice") 
+> if(runTripMode)
++ {
++   source("tripmode.R")
++ }
+[1] "Trip Mode Summary...Started"
+[1] "Trip Mode Summary...Finished"
+> progressNextStep("summarizing Trip Time of Day Choice")
+> if(runTripTOD)
++ {
++   source("triptod.R")
++ }
+[1] "Trip Time of Day Summary...Started"
+[1] "survey"
+[1] "times are in HHMM format"
+[1] "daysim"
+[1] "times are in minutes"
+[1] "Trip Time of Day Summary...Finished"
+> 
+> progressEnd(outputsDir)
+   steps                            stepnames stepruntimes cumruntimes
+1      1                      reading hh data         3.73        3.73
+2      2                  reading person data         8.92       12.65
+3      3              reading person day data         7.71       20.36
+4      4         reading person day tour data        18.34       38.70
+5      5         reading person day trip data        41.91       80.61
+6      6     summarizing work location choice        13.42       94.03
+7      7 summarizing vehicle ownership choice         2.51       96.54
+8      8              summarizing Day pattern       116.77      213.31
+9      9       summarizing Destination Choice        10.94      224.25
+10    10  summarizing Trip Destination Choice        12.25      236.50
+11    11         summarizing Tour Mode Choice         9.04      245.54
+12    12  summarizing Tour Time of Day Choice        10.42      255.96
+13    13         summarizing Trip Mode Choice        13.30      269.26
+14    14  summarizing Trip Time of Day Choice        17.88      287.14
+> 
+> # Rprof(NULL)
+> # memprof <- summaryRprof()
+> 
+> proc.time()
+   user  system elapsed 
+ 344.43  101.84  290.03 

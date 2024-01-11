@@ -7,6 +7,12 @@ dspdayfile                                = "../DaySim/outputs/_person_day.tsv"
 dstourfile                                = "../DaySim/outputs/_tour.tsv"
 dstripfile                                = "../DaySim/outputs/_trip.tsv"
 
+# dshhfile                                  = "U:/Projects/Clients/Nashville_storage/nashvilleabm_tcad9_test/2018/DaySim/outputs/_household.tsv"
+# dsperfile                                 = "U:/Projects/Clients/Nashville_storage/nashvilleabm_tcad9_test/2018/DaySim/outputs/_person.tsv"
+# dspdayfile                                = "U:/Projects/Clients/Nashville_storage/nashvilleabm_tcad9_test/2018/DaySim/outputs/_person_day.tsv"
+# dstourfile                                = "U:/Projects/Clients/Nashville_storage/nashvilleabm_tcad9_test/2018/DaySim/outputs/_tour.tsv"
+# dstripfile                                = "U:/Projects/Clients/Nashville_storage/nashvilleabm_tcad9_test/2018/DaySim/outputs/_trip.tsv"
+
 # Nashville Survey
 surveyhhfile                              = "./data/nash_hrecx_rewt.dat"
 surveyperfile                             = "./data/nash_precx_rewt.dat"
