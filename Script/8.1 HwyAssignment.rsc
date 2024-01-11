@@ -582,7 +582,7 @@ Macro "PreloadAssignment"(Args, allod, periods1)
     Opts.Field.[Vehicle Classes] = {21, 22, 23, 24, 25, 26}
     Opts.Field.[Fixed Toll Fields] = {trucktoll, trucktoll, trucktoll, trucktoll, trucktoll, "n/a"}
     Opts.Field.[PCE Fields] = {"None", "None", "None", "None", "None", "None"}
-    Opts.Field.[VDF Fld Names] = {"[time_FF_AB / time_FF_BA]", "[capacity_"+Lower(periods1)+"_AB / capacity_"+Lower(periods1)+"_BA]", "alpha", "beta", "None"}
+    Opts.Field.[VDF Fld Names] = {"[time_FF_AB_time_FF_BA]", "[capacity_"+Lower(periods1)+"_AB_capacity_"+Lower(periods1)+"_BA]", "alpha", "beta", "None"}
     Opts.Global.[Load Method] = "BFW"
     Opts.Global.[Loading Multiplier] = 1
     Opts.Global.[N Conjugate] = 2
@@ -704,7 +704,7 @@ Macro "GeneralAssignment"(Args, allod, periods1)
     Opts.Field.[Vehicle Classes] = assign_veh_classes
     Opts.Field.[Fixed Toll Fields] = assign_toll_fields
     Opts.Field.[PCE Fields] = assign_pce_fields
-    Opts.Field.[VDF Fld Names] = {"[time_FF_AB / time_FF_BA]", "[capacity_"+Lower(periods1)+"_AB / capacity_"+Lower(periods1)+"_BA]", "alpha", "beta", "[Preload"+periods1+"AB/BA PCE]"}
+    Opts.Field.[VDF Fld Names] = {"[time_FF_AB_time_FF_BA]", "[capacity_"+Lower(periods1)+"_AB_capacity_"+Lower(periods1)+"_BA]", "alpha", "beta", "[Preload"+periods1+"AB/BA PCE]"}
     Opts.Global.[Load Method] = "BFW"
     Opts.Global.[Loading Multiplier] = 1
     Opts.Global.[N Conjugate] = 2
@@ -1386,16 +1386,16 @@ Macro "PostProcessor" (Args)
 		"if VOL_AMBA/capacity_am_BA<>null then VOL_AMBA/capacity_am_BA else 0",
 		"max(VC_AMAB,VC_AMBA)",
 		
-		"if VOL_MDAB/capacity_MD_AB<>null then VOL_MDAB/capacity_MD_AB else 0",
-		"if VOL_MDBA/capacity_MD_BA<>null then VOL_MDBA/capacity_MD_BA else 0",
+		"if VOL_MDAB/capacity_md_AB<>null then VOL_MDAB/capacity_md_AB else 0",
+		"if VOL_MDBA/capacity_md_BA<>null then VOL_MDBA/capacity_md_BA else 0",
 		"max(VC_MDAB,VC_MDBA)",
 		
-		"if VOL_PMAB/capacity_PM_AB<>null then VOL_PMAB/capacity_PM_AB else 0",
-		"if VOL_PMBA/capacity_PM_BA<>null then VOL_PMBA/capacity_PM_BA else 0",
+		"if VOL_PMAB/capacity_pm_AB<>null then VOL_PMAB/capacity_pm_AB else 0",
+		"if VOL_PMBA/capacity_pm_BA<>null then VOL_PMBA/capacity_pm_BA else 0",
 		"max(VC_PMAB,VC_PMBA)",
 		
-		"if VOL_OPAB/capacity_OP_AB<>null then VOL_OPAB/capacity_OP_AB else 0",
-		"if VOL_OPBA/capacity_OP_BA<>null then VOL_OPBA/capacity_OP_BA else 0",
+		"if VOL_OPAB/capacity_op_AB<>null then VOL_OPAB/capacity_op_AB else 0",
+		"if VOL_OPBA/capacity_op_BA<>null then VOL_OPBA/capacity_op_BA else 0",
 		"max(VC_OPAB,VC_OPBA)",
 		
 		"VOL_TOT/(nz(capacity_daily_AB)+nz(capacity_daily_BA))",

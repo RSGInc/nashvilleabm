@@ -50,7 +50,7 @@ Macro "Settings" (Args)
 	parcel_lu_file 		= Args.[Parcels]
 	tazindex_file 		= Args.[taz_index]
 	
-	skim_truck_time 	= "Shortest Path - [time_MD_AB / time_MD_BA]"
+	skim_truck_time 	= "Shortest Path - [time_MD_AB_time_MD_BA]"
 
 	//OUTPUTS - TRUCKS (SU and MU)
 	od_trk				= Args.[Internal Truck OD]
@@ -732,7 +732,7 @@ Macro "GenerateTripLengths" (trips_mat, core_names, skim_mat, skim_index, trip_i
 		trip_type = sumStats_trips[core][1]
 		trips = sumStats_trips[core][2]
 		vmt = sumStats_vmt[core][2]
-		trip_length = StringToReal(vmt) / StringToReal(trips)
+		trip_length = StringToReal(vmt)/StringToReal(trips)
 		
 		out_string = trip_type + "," + trips + "," + vmt + "," + RealToString(trip_length)
 		WriteLine(file_writer, out_string)

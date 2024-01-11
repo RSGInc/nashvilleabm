@@ -257,7 +257,7 @@ Macro "Rte_PH_PM"
        rtemiam[mmm]=0
        rtehrmd[mmm]=0
        rtemimd[mmm]=0
-			 rtehrpm[mmm]=0
+	   rtehrpm[mmm]=0
        rtemipm[mmm]=0
        rtehrop[mmm]=0
        rtemiop[mmm]=0
@@ -276,7 +276,7 @@ Macro "Rte_PH_PM"
             route_name_list[num_routes] = route_info_view.Route_Name
             route_amhdwy_list[num_routes] = route_info_view.HW_AM
             route_mdhdwy_list[num_routes] = route_info_view.HW_MD
-						route_pmhdwy_list[num_routes] = route_info_view.HW_PM
+			route_pmhdwy_list[num_routes] = route_info_view.HW_PM
             route_ophdwy_list[num_routes] = route_info_view.HW_OP
             route_modeid_list[num_routes] = route_info_view.Mode
             route_fare_list[num_routes] = route_info_view.Fare
@@ -723,7 +723,7 @@ Macro "TRNSTAT"
         Flows[k][17] = stat_array.[KNRURBRAIL].Sum
         Flows[k][18] = stat_array.[KNRCOMRAIL].Sum
         Flows[k][19] = Flows[k][1]+Flows[k][2]+Flows[k][3]+Flows[k][4]+Flows[k][5]+Flows[k][6]+Flows[k][7]+Flows[k][8]+Flows[k][9]+
-                       Flows[k][10]+Flows[k][11]+Flows[k][12]+Flows[k][13]+Flows[k][14]+Flows[k][15]+Flows[k][16]+Flows[k][17]+Flows[k][18]
+        Flows[k][10]+Flows[k][11]+Flows[k][12]+Flows[k][13]+Flows[k][14]+Flows[k][15]+Flows[k][16]+Flows[k][17]+Flows[k][18]
         Flows[5][1] = Flows[5][1] + Flows[k][1]
         Flows[5][2] = Flows[5][2] + Flows[k][2]
         Flows[5][3] = Flows[5][3] + Flows[k][3]
@@ -799,16 +799,16 @@ Macro "TRNSTAT"
 				// mode level boarding
         ambrd[mode] = ambrd[mode] + ambrdtotal
         mdbrd[mode] = mdbrd[mode] + mdbrdtotal
-			  pmbrd[mode] = pmbrd[mode] + pmbrdtotal
-			  opbrd[mode] = opbrd[mode] + opbrdtotal														
+		pmbrd[mode] = pmbrd[mode] + pmbrdtotal
+		opbrd[mode] = opbrd[mode] + opbrdtotal														
         totbrd[mode] = totbrd[mode] + brdtotal
         
 				// route level boarding
-				modenum[route]=mode
+		modenum[route]=mode
         ambrdrte[route] = ambrdrte[route] + ambrdtotal
-				mdbrdrte[route] = mdbrdrte[route] + mdbrdtotal
-				pmbrdrte[route] = pmbrdrte[route] + pmbrdtotal
-				opbrdrte[route] = opbrdrte[route] + opbrdtotal      
+		mdbrdrte[route] = mdbrdrte[route] + mdbrdtotal
+		pmbrdrte[route] = pmbrdrte[route] + pmbrdtotal
+		opbrdrte[route] = opbrdrte[route] + opbrdtotal      
         totbrdrte[route] = totbrdrte[route] + brdtotal
 
         tot[1] = tot[1] + ambrdtotal

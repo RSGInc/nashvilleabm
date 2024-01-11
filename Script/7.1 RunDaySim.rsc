@@ -30,37 +30,80 @@ Macro "ConverSkimsToOMX" (Args)
 	transit_access = {"Walk", "Drive"}
 	
 	matrix_name = "hwyskim_ff"
-	RunMacro("ExportToOMX", matrix_name, "Length", OutDir, OutDir)
+	RunMacro("ExportToOMX", "auto" ,matrix_name, "Length", OutDir, OutDir)
+
 	
 	for p=1 to Periods.length do
 		for m=1 to auto_modes.length do
 			matrix_name = "hwyskim_" + Lower(Periods[p]) + "_" + auto_modes[m]
-			RunMacro("ExportToOMX", matrix_name, "Length", OutDir, OutDir)
+			RunMacro("ExportToOMX", "auto", matrix_name, "Length", OutDir, OutDir)
 		end
 		
 		for m=1 to transit_modes.length do
 			for a=1 to transit_access.length do
 				matrix_name = Periods[p] + "_" + transit_access[a] + transit_modes[m] + "Skim" 
-				RunMacro("ExportToOMX", matrix_name, "Generalized Cost", OutDir, OutDir)
+				RunMacro("ExportToOMX", "transit", matrix_name, "Generalized Cost", OutDir, OutDir)
 			end
 		end
-	
 	end
 
 endMacro
 
-Macro "ExportToOMX" (mat, core, inDir, outDir)
+Macro "ExportToOMX" (mode, mat, core, inDir, outDir)
 
     m = OpenMatrix(inDir + mat + ".mtx", )
-    mc = CreateMatrixCurrency(m,core,,,)
-    
+	
+	if mode="auto" then do
+		mc = CreateMatrixCurrency(m,core,"Origin","Destination",)
+	end
+	else do
+		mc = CreateMatrixCurrency(m,core,,,)
+    end
+	
 	CopyMatrix(mc, {
-        {"File Name", outDir + mat + ".omx"},
+        {"File Name", outDir + mat + "_temp.omx"},
+		{"Indices", "Current"},
         {"OMX", "True"}
       } 
     )
 
-EndMacro
+endMacro
+
+Macro "Run OMX Re Export" (Args)
+    shared Scen_Dir, OutDir, drive, loop
+    shared DaySimDir
+
+	/*
+	PURPOSE:
+	- Generate new OMX skims using R from TransCAD generated OMX files
+ 
+	*/
+	
+	starttime = RunMacro("RuntimeLog", {"OMX Re Exprot", null})
+	RunMacro("HwycadLog", {"Runing OMX Re Export in feedback loop " + i2s(loop), null})
+    RunMacro("SetParameters", Args)
+	
+	path_info = SplitPath(Scen_Dir)
+    drive = path_info[1]
+	
+	pos = Position(Scen_Dir, "2018") //TODO - remove hard coded folder name (2018)
+	ModelDir = Left(Scen_Dir, pos-1)
+	
+	// script directory
+	ScriptDir = ModelDir + "Script\\"
+	
+	// Launch R batch file
+	command_line = "cmd /c " + drive + " && cd " + ScriptDir + " && run_convert_to_omx.cmd"
+	
+	status = RunProgram(command_line,{{"Maximize", "True"}})
+	status = 0
+	
+	endtime = RunMacro("RuntimeLog", {"OMX Re Export", starttime})
+	
+	Return(1)
+
+endMacro
+
 
 Macro "Run DaySim" (Args)
     shared Scen_Dir, OutDir, loop
@@ -82,7 +125,8 @@ STEPS:
 
 	RunMacro("HwycadLog", {"7.1 RunDaySim.rsc", "  ****** Run DaySim ****** "})
 	RunMacro("SetParameters", Args)
-	//RunMacro("ConverSkimsToOMX", Args) //TODO: do not use yet
+	RunMacro("ConverSkimsToOMX", Args) 
+	RunMacro("Run OMX Re Export", Args)
     
     // number of daysim iterations
 	//removed shadow pricing runs as districts constants are used in work location. stable shadow prices are used as inputs
@@ -94,8 +138,8 @@ STEPS:
 	RunMacro("HwycadLog", {"Copy DaySim inputs in feedback loop " + i2s(loop), null})
 	
 	// copy roster file to outputs folder
-	infile = DaySimDir + "inputs\\nashville-roster_matrix.csv"
-	outfile = OutDir + "nashville-roster_matrix.csv"
+	infile = DaySimDir + "inputs\\nashville-roster_matrix_omx.csv"
+	outfile = OutDir + "nashville-roster_matrix_omx.csv"
 	CopyFile(infile,outfile)
 	
 	// copy roster combination file to outputs folder
@@ -167,6 +211,7 @@ STEPS:
         // Launch Daysim
 		RunMacro("HwycadLog", {"Runing DaySim for iteration " + i2s(i) + " in feedback loop " + i2s(loop), null})
         command_line = "cmd /c " + drive + " && cd " + DaySimDir + " && software\\Daysim.exe -c " + config_file
+		//command_line = "cmd /c " + drive + " && cd " + " && E:\\Projects\\Clients\\NashvilleMPO\\ModelUpdate2023\\Tasks\\Task2_UpdateSoftware\\" + " && DaySim_exe_08152023\\Daysim.exe -c " + config_file 
         status = RunProgram(command_line,{{"Maximize", "True"}})
 		
 		endtime = RunMacro("RuntimeLog", {"DaySim Iteration " + i2s(i), starttime})
@@ -192,7 +237,7 @@ Macro "Copy DaySim Outputs" (Args)
     outfile = OutDir + TourFileName + ".csv"
     CopyFile(infile,outfile)	
 
-EndMacro
+endMacro
 
 Macro "Run DaySim Summaries" (Args)
     shared Scen_Dir, OutDir, drive, loop
@@ -226,7 +271,7 @@ Macro "Run DaySim Summaries" (Args)
 	
 	Return(1)
 
-EndMacro
+endMacro
 
 
 Macro "SetHighwayParameters" (Args)
@@ -249,7 +294,7 @@ Macro "SetHighwayParameters" (Args)
     TimePeriod[3] = {900,1139,9999,9999}   //PM    
     TimePeriod[4] = {1140,1439,0,359} 	   //OP       
     
-EndMacro
+endMacro
 
 Macro "SetAirportParameter"
 	shared Scen_Dir
@@ -266,7 +311,7 @@ Macro "SetAirportParameter"
     purposesPeriod = {"OP","OP","PK"}
 	AirPeriodFactors = {0.5,0.5,0.5,0.5}  // corresponding to Periods = {"AM","MD","PM","OP"}, factors to distribute trips from PK and OP periods		
 		
-EndMacro
+endMacro
 
 Macro "SetDaySimParameters" (Args)
     shared Scen_Dir, OutDir, DaySimDir
@@ -279,7 +324,7 @@ Macro "SetDaySimParameters" (Args)
 	TripTourFile = OutDir + "trip_tour.csv"
     MaxZone  = 3012  //TODO: get this from taz index file
 
-EndMacro
+endMacro
 
 Macro "JoinDaySimTripTourFiles"
     shared OutDir
@@ -680,7 +725,7 @@ Macro "Fill Highway Airport Trips" (Args)
         end
     end
 
-EndMacro
+endMacro
 
 Macro "Fill Person Trips" (Args)
     shared Scen_Dir, loop
@@ -735,7 +780,7 @@ Macro "Fill Person Trips" (Args)
     // add all daysim person trips
     mc5 :=nz(mc1)+nz(mc2)+nz(mc3)+nz(mc4)    
     
-EndMacro
+endMacro
 
 Macro "Fill Transit Airport Trips" (Args)
     shared Scen_Dir, OutDir, Modes, AccessAssgnModes, Periods // input files
@@ -824,7 +869,7 @@ STEPS:
         end 
     end
 
-EndMacro
+endMacro
 
 Macro "UpdateComuterRailTrips" (Args)
     shared Scen_Dir, OutDir, Modes, AccessAssgnModes, Periods // input files
@@ -853,4 +898,4 @@ PURPOSE:
 		mc4 := 0
 	end
 
-EndMacro
+endMacro

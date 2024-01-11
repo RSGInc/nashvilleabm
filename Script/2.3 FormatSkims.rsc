@@ -41,12 +41,12 @@
     // STEP 3: Change the row and column IDs for Transit Skims
     for iper=1 to Periods.length do
 	    for iacc=1 to AccessModes.Length do
-        for imode=1 to Modes.Length do
-           inmat  = OutDir + Periods[iper] + "_" + AccessModes[iacc] + Modes[imode] + ".mtx"
-           outmat = OutDir + Periods[iper] + "_" + AccessModes[iacc] + Modes[imode] + "Skim.mtx"
-           new_mat = CopyFile(inmat,outmat)
-         end   // transit 
-      end    // access  
+			for imode=1 to Modes.Length do
+				inmat  = OutDir + Periods[iper] + "_" + AccessModes[iacc] + Modes[imode] + ".mtx"
+				outmat = OutDir + Periods[iper] + "_" + AccessModes[iacc] + Modes[imode] + "Skim.mtx"
+				new_mat = CopyFile(inmat,outmat)
+			end   // transit 
+		end    // access  
     end    // period 
 
    // Close view 
@@ -57,7 +57,7 @@
 	  for iacc=1 to AccessModes.Length do
       for imode=1 to Modes.Length do
 		            
-		            timevar = "TransitTime"+Periods[iper]+"_*"
+		            timevar = "TransitTime"+Periods[iper]+"_"
                 m = OpenMatrix(OutDir + Periods[iper] + "_" + AccessModes[iacc] + Modes[imode] + "Skim.mtx", )
                 
                 mc1 = CreateMatrixCurrency(m, "Generalized Cost", , , )
@@ -110,7 +110,7 @@
                 mc22 := Nz(mc22)
                 mc23 := Nz(mc23)
                 mc24 := Nz(mc24)
-				mc25 := Nz(mc25)
+				        mc25 := Nz(mc25)
 
                 if (Modes[imode]="Local") then do
                    FillMatrix(mc2, null, null, {"Multiply", 100}, )
@@ -148,7 +148,7 @@
                   mc22 := if ((mc19 + mc20) <= 0) then 0 else (mc22 + mc25)    // for DaySim - as only commuter rail ivt is provided in the roster, therefore, this core should also include commuter rail shuttle.
                   mc23 := if ((mc19 + mc20) <= 0) then 0 else mc23
                   mc24 := if ((mc19 + mc20) <= 0) then 0 else mc24
-				  mc25 := if ((mc19 + mc20) <= 0) then 0 else mc25
+				          mc25 := if ((mc19 + mc20) <= 0) then 0 else mc25
                 
                   FillMatrix(mc2, null, null, {"Multiply", 100}, )
 /*                new_mat = CombineMatrices({mc1, mc2, mc3, mc4, mc5, mc6, mc7, mc8, mc9, mc10, mc11, mc12, mc13,
@@ -184,7 +184,7 @@
                   mc22 := if ((mc17 + mc18) <= 0) then 0 else (mc22 + mc25)
                   mc23 := if ((mc17 + mc18) <= 0) then 0 else mc23
                   mc24 := if ((mc17 + mc18) <= 0) then 0 else mc24
-				  mc25 := if ((mc17 + mc18) <= 0) then 0 else mc25
+				          mc25 := if ((mc17 + mc18) <= 0) then 0 else mc25
                 
                 FillMatrix(mc2, null, null, {"Multiply", 100}, )
 /*                new_mat = CombineMatrices({mc1, mc2, mc3, mc4, mc5, mc6, mc7, mc8, mc9, mc10, mc11, mc12, mc13,
@@ -219,7 +219,7 @@
                   mc22 := if (mc21 <= 0) then 0 else (mc22 + mc25)
                   mc23 := if (mc21 <= 0) then 0 else mc23
                   mc24 := if (mc21 <= 0) then 0 else mc24
-				  mc25 := if (mc21 <= 0) then 0 else mc25
+				          mc25 := if (mc21 <= 0) then 0 else mc25
                
                 FillMatrix(mc2, null, null, {"Multiply", 100}, )
 /*                new_mat = CombineMatrices({mc1, mc2, mc3, mc4, mc5, mc6, mc7, mc8, mc9, mc10, mc11, mc12, mc13,
@@ -254,7 +254,7 @@
                   mc22 := if ((mc22 + mc25) <= 0) then 0 else (mc22 + mc25)
                   mc23 := if ((mc22 + mc25) <= 0) then 0 else mc23
                   mc24 := if ((mc22 + mc25) <= 0) then 0 else mc24
-				  mc25 := if ((mc22 + mc25) <= 0) then 0 else mc25
+				          mc25 := if ((mc22 + mc25) <= 0) then 0 else mc25
                 
                    FillMatrix(mc2, null, null, {"Multiply", 100}, )
 /*                new_mat = CombineMatrices({mc1, mc2, mc3, mc4, mc5, mc6, mc7, mc8, mc9, mc10, mc11, mc12, mc13,

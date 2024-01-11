@@ -329,7 +329,7 @@ Macro "01_Model_Inputs" (tazvw)
 	tazcount = VectorStatistic(TAZID, "Count", )
 	zerovec = Vector(tazcount, "Long", {{"Constant", 0}})
 	Intersection = nz(Int3) + nz(Int4)
-	IntscnDens = Intersection*1000000 / ZoneArea
+	IntscnDens = Intersection*1000000/ZoneArea
 	SetDataVectors(zonevw+"|", {{"Intersection", Intersection}, {"IntDensx1000000", IntscnDens}, {"AvgInc", zerovec}, {"Spec_Gen", zerovec}}, {{"Sort Order",{{zonevw+".taz_p","Ascending"}}}})
 	
 	jnvw = JoinViews(zonevw + hhvw, zonevw+".taz_p", hhvw+".hhtaz", {{"I", }})

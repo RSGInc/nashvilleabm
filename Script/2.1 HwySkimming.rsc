@@ -41,17 +41,17 @@ Macro "Highway Skimming" (Args)    // Highway Skimming
     hov_skims_fileName[3] = Left(Args.[op skim],Len(Args.[op skim])-8) + "_hov.mtx"  
     hov_skims_fileName[4] = Left(Args.[md skim],Len(Args.[md skim])-8) + "_hov.mtx"
       
-    hov_skims[1]={hov_skims_fileName[1],"[time_am_AB / time_am_BA]","AM"}  
-    hov_skims[2]={hov_skims_fileName[2],"[time_pm_AB / time_pm_BA]","PM"}
-    hov_skims[3]={hov_skims_fileName[3],"[time_op_AB / time_op_BA]","OP"}
-    hov_skims[4]={hov_skims_fileName[4],"[time_md_AB / time_md_BA]","MD"}    
+    hov_skims[1]={hov_skims_fileName[1],"[time_AM_AB_time_AM_BA]","AM"}  
+    hov_skims[2]={hov_skims_fileName[2],"[time_PM_AB_time_PM_BA]","PM"}
+    hov_skims[3]={hov_skims_fileName[3],"[time_OP_AB_time_OP_BA]","OP"}
+    hov_skims[4]={hov_skims_fileName[4],"[time_MD_AB_time_MD_BA]","MD"}    
     
 	dim sov_skims[5] //File name, field
-	sov_skims[1]={Args.[am skim],"[time_am_AB / time_am_BA]","AM"}
-	sov_skims[2]={Args.[pm skim],"[time_pm_AB / time_pm_BA]","PM"}
-	sov_skims[3]={Args.[op skim],"[time_op_AB / time_op_BA]","OP"}
-	sov_skims[4]={Args.[md skim],"[time_md_AB / time_md_BA]","MD"}
-	sov_skims[5]={Args.[ff skim],"[time_FF_AB / time_FF_BA]","FF"}
+	sov_skims[1]={Args.[am skim],"[time_AM_AB_time_AM_BA]","AM"}
+	sov_skims[2]={Args.[pm skim],"[time_PM_AB_time_PM_BA]","PM"}
+	sov_skims[3]={Args.[op skim],"[time_OP_AB_time_OP_BA]","OP"}
+	sov_skims[4]={Args.[md skim],"[time_MD_AB_time_MD_BA]","MD"}
+	sov_skims[5]={Args.[ff skim],"[time_FF_AB_time_FF_BA]","FF"}
     
     //**************************************
 	//*      Skim_1: Build Highway Network - build it only once          *
@@ -201,10 +201,10 @@ Macro "Highway Skimming" (Args)    // Highway Skimming
         RunMacro("AddCore", hov_skims, 4)
     end
     
-	RunMacro("HwycadLog", {"Save and copy skims", null})
+/* 	RunMacro("HwycadLog", {"Save and copy skims", null})
     //Save and copy skims
     RunMacro("SaveAndCopySkims", sov_skims)
-    RunMacro("SaveAndCopySkims", hov_skims)
+    RunMacro("SaveAndCopySkims", hov_skims) */
 
 	RunMacro("HwycadLog", {"2.1 HwySkimming.rsc", "Finished Highway Skimming"})
 	endtime = RunMacro("RuntimeLog", {"Highway Skimming - Feedback Loop " + i2s(loop), starttime})	
@@ -213,7 +213,7 @@ Macro "Highway Skimming" (Args)    // Highway Skimming
     quit:
     CloseMap("temp")
     return(ret_value)
-EndMacro    
+endMacro    
  
 Macro "Build Hwy Network" (Args)
     shared  Scen_Dir, loop
@@ -244,21 +244,21 @@ Macro "Build Hwy Network" (Args)
         Opts.Global.[Network Options].[Time Units] = "Minutes"
         Opts.Global.[Link Options] = {{"Length", {llayer+".Length", llayer+".Length", , , "False"}}, 
         {"WalkTime", {llayer+".WalkTime", llayer+".WalkTime", , , "False"}}, 
-        {"[capacity_am_AB / capacity_am_BA]", {llayer+".capacity_am_AB", llayer+".capacity_am_BA", , , "False"}}, 
-        {"[capacity_pm_AB / capacity_pm_BA]", {llayer+".capacity_pm_AB", llayer+".capacity_pm_BA", , , "False"}}, 
-        {"[capacity_op_AB / capacity_op_BA]", {llayer+".capacity_op_AB", llayer+".capacity_op_BA", , , "False"}}, 
-        {"[capacity_md_AB / capacity_md_BA]", {llayer+".capacity_md_AB", llayer+".capacity_md_BA", , , "False"}}, 
-        {"[capacity_daily_AB / capacity_daily_BA]", {llayer+".capacity_daily_AB", llayer+".capacity_daily_BA", , , "False"}}, 
-        {"[SPD_FF_AB / SPD_FF_BA]", {llayer+".SPD_FF_AB", llayer+".SPD_FF_BA", , , "False"}}, 
-        {"[SPD_AM_AB / SPD_AM_BA]", {llayer+".SPD_AM_AB", llayer+".SPD_AM_BA", , , "False"}}, 
-        {"[SPD_MD_AB / SPD_MD_BA]", {llayer+".SPD_MD_AB", llayer+".SPD_MD_BA", , , "False"}}, 
-        {"[SPD_PM_AB / SPD_PM_BA]", {llayer+".SPD_PM_AB", llayer+".SPD_PM_BA", , , "False"}}, 
-        {"[SPD_OP_AB / SPD_OP_BA]", {llayer+".SPD_OP_AB", llayer+".SPD_OP_BA", , , "False"}}, 
-        {"[time_FF_AB / time_FF_BA]", {llayer+".time_FF_AB", llayer+".time_FF_BA", , , "False"}}, 
-        {"[time_AM_AB / time_AM_BA]", {llayer+".time_AM_AB", llayer+".time_AM_BA", , , "False"}}, 
-        {"[time_MD_AB / time_MD_BA]", {llayer+".time_MD_AB", llayer+".time_MD_BA", , , "False"}}, 
-        {"[time_PM_AB / time_PM_BA]", {llayer+".time_PM_AB", llayer+".time_PM_BA", , , "False"}}, 
-        {"[time_OP_AB / time_OP_BA]", {llayer+".time_OP_AB", llayer+".time_OP_BA", , , "False"}}, 
+        {"[capacity_am_AB_capacity_am_BA]", {llayer+".capacity_am_AB", llayer+".capacity_am_BA", , , "False"}}, 
+        {"[capacity_pm_AB_capacity_pm_BA]", {llayer+".capacity_pm_AB", llayer+".capacity_pm_BA", , , "False"}}, 
+        {"[capacity_op_AB_capacity_op_BA]", {llayer+".capacity_op_AB", llayer+".capacity_op_BA", , , "False"}}, 
+        {"[capacity_md_AB_capacity_md_BA]", {llayer+".capacity_md_AB", llayer+".capacity_md_BA", , , "False"}}, 
+        {"[capacity_daily_AB_capacity_daily_BA]", {llayer+".capacity_daily_AB", llayer+".capacity_daily_BA", , , "False"}}, 
+        {"[SPD_FF_AB_SPD_FF_BA]", {llayer+".SPD_FF_AB", llayer+".SPD_FF_BA", , , "False"}}, 
+        {"[SPD_AM_AB_SPD_AM_BA]", {llayer+".SPD_AM_AB", llayer+".SPD_AM_BA", , , "False"}}, 
+        {"[SPD_MD_AB_SPD_MD_BA]", {llayer+".SPD_MD_AB", llayer+".SPD_MD_BA", , , "False"}}, 
+        {"[SPD_PM_AB_SPD_PM_BA]", {llayer+".SPD_PM_AB", llayer+".SPD_PM_BA", , , "False"}}, 
+        {"[SPD_OP_AB_SPD_OP_BA]", {llayer+".SPD_OP_AB", llayer+".SPD_OP_BA", , , "False"}}, 
+        {"[time_FF_AB_time_FF_BA]", {llayer+".time_FF_AB", llayer+".time_FF_BA", , , "False"}}, 
+        {"[time_AM_AB_time_AM_BA]", {llayer+".time_AM_AB", llayer+".time_AM_BA", , , "False"}}, 
+        {"[time_MD_AB_time_MD_BA]", {llayer+".time_MD_AB", llayer+".time_MD_BA", , , "False"}}, 
+        {"[time_PM_AB_time_PM_BA]", {llayer+".time_PM_AB", llayer+".time_PM_BA", , , "False"}}, 
+        {"[time_OP_AB_time_OP_BA]", {llayer+".time_OP_AB", llayer+".time_OP_BA", , , "False"}}, 
         {"hov", {llayer+".hov", llayer+".hov", , , "False"}}, 
         {"alpha", {llayer+".alpha", llayer+".alpha", , , "False"}}, 
         {"beta", {llayer+".beta", llayer+".beta", , , "False"}},
@@ -283,7 +283,7 @@ Macro "Build Hwy Network" (Args)
     end
     quit:
     return(ret_value)
-EndMacro
+endMacro
 
  
 //**************************************
@@ -357,7 +357,7 @@ Macro "Build Hwy Skims"(network_file, db_nodelyr, nlayer, skim, SkimField)
     FillMatrix(mc,,, {"Copy", 0}, {{"Diagonal", "Yes"}})
     quit:
     return(ret_value)
-EndMacro
+endMacro
 
 //**************************************
 //*    Add Intrazonal and Terminal   
@@ -386,7 +386,7 @@ Shared Scen_Dir
     // STEP 4: Merge Matrices
     Opts = null
     Opts.Input.[Target Currency] = {skim[1], "Length", "Origin", "Destination"}
-    Opts.Input.[Source Currencies] = {{Scen_Dir +  "outputs\\ExtDistSkims.mtx", "EE - Length", "Origin", "Destination"}}
+    Opts.Input.[Source Currencies] = {{Scen_Dir +  "outputs\\ExtDistSkims.mtx", "Length", "Origin", "Destination"}}
     Opts.Global.[Missing Option].[Force Missing] = "No"
     ret_value = RunMacro("TCB Run Operation", "Merge Matrices", Opts, &Ret)
     if !ret_value then goto quit
@@ -403,7 +403,7 @@ Shared Scen_Dir
           
     quit:
     return(ret_value)
-EndMacro
+endMacro
 
 Macro "AddCore" (HwySkims,CoreCount)
     shared Scen_Dir, loop
@@ -413,7 +413,7 @@ Macro "AddCore" (HwySkims,CoreCount)
         inMat = HwySkims[i][1]
         m = OpenMatrix(inMat,)
         
-        coreName = "Shortest Path - [time_" + HwySkims[i][3] + "_AB / time_" + HwySkims[i][3] + "_BA]"
+        coreName = "Shortest Path - [time_" + HwySkims[i][3] + "_AB_time_" + HwySkims[i][3] + "_BA]"
         
         AddMatrixCore(m, coreName)
         
@@ -424,7 +424,7 @@ Macro "AddCore" (HwySkims,CoreCount)
         mc2 := mc1
     end
 
-EndMacro
+endMacro
 
 Macro "SaveAndCopySkims" (HwySkims)
     shared Scen_Dir, loop
@@ -451,4 +451,4 @@ Macro "SaveAndCopySkims" (HwySkims)
         
     end
 
-EndMacro
+endMacro
