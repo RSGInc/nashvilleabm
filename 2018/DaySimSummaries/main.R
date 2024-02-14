@@ -15,7 +15,7 @@ library(Hmisc)
 library(data.table)
 library(plyr)
 
-setwd("U:/Projects/Clients/Nashville_storage/nashvilleabm_tcad9_test/2018/DaySimSummaries")
+setwd(getwd())
 
 #------------------------------------
 #Source functions and config settings
@@ -23,7 +23,6 @@ setwd("U:/Projects/Clients/Nashville_storage/nashvilleabm_tcad9_test/2018/DaySim
 source("utilfunc.R")
 #TODO function in package to create template config file in a specified location
 source("daysim_output_config.R")
-#source("daysim_output_config_nhts.R")
 
 progressStart("run DaySim summaries",14)
 
