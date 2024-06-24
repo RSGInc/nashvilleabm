@@ -83,11 +83,91 @@ Macro "Settings" (Args)
 	//outputs
 	mf.output_path		= mf.path + "outputs\\"
 	mf.V_PAfile			= mf.output_path + "Visitor_PA.bin"
-	mf.intsel			= "TAZID < 2930" //TODO: make this dynamic
+	mf.intsel			= "TAZID < 3008" //TODO: make this dynamic
 	mf.V_Distribution	= mf.output_path + "Visitor_OD.mtx"
 
 endMacro
 
+Macro "01_Model_Inputs" (tazvw)
+	shared mf
+
+	on error, notfound do
+		goto quit
+	end
+
+	parcel_lu_file_vw = OpenTable("parcel_lu_file_vw", "CSV", {mf.parcel_lu_file},{{"Delimiter", " "}})
+	hotel_file_vw = OpenTable("hotel_file_vw", "CSV", {mf.h_bed_file,})
+
+	jnvw = JoinViews(parcel_lu_file_vw + hotel_file_vw, parcel_lu_file_vw+".parcelid", hotel_file_vw+".ID", {{"N", }}) //
+	//Aggregate trips over some custom segments
+	aggflds = {{"hh_p","sum",},{"ENROLL_UG","sum",},{"nodes3_1","sum",},{"nodes4_1","sum",},{"emptot_p","sum",},{"Hospital_Beds","sum",},{"Hotel_Beds","sum",}}
+	
+	SetView(jnvw)
+	
+	zonalfile = mf.output_path + "ZonalSE.bin"
+	sevw = RunMacro("AggregateTable", jnvw+"|", "taz_p", aggflds, zonalfile)
+	CloseView(jnvw)
+
+	hh_file_vw = OpenTable("hh_file_vw", "CSV", {mf.hh_file},{{"Delimiter", " "}})
+	
+	//Aggregate trips over some custom segments
+	aggflds = {{"hhincome","avg",}}
+	
+	SetView(hh_file_vw)
+	
+	hhincfile = mf.output_path + "AvgInc.bin"
+	hhvw = RunMacro("AggregateTable", hh_file_vw+"|", "hhtaz", aggflds, hhincfile)
+
+	zonevw = OpenTable("zonevw", "FFB", {mf.output_path + "ZonalSE.bin",})
+	RunMacro("addfields", zonevw, {"Intersection", "IntDensx1000000", "AvgInc", "Spec_Gen", "SpecGen_Coeff"}  , {"i","r","r","i","r"})
+	{TAZID, Int3, Int4} = GetDataVectors(zonevw + "|", {"taz_p","nodes3_1","nodes4_1"}, {{"Sort Order",{{"taz_p","Ascending"}}}} )
+
+	{TAZ, ZoneArea} = GetDataVectors(tazvw + "|", {"ID", "SHAPE_AREA"}, {{"Sort Order",{{"ID","Ascending"}}}} )
+	
+	specvw = OpenTable("specvw", "FFB", {mf.v_spec_gen,})
+	
+	
+	hhvw = OpenTable("hhvw", "FFB", {mf.output_path + "AvgInc.bin",})
+
+	tazcount = VectorStatistic(TAZID, "Count", )
+	zerovec = Vector(tazcount, "Long", {{"Constant", 0}})
+	Intersection = nz(Int3) + nz(Int4)
+	IntscnDens = Intersection*1000000/ZoneArea
+	SetDataVectors(zonevw+"|", {{"Intersection", Intersection}, {"IntDensx1000000", IntscnDens}, {"AvgInc", zerovec}, {"Spec_Gen", zerovec}}, {{"Sort Order",{{zonevw+".taz_p","Ascending"}}}})
+	
+	jnvw = JoinViews(zonevw + hhvw, zonevw+".taz_p", hhvw+".hhtaz", {{"I", }})
+	HHIncome = GetDataVector(jnvw+"|", "AVG hhincome", {{"Sort Order",{{"taz_p","Ascending"}}}} )
+	SetDataVector(jnvw+"|", "AvgInc", HHIncome, {{"Sort Order",{{"taz_p","Ascending"}}}})
+	Closeview(jnvw)
+	
+
+	jnvw = JoinViews(zonevw + specvw, zonevw+".taz_p", specvw+".TAZID", {{"I", }})
+	SetView(jnvw)
+	int_zones = SelectByQuery("Internal", "Several", "Select * where "+mf.intsel,)
+	{special, Coefficient} = GetDataVectors(jnvw + "|Internal", {"TAZID", "Coeff"}, {{"Sort Order",{{"TAZID","Ascending"}}}} )
+	SetDataVectors(jnvw+"|Internal", {{"Spec_Gen", special}, {"SpecGen_Coeff", Coefficient}}, {{"Sort Order",{{zonevw+".taz_p","Ascending"}}}})
+	CloseView(jnvw)
+	
+	SetView(zonevw)
+	RunMacro("addfields", zonevw, {"TAZID"}  , {"i"})
+	{taz, special, coeffs} = GetDataVectors(zonevw + "|", {"taz_p", "Spec_Gen", "SpecGen_Coeff"}, {{"Sort Order",{{"taz_p","Ascending"}}}} )
+	specgen = if special > 0 then 1 else 0
+	SG_coeffs = if coeffs > 0 then coeffs else 0
+	SetDataVectors(zonevw+"|", {{"Spec_Gen", specgen}, {"SpecGen_Coeff", SG_coeffs}, {"TAZID", taz}}, {{"Sort Order",{{zonevw+".taz_p","Ascending"}}}})
+
+	
+	CloseView(zonevw)
+	CloseView(parcel_lu_file_vw)
+	CloseView(hotel_file_vw)
+	CloseView(hh_file_vw)
+	CloseView(hhvw)
+	CloseView(specvw)
+
+	ok=1
+	quit:
+		Return(ok)
+	
+endMacro
 
 Macro "02_VTripGen" (tazvw)
 	shared mf
@@ -284,87 +364,7 @@ Macro "05_VTripTOD"
 		
 endMacro
 
-Macro "01_Model_Inputs" (tazvw)
-	shared mf
 
-	on error, notfound do
-		goto quit
-	end
-
-	parcel_lu_file_vw = OpenTable("parcel_lu_file_vw", "CSV", {mf.parcel_lu_file},{{"Delimiter", " "}})
-	hotel_file_vw = OpenTable("hotel_file_vw", "CSV", {mf.h_bed_file,})
-
-	jnvw = JoinViews(parcel_lu_file_vw + hotel_file_vw, parcel_lu_file_vw+".parcelid", hotel_file_vw+".ID", {{"I", }})
-	
-	//Aggregate trips over some custom segments
-	aggflds = {{"hh_p","sum",},{"ENROLL_UG","sum",},{"nodes3_1","sum",},{"nodes4_1","sum",},{"emptot_p","sum",},{"Hospital_Beds","sum",},{"Hotel_Beds","sum",}}
-	
-	SetView(jnvw)
-	
-	zonalfile = mf.output_path + "ZonalSE.bin"
-	sevw = RunMacro("AggregateTable", jnvw+"|", "taz_p", aggflds, zonalfile)
-	CloseView(jnvw)
-
-	hh_file_vw = OpenTable("hh_file_vw", "CSV", {mf.hh_file},{{"Delimiter", " "}})
-	
-	//Aggregate trips over some custom segments
-	aggflds = {{"hhincome","avg",}}
-	
-	SetView(hh_file_vw)
-	
-	hhincfile = mf.output_path + "AvgInc.bin"
-	hhvw = RunMacro("AggregateTable", hh_file_vw+"|", "hhtaz", aggflds, hhincfile)
-
-	zonevw = OpenTable("zonevw", "FFB", {mf.output_path + "ZonalSE.bin",})
-	RunMacro("addfields", zonevw, {"Intersection", "IntDensx1000000", "AvgInc", "Spec_Gen", "SpecGen_Coeff"}  , {"i","r","r","i","r"})
-	{TAZID, Int3, Int4} = GetDataVectors(zonevw + "|", {"taz_p","nodes3_1","nodes4_1"}, {{"Sort Order",{{"taz_p","Ascending"}}}} )
-
-	{TAZ, ZoneArea} = GetDataVectors(tazvw + "|", {"ID", "SHAPE_AREA"}, {{"Sort Order",{{"ID","Ascending"}}}} )
-	
-	specvw = OpenTable("specvw", "FFB", {mf.v_spec_gen,})
-	
-	
-	hhvw = OpenTable("hhvw", "FFB", {mf.output_path + "AvgInc.bin",})
-
-	tazcount = VectorStatistic(TAZID, "Count", )
-	zerovec = Vector(tazcount, "Long", {{"Constant", 0}})
-	Intersection = nz(Int3) + nz(Int4)
-	IntscnDens = Intersection*1000000/ZoneArea
-	SetDataVectors(zonevw+"|", {{"Intersection", Intersection}, {"IntDensx1000000", IntscnDens}, {"AvgInc", zerovec}, {"Spec_Gen", zerovec}}, {{"Sort Order",{{zonevw+".taz_p","Ascending"}}}})
-	
-	jnvw = JoinViews(zonevw + hhvw, zonevw+".taz_p", hhvw+".hhtaz", {{"I", }})
-	HHIncome = GetDataVector(jnvw+"|", "AVG hhincome", {{"Sort Order",{{"taz_p","Ascending"}}}} )
-	SetDataVector(jnvw+"|", "AvgInc", HHIncome, {{"Sort Order",{{"taz_p","Ascending"}}}})
-	Closeview(jnvw)
-	
-
-	jnvw = JoinViews(zonevw + specvw, zonevw+".taz_p", specvw+".TAZID", {{"I", }})
-	SetView(jnvw)
-	int_zones = SelectByQuery("Internal", "Several", "Select * where "+mf.intsel,)
-	{special, Coefficient} = GetDataVectors(jnvw + "|Internal", {"TAZID", "Coeff"}, {{"Sort Order",{{"TAZID","Ascending"}}}} )
-	SetDataVectors(jnvw+"|Internal", {{"Spec_Gen", special}, {"SpecGen_Coeff", Coefficient}}, {{"Sort Order",{{zonevw+".taz_p","Ascending"}}}})
-	CloseView(jnvw)
-	
-	SetView(zonevw)
-	RunMacro("addfields", zonevw, {"TAZID"}  , {"i"})
-	{taz, special, coeffs} = GetDataVectors(zonevw + "|", {"taz_p", "Spec_Gen", "SpecGen_Coeff"}, {{"Sort Order",{{"taz_p","Ascending"}}}} )
-	specgen = if special > 0 then 1 else 0
-	SG_coeffs = if coeffs > 0 then coeffs else 0
-	SetDataVectors(zonevw+"|", {{"Spec_Gen", specgen}, {"SpecGen_Coeff", SG_coeffs}, {"TAZID", taz}}, {{"Sort Order",{{zonevw+".taz_p","Ascending"}}}})
-
-	
-	CloseView(zonevw)
-	CloseView(parcel_lu_file_vw)
-	CloseView(hotel_file_vw)
-	CloseView(hh_file_vw)
-	CloseView(hhvw)
-	CloseView(specvw)
-
-	ok=1
-	quit:
-		Return(ok)
-	
-endMacro
 
 
 Macro "LoadConfig" (csvfile)

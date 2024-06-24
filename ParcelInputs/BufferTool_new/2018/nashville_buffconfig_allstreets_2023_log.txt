@@ -1,0 +1,23 @@
+INFO: DaySim Buffering Tool Log Started: Saturday, April 20, 2024 @ 7:28:37 AM
+INFO: Started buffering process: Saturday, April 20, 2024 @ 7:28:37 AM
+INFO: Started buffering process: Saturday, April 20, 2024 @ 7:28:37 AM
+INFO: Started reading node data: Saturday, April 20, 2024 @ 7:28:37 AM
+INFO: Finished reading node data: Saturday, April 20, 2024 @ 7:28:38 AM
+INFO: Started reading parcel data: Saturday, April 20, 2024 @ 7:28:38 AM
+INFO: Finished reading parcel data: Saturday, April 20, 2024 @ 7:28:38 AM
+INFO: Started reading intersection data: Saturday, April 20, 2024 @ 7:28:38 AM
+INFO: Finished reading intersection data: Saturday, April 20, 2024 @ 7:28:38 AM
+INFO: Started reading transit stops data: Saturday, April 20, 2024 @ 7:28:38 AM
+INFO: Finished reading transit stops data: Saturday, April 20, 2024 @ 7:28:38 AM
+INFO: Started reading open spaces data: Saturday, April 20, 2024 @ 7:28:38 AM
+INFO: Finished reading open spaces data: Saturday, April 20, 2024 @ 7:28:38 AM
+INFO: Started creating node correspondences: Saturday, April 20, 2024 @ 7:28:38 AM
+INFO: Started creating parcel-node correspondence: Saturday, April 20, 2024 @ 7:28:38 AM
+INFO: Finished creating parcel-node correspondence: Saturday, April 20, 2024 @ 7:28:47 AM
+INFO: Started creating intersection-node correspondence: Saturday, April 20, 2024 @ 7:28:47 AM
+INFO: Started creating stop-node correspondence: Saturday, April 20, 2024 @ 7:29:12 AM
+INFO: Finished creating node correspondences: Saturday, April 20, 2024 @ 7:29:13 AM
+INFO: Started precalculating distance decay weights: Saturday, April 20, 2024 @ 7:29:13 AM
+INFO: Finished precalculating distance decay weights: Saturday, April 20, 2024 @ 7:29:13 AM
+INFO: Started writing out buffered parcel data: Saturday, April 20, 2024 @ 7:29:13 AM
+INFO: Reading node-node distance information from E:\Projects\Clients\NashvilleMPO\ModelUpdate2023\Model\Development\nashabm_TCAD9_transit\ParcelInputs\BufferTool_new\2018\node_node_distances.dat: Saturday, April 20, 2024 @ 7:29:13 AM

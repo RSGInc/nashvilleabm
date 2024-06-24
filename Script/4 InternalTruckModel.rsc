@@ -265,7 +265,7 @@ Macro "Truck_Model"
 	 
 	//River Crossing
 	mcriv = RunMacro("CheckMatrixCore", kmat, "RiverX (Skim)", "TAZ_ID", "TAZ_ID",)
-	
+	mcriv := min(mcriv, 30) 
 	//Intrazonal 1s
 	mciz  = RunMacro("CheckMatrixCore", kmat, "IZ", "TAZ_ID", "TAZ_ID",)
 	mciz := 0     

@@ -653,7 +653,7 @@ Macro "BuildDriveConnectors"
             drive_distance   = GetMatrixVector(dacc_dist_cur,  {{"Row", StringToInt(rowID[i])}})
             DriveTime    = Vector(drive_time.length, "Float",)
             // identify production area type
-            rh1 = LocateRecord(tazview+"|", "ID_NEW_new", {StringToInt(rowID[i])}, {{"Exact", "True"}})
+            rh1 = LocateRecord(tazview+"|", "TAZ_ID", {StringToInt(rowID[i])}, {{"Exact", "True"}})
             if rh1 <> null then ProdAType=tazview.Predict
             if ProdAType = "CBD" then DrWt = 99       // no connector from CBD
             if (ProdAType = "URBAN" | ProdAType = "SU" | ProdAType = "RURAL") then DrWt = 1.5

@@ -2,15 +2,15 @@
 <DaySimBufferingTool>
   <INPUTS>
     <FILEPATHS>
-      <ParcelFile>E:\Projects\Clients\Nashville\Model\BaseYear\Development\ABM_TCAD8_TAZSPLIT\ParcelInputs\BufferTool\2018\nashville_landuse_2017.csv</ParcelFile>
-      <IntersectionFile>E:\Projects\Clients\Nashville\Model\BaseYear\Development\ABM_TCAD8_TAZSPLIT\ParcelInputs\BufferTool\2018\intersections_nashville.txt</IntersectionFile>
-      <TransitStopsFile>E:\Projects\Clients\Nashville\Model\BaseYear\Development\ABM_TCAD8_TAZSPLIT\ParcelInputs\BufferTool\2018\transit_stops_2017.csv</TransitStopsFile>
+      <ParcelFile>E:\Projects\Clients\NashvilleMPO\ModelUpdate2023\Model\Development\nashabm_TCAD9_transit\ParcelInputs\BufferTool\2018\nashville_landuse_2017.csv</ParcelFile>
+      <IntersectionFile>E:\Projects\Clients\NashvilleMPO\ModelUpdate2023\Model\Development\nashabm_TCAD9_transit\ParcelInputs\BufferTool\2018\intersections_nashville.txt</IntersectionFile>
+      <TransitStopsFile>E:\Projects\Clients\NashvilleMPO\ModelUpdate2023\Model\Development\nashabm_TCAD9_transit\ParcelInputs\BufferTool\2018\transit_stops_2017.csv</TransitStopsFile>
       <OpenSpacesFile />
       <CircuityFile />
       <NodeDistanceType>DaySim Format</NodeDistanceType>
-      <NodeFile>E:\Projects\Clients\Nashville\Model\BaseYear\Development\ABM_TCAD8_TAZSPLIT\ParcelInputs\BufferTool\2018\input_node.csv</NodeFile>
-      <NodeDistanceFile>E:\Projects\Clients\Nashville\Model\BaseYear\Development\ABM_TCAD8_TAZSPLIT\ParcelInputs\BufferTool\2018\node_node_distances.dat</NodeDistanceFile>
-      <ParcelNodeFile>E:\Projects\Clients\Nashville\Model\BaseYear\Development\ABM_TCAD8_TAZSPLIT\ParcelInputs\BufferTool\2018\mz_node_2010.dat</ParcelNodeFile>
+      <NodeFile>E:\Projects\Clients\NashvilleMPO\ModelUpdate2023\Model\Development\nashabm_TCAD9_transit\ParcelInputs\BufferTool\2018\input_node.csv</NodeFile>
+      <NodeDistanceFile>E:\Projects\Clients\NashvilleMPO\ModelUpdate2023\Model\Development\nashabm_TCAD9_transit\ParcelInputs\BufferTool\2018\node_node_distances.dat</NodeDistanceFile>
+      <ParcelNodeFile>E:\Projects\Clients\NashvilleMPO\ModelUpdate2023\Model\Development\nashabm_TCAD9_transit\ParcelInputs\BufferTool\2018\mz_node_2010.dat</ParcelNodeFile>
       <OpenSpacesNodeFile />
     </FILEPATHS>
     <PARAMETERS>
@@ -27,7 +27,7 @@
     </PARAMETERS>
   </INPUTS>
   <OUTPUTS>
-    <BufferedParcelFile>E:\Projects\Clients\Nashville\Model\BaseYear\Development\ABM_TCAD8_TAZSPLIT\ParcelInputs\BufferTool\2018\nashville_mzbuffer_allstreets_2017.dat</BufferedParcelFile>
-    <SaveXMLFile>E:\Projects\Clients\Nashville\Model\BaseYear\Development\ABM_TCAD8_TAZSPLIT\ParcelInputs\BufferTool\2018\nashville_buffconfig_allstreets_2017.xml</SaveXMLFile>
+    <BufferedParcelFile>E:\Projects\Clients\NashvilleMPO\ModelUpdate2023\Model\Development\nashabm_TCAD9_transit\ParcelInputs\BufferTool\2018\nashville_mzbuffer_allstreets_2017.dat</BufferedParcelFile>
+    <SaveXMLFile>E:\Projects\Clients\NashvilleMPO\ModelUpdate2023\Model\Development\nashabm_TCAD9_transit\ParcelInputs\BufferTool\2018\nashville_buffconfig_allstreets_2017.xml</SaveXMLFile>
   </OUTPUTS>
 </DaySimBufferingTool>

@@ -1,0 +1,345 @@
+Fri Mar  1 17:06:38 2024, Finished Initialization in 6 mins
+Fri Mar  1 17:09:10 2024, Finished Initialization - Area Type in 3 mins
+Fri Mar  1 17:40:25 2024, Finished Initialization - Capacity and FF speed in 31 mins
+Fri Mar  1 17:42:25 2024, Finished Highway Skimming - Feedback Loop 1 in 2 mins
+Fri Mar  1 19:44:09 2024, Finished Transit Skimming  in 122 mins
+Fri Mar  1 19:49:00 2024, Finished Internal Truck Model in 2 mins
+Fri Mar  1 19:50:06 2024, Finished Visitor Model in 1 mins
+Fri Mar  1 23:47:52 2024, Finished OMX Re Export in 232 mins
+Mon Mar  4 12:51:35 2024, Finished DaySim Iteration 1 in 3664 mins
+Mon Mar  4 12:56:55 2024, Finished Initialization in 4 mins
+Mon Mar  4 12:58:04 2024, Finished Initialization - Area Type in 2 mins
+Mon Mar  4 13:27:09 2024, Finished Initialization - Capacity and FF speed in 29 mins
+Mon Mar  4 13:45:24 2024, Finished Highway Skimming - Feedback Loop 1 in 1 mins
+Mon Mar  4 15:26:23 2024, Finished Transit Skimming  in 101 mins
+Mon Mar  4 16:56:33 2024, Finished Internal Truck Model in 1 mins
+Mon Mar  4 20:15:34 2024, Finished Visitor Model in 1 mins
+Tue Mar  5 00:39:34 2024, Finished OMX Re Export in 234 mins
+Tue Mar  5 11:56:43 2024, Finished DaySim Iteration 1 in 677 mins
+Tue Mar  5 11:56:48 2024, Finished DaySim Summaries in 0 mins
+Tue Mar  5 15:35:40 2024, Finished OMX Re Export in 207 mins
+Tue Mar  5 16:40:57 2024, Finished DaySim Iteration 1 in 65 mins
+Tue Mar  5 16:45:44 2024, Finished DaySim Summaries in 5 mins
+Tue Mar  5 17:25:17 2024, Finished DaySim Trip Tables in 40 mins
+Tue Mar  5 17:34:42 2024, Finished Highay Pre Assignment  in 2 mins
+Tue Mar  5 17:56:47 2024, Finished Highay Assignment  in 22 mins
+Tue Mar  5 18:07:34 2024, Finished Highway Post Processing  in 11 mins
+Tue Mar  5 18:09:55 2024, Finished Update Travel Times  in 2 mins
+Tue Mar  5 18:29:32 2024, Finished Initialization in 12 mins
+Tue Mar  5 18:33:10 2024, Finished Initialization - Area Type in 4 mins
+Tue Mar  5 19:05:04 2024, Finished Initialization - Capacity and FF speed in 32 mins
+Tue Mar  5 19:08:04 2024, Finished Highway Skimming - Feedback Loop 1 in 3 mins
+Tue Mar  5 21:00:35 2024, Finished Transit Skimming  in 112 mins
+Tue Mar  5 21:05:40 2024, Finished Internal Truck Model in 1 mins
+Tue Mar  5 21:06:55 2024, Finished Visitor Model in 1 mins
+Wed Mar  6 00:52:54 2024, Finished OMX Re Export in 208 mins
+Wed Mar  6 02:12:11 2024, Finished DaySim Iteration 1 in 80 mins
+Wed Mar  6 02:16:57 2024, Finished DaySim Summaries in 4 mins
+Wed Mar  6 02:56:40 2024, Finished DaySim Trip Tables in 40 mins
+Wed Mar  6 02:57:29 2024, Finished Highay Pre Assignment  in 1 mins
+Wed Mar  6 03:20:03 2024, Finished Highay Assignment  in 23 mins
+Wed Mar  6 03:43:58 2024, Finished Highway Post Processing  in 23 mins
+Wed Mar  6 03:46:50 2024, Finished Update Travel Times  in 3 mins
+Mon Mar 11 20:57:41 2024, Finished Initialization in 5 mins
+Mon Mar 11 21:08:22 2024, Finished Initialization in 5 mins
+Mon Mar 11 21:10:23 2024, Finished Initialization - Area Type in 2 mins
+Mon Mar 11 21:38:12 2024, Finished Initialization - Capacity and FF speed in 28 mins
+Mon Mar 11 21:39:51 2024, Finished Highway Skimming - Feedback Loop 1 in 1 mins
+Mon Mar 11 22:48:16 2024, Finished Initialization in 6 mins
+Mon Mar 11 22:57:59 2024, Finished Initialization - Area Type in 9 mins
+Mon Mar 11 23:27:12 2024, Finished Initialization - Capacity and FF speed in 30 mins
+Mon Mar 11 23:40:08 2024, Finished Highway Skimming - Feedback Loop 1 in 2 mins
+Mon Mar 11 23:53:29 2024, Finished Initialization in 6 mins
+Tue Mar 12 00:03:08 2024, Finished Initialization - Area Type in 10 mins
+Tue Mar 12 00:32:44 2024, Finished Initialization - Capacity and FF speed in 29 mins
+Tue Mar 12 00:36:34 2024, Finished Highway Skimming - Feedback Loop 1 in 2 mins
+Tue Mar 12 00:46:37 2024, Finished Highway Skimming - Feedback Loop 1 in 2 mins
+Tue Mar 12 13:08:21 2024, Finished Initialization in 4 mins
+Tue Mar 12 13:11:26 2024, Finished Initialization - Area Type in 3 mins
+Tue Mar 12 13:39:55 2024, Finished Initialization - Capacity and FF speed in 28 mins
+Tue Mar 12 13:41:14 2024, Finished Highway Skimming - Feedback Loop 1 in 2 mins
+Tue Mar 12 15:23:27 2024, Finished Initialization in 5 mins
+Tue Mar 12 15:34:28 2024, Finished Initialization - Area Type in 11 mins
+Tue Mar 12 16:10:24 2024, Finished Initialization - Capacity and FF speed in 36 mins
+Tue Mar 12 16:12:40 2024, Finished Highway Skimming - Feedback Loop 1 in 2 mins
+Wed Mar 13 18:04:37 2024, Finished Initialization in 6 mins
+Wed Mar 13 18:14:18 2024, Finished Initialization - Area Type in 10 mins
+Wed Mar 13 18:44:14 2024, Finished Initialization - Capacity and FF speed in 30 mins
+Wed Mar 13 18:46:07 2024, Finished Highway Skimming - Feedback Loop 1 in 2 mins
+Fri Mar 15 14:41:49 2024, Finished Initialization in 5 mins
+Fri Mar 15 14:54:44 2024, Finished Initialization - Area Type in 13 mins
+Fri Mar 15 15:31:23 2024, Finished Initialization - Capacity and FF speed in 37 mins
+Fri Mar 15 15:58:19 2024, Finished Highway Skimming - Feedback Loop 1 in 2 mins
+Mon Mar 18 15:19:25 2024, Finished Highway Skimming - Feedback Loop 1 in 1 mins
+Mon Mar 18 15:24:39 2024, Finished Highway Skimming - Feedback Loop 1 in 1 mins
+Tue Apr  9 13:33:20 2024, Finished Initialization in 8 mins
+Tue Apr  9 13:52:59 2024, Finished Initialization in 6 mins
+Tue Apr  9 14:06:01 2024, Finished Initialization - Area Type in 14 mins
+Tue Apr  9 14:36:57 2024, Finished Initialization - Capacity and FF speed in 30 mins
+Tue Apr  9 14:49:30 2024, Finished Highway Skimming - Feedback Loop 1 in 4 mins
+Tue Apr  9 19:25:39 2024, Finished Transit Skimming  in 157 mins
+Wed Apr 10 14:42:01 2024, Finished Initialization in 5 mins
+Wed Apr 10 14:52:59 2024, Finished Initialization - Area Type in 10 mins
+Wed Apr 10 15:23:26 2024, Finished Initialization - Capacity and FF speed in 30 mins
+Wed Apr 10 17:21:09 2024, Finished Transit Skimming  in 118 mins
+Wed Apr 10 20:54:59 2024, Finished Initialization in 3 mins
+Wed Apr 10 21:04:04 2024, Finished Initialization - Area Type in 10 mins
+Wed Apr 10 21:33:24 2024, Finished Initialization - Capacity and FF speed in 29 mins
+Wed Apr 10 21:35:52 2024, Finished Highway Skimming - Feedback Loop 1 in 2 mins
+Wed Apr 10 23:32:36 2024, Finished Transit Skimming  in 117 mins
+Mon Apr 22 13:25:41 2024, Finished Internal Truck Model in 1 mins
+Mon Apr 22 13:52:41 2024, Finished Initialization in 5 mins
+Mon Apr 22 14:02:35 2024, Finished Initialization - Area Type in 10 mins
+Mon Apr 22 14:31:40 2024, Finished Initialization - Capacity and FF speed in 29 mins
+Mon Apr 22 14:33:35 2024, Finished Highway Skimming - Feedback Loop 1 in 2 mins
+Tue Apr 23 12:29:17 2024, Finished Initialization in 5 mins
+Tue Apr 23 12:38:20 2024, Finished Initialization - Area Type in 9 mins
+Tue Apr 23 13:06:46 2024, Finished Initialization - Capacity and FF speed in 28 mins
+Tue Apr 23 13:08:30 2024, Finished Highway Skimming - Feedback Loop 1 in 2 mins
+Tue Apr 23 14:54:18 2024, Finished Transit Skimming  in 106 mins
+Tue Apr 23 14:58:12 2024, Finished Internal Truck Model in 2 mins
+Tue Apr 30 18:21:38 2024, Finished Highway Skimming - Feedback Loop 1 in 1 mins
+Tue Apr 30 18:30:50 2024, Finished Highway Skimming - Feedback Loop 1 in 1 mins
+Thu May  2 16:39:54 2024, Finished Highway Skimming - Feedback Loop 1 in 1 mins
+Thu May  2 18:23:19 2024, Finished Highway Skimming - Feedback Loop 1 in 2 mins
+Thu May  2 18:30:08 2024, Finished Highway Skimming - Feedback Loop 1 in 2 mins
+Thu May  2 19:35:30 2024, Finished Visitor Model in 1 mins
+Fri May  3 13:47:03 2024, Finished Initialization in 6 mins
+Fri May  3 13:57:14 2024, Finished Initialization - Area Type in 10 mins
+Fri May  3 14:28:01 2024, Finished Initialization - Capacity and FF speed in 31 mins
+Fri May  3 14:29:58 2024, Finished Highway Skimming - Feedback Loop 1 in 1 mins
+Fri May  3 16:20:55 2024, Finished Transit Skimming  in 111 mins
+Fri May  3 16:25:00 2024, Finished Internal Truck Model in 2 mins
+Fri May  3 16:26:11 2024, Finished Visitor Model in 1 mins
+Fri May  3 20:00:52 2024, Finished OMX Re Export in 209 mins
+Fri May  3 20:53:18 2024, Finished DaySim Iteration 1 in 53 mins
+Tue May  7 17:12:23 2024, Finished Visitor Model in 0 mins
+Tue May  7 18:22:40 2024, Finished DaySim Iteration 1 in 1 mins
+Tue May  7 19:19:47 2024, Finished DaySim Iteration 1 in 56 mins
+Tue May  7 20:04:56 2024, Finished DaySim Trip Tables in 45 mins
+Wed May  8 18:42:12 2024, Finished Highay Pre Assignment  in 2 mins
+Wed May  8 19:08:38 2024, Finished Highay Assignment  in 26 mins
+Wed May  8 19:15:15 2024, Finished Highway Post Processing  in 7 mins
+Wed May  8 19:16:37 2024, Finished Update Travel Times  in 1 mins
+Thu May  9 19:21:10 2024, Finished Visitor Model in 1 mins
+Thu May  9 19:39:40 2024, Finished Visitor Model in 0 mins
+Thu May  9 19:54:02 2024, Finished Internal Truck Model in 2 mins
+Thu May  9 20:00:40 2024, Finished Initialization in 5 mins
+Thu May  9 20:10:24 2024, Finished Initialization - Area Type in 10 mins
+Thu May  9 20:39:20 2024, Finished Initialization - Capacity and FF speed in 29 mins
+Thu May  9 20:41:20 2024, Finished Highway Skimming - Feedback Loop 1 in 2 mins
+Thu May  9 22:34:55 2024, Finished Transit Skimming  in 113 mins
+Thu May  9 22:39:14 2024, Finished Internal Truck Model in 2 mins
+Thu May  9 22:40:33 2024, Finished Visitor Model in 1 mins
+Thu May  9 23:38:28 2024, Finished DaySim Iteration 1 in 58 mins
+Fri May 10 00:25:23 2024, Finished DaySim Trip Tables in 47 mins
+Fri May 10 00:26:23 2024, Finished Highay Pre Assignment  in 1 mins
+Fri May 10 00:52:12 2024, Finished Highay Assignment  in 26 mins
+Fri May 10 01:05:15 2024, Finished Highway Post Processing  in 13 mins
+Fri May 10 01:06:51 2024, Finished Update Travel Times  in 1 mins
+Fri May 10 01:08:43 2024, Finished Highway Skimming - Feedback Loop 2 in 2 mins
+Fri May 10 03:00:00 2024, Finished Transit Skimming  in 112 mins
+Fri May 10 03:02:05 2024, Finished Internal Truck Model in 2 mins
+Fri May 10 03:03:19 2024, Finished Visitor Model in 1 mins
+Fri May 10 03:59:38 2024, Finished DaySim Iteration 1 in 56 mins
+Fri May 10 04:46:38 2024, Finished DaySim Trip Tables in 47 mins
+Fri May 10 04:47:50 2024, Finished Highay Pre Assignment  in 1 mins
+Fri May 10 05:13:41 2024, Finished Highay Assignment  in 26 mins
+Fri May 10 05:27:45 2024, Finished Highway Post Processing  in 14 mins
+Fri May 10 05:29:43 2024, Finished Update Travel Times  in 2 mins
+Fri May 10 05:31:37 2024, Finished Highway Skimming - Feedback Loop 3 in 2 mins
+Fri May 10 07:24:54 2024, Finished Transit Skimming  in 113 mins
+Fri May 10 07:26:48 2024, Finished Internal Truck Model in 2 mins
+Fri May 10 07:27:59 2024, Finished Visitor Model in 1 mins
+Fri May 10 08:24:02 2024, Finished DaySim Iteration 1 in 56 mins
+Fri May 10 08:29:35 2024, Finished DaySim Summaries in 5 mins
+Fri May 10 09:16:58 2024, Finished DaySim Trip Tables in 47 mins
+Fri May 10 09:18:01 2024, Finished Highay Pre Assignment  in 2 mins
+Fri May 10 09:43:58 2024, Finished Highay Assignment  in 25 mins
+Fri May 10 09:54:17 2024, Finished Transit Assignment  in 11 mins
+Fri May 10 15:06:21 2024, Finished Transit Assignment  in 7 mins
+Fri May 10 15:56:15 2024, Finished Transit Report  in 19 mins
+Fri May 10 16:08:48 2024, Finished Highway Post Processing  in 12 mins
+Fri May 10 17:45:08 2024, Finished Highway Skimming - Feedback Loop 2 in 1 mins
+Fri May 10 19:06:36 2024, Finished Initialization in 4 mins
+Fri May 10 19:16:14 2024, Finished Initialization - Area Type in 10 mins
+Fri May 10 19:44:52 2024, Finished Initialization - Capacity and FF speed in 28 mins
+Fri May 10 19:46:42 2024, Finished Highway Skimming - Feedback Loop 1 in 2 mins
+Fri May 10 21:40:00 2024, Finished Transit Skimming  in 114 mins
+Fri May 10 21:44:20 2024, Finished Internal Truck Model in 2 mins
+Fri May 10 21:45:35 2024, Finished Visitor Model in 1 mins
+Sat May 11 01:30:03 2024, Finished OMX Re Export in 212 mins
+Sat May 11 02:27:35 2024, Finished DaySim Iteration 1 in 57 mins
+Sat May 11 03:13:07 2024, Finished DaySim Trip Tables in 46 mins
+Sat May 11 03:14:15 2024, Finished Highay Pre Assignment  in 1 mins
+Sat May 11 03:40:01 2024, Finished Highay Assignment  in 26 mins
+Sat May 11 03:53:51 2024, Finished Highway Post Processing  in 13 mins
+Sat May 11 03:55:28 2024, Finished Update Travel Times  in 2 mins
+Sat May 11 03:57:31 2024, Finished Highway Skimming - Feedback Loop 2 in 2 mins
+Sat May 11 05:51:07 2024, Finished Transit Skimming  in 114 mins
+Sat May 11 05:53:29 2024, Finished Internal Truck Model in 2 mins
+Sat May 11 05:54:42 2024, Finished Visitor Model in 1 mins
+Sat May 11 09:50:27 2024, Finished OMX Re Export in 222 mins
+Sat May 11 10:48:09 2024, Finished DaySim Iteration 1 in 58 mins
+Sat May 11 11:32:42 2024, Finished DaySim Trip Tables in 44 mins
+Sat May 11 11:33:54 2024, Finished Highay Pre Assignment  in 1 mins
+Sat May 11 11:59:47 2024, Finished Highay Assignment  in 26 mins
+Sat May 11 12:11:43 2024, Finished Highway Post Processing  in 12 mins
+Sat May 11 12:13:45 2024, Finished Update Travel Times  in 2 mins
+Sat May 11 12:15:48 2024, Finished Highway Skimming - Feedback Loop 3 in 2 mins
+Sat May 11 14:08:02 2024, Finished Transit Skimming  in 113 mins
+Sat May 11 14:10:18 2024, Finished Internal Truck Model in 2 mins
+Sat May 11 14:11:29 2024, Finished Visitor Model in 1 mins
+Sat May 11 18:01:34 2024, Finished OMX Re Export in 216 mins
+Sat May 11 18:59:17 2024, Finished DaySim Iteration 1 in 58 mins
+Sat May 11 19:04:45 2024, Finished DaySim Summaries in 5 mins
+Sat May 11 19:49:55 2024, Finished DaySim Trip Tables in 45 mins
+Sat May 11 19:51:09 2024, Finished Highay Pre Assignment  in 2 mins
+Sat May 11 20:17:32 2024, Finished Highay Assignment  in 26 mins
+Sat May 11 20:27:58 2024, Finished Transit Assignment  in 10 mins
+Sat May 11 20:46:34 2024, Finished Transit Report  in 19 mins
+Sat May 11 20:58:02 2024, Finished Highway Post Processing  in 12 mins
+Sat May 11 21:00:44 2024, Finished Update Travel Times  in 2 mins
+Sat May 11 21:04:29 2024, Finished Transit Stop Summary  in 4 mins
+Tue May 14 18:16:56 2024, Finished Highay Assignment  in 26 mins
+Tue May 14 18:51:49 2024, Finished Highway Post Processing  in 10 mins
+Wed May 15 16:00:37 2024, Finished Highway Post Processing  in 11 mins
+Wed May 15 16:36:45 2024, Finished Highway Post Processing  in 11 mins
+Mon May 27 14:02:22 2024, Finished Initialization in 3 mins
+Mon May 27 14:05:29 2024, Finished Initialization - Area Type in 3 mins
+Mon May 27 14:33:25 2024, Finished Initialization - Capacity and FF speed in 28 mins
+Mon May 27 14:34:50 2024, Finished Highway Skimming - Feedback Loop 1 in 1 mins
+Mon May 27 20:00:47 2024, Finished Initialization in 4 mins
+Mon May 27 20:04:28 2024, Finished Initialization - Area Type in 4 mins
+Mon May 27 20:35:55 2024, Finished Initialization - Capacity and FF speed in 31 mins
+Mon May 27 20:37:47 2024, Finished Highway Skimming - Feedback Loop 1 in 2 mins
+Thu May 30 13:51:49 2024, Finished Initialization in 3 mins
+Thu May 30 14:00:24 2024, Finished Initialization - Area Type in 9 mins
+Thu May 30 14:29:07 2024, Finished Initialization - Capacity and FF speed in 29 mins
+Thu May 30 14:31:07 2024, Finished Highway Skimming - Feedback Loop 1 in 2 mins
+Thu May 30 16:21:41 2024, Finished Transit Skimming  in 110 mins
+Thu May 30 16:27:57 2024, Finished Internal Truck Model in 4 mins
+Thu May 30 16:29:13 2024, Finished Visitor Model in 2 mins
+Thu May 30 20:21:15 2024, Finished OMX Re Export in 218 mins
+Mon Jun  3 14:47:53 2024, Finished DaySim Iteration 1 in -39214 mins
+Mon Jun  3 15:11:00 2024, Finished DaySim Trip Tables in 24 mins
+Mon Jun  3 15:11:23 2024, Finished Highay Pre Assignment  in 0 mins
+Mon Jun  3 15:37:52 2024, Finished Highay Assignment  in 26 mins
+Mon Jun  3 15:43:54 2024, Finished Highway Post Processing  in 6 mins
+Mon Jun  3 15:45:17 2024, Finished Update Travel Times  in 2 mins
+Mon Jun  3 15:46:44 2024, Finished Highway Skimming - Feedback Loop 2 in 1 mins
+Mon Jun  3 20:34:08 2024, Finished OMX Re Export in 70 mins
+Mon Jun  3 20:34:14 2024, Finished DaySim Iteration 1 in 0 mins
+Mon Jun  3 20:40:06 2024, Finished Initialization in 6 mins
+Mon Jun  3 20:50:05 2024, Finished Initialization - Area Type in 10 mins
+Mon Jun  3 21:18:45 2024, Finished Initialization - Capacity and FF speed in 28 mins
+Mon Jun  3 21:20:51 2024, Finished Highway Skimming - Feedback Loop 1 in 2 mins
+Mon Jun  3 23:13:49 2024, Finished Transit Skimming  in 113 mins
+Mon Jun  3 23:18:48 2024, Finished Internal Truck Model in 2 mins
+Mon Jun  3 23:20:02 2024, Finished Visitor Model in 2 mins
+Tue Jun  4 03:17:55 2024, Finished OMX Re Export in 223 mins
+Tue Jun  4 06:53:56 2024, Finished DaySim Iteration 1 in 216 mins
+Tue Jun  4 07:41:45 2024, Finished DaySim Trip Tables in 48 mins
+Tue Jun  4 07:42:43 2024, Finished Highay Pre Assignment  in 1 mins
+Tue Jun  4 08:25:24 2024, Finished Highay Assignment  in 43 mins
+Tue Jun  4 08:37:29 2024, Finished Highway Post Processing  in 12 mins
+Tue Jun  4 08:39:13 2024, Finished Update Travel Times  in 2 mins
+Tue Jun  4 08:41:41 2024, Finished Highway Skimming - Feedback Loop 2 in 2 mins
+Tue Jun  4 10:59:37 2024, Finished Transit Skimming  in 138 mins
+Wed Jun  5 12:40:46 2024, Finished Internal Truck Model in 2 mins
+Wed Jun  5 12:44:21 2024, Finished Initialization in 3 mins
+Wed Jun  5 12:47:30 2024, Finished Initialization - Area Type in 3 mins
+Wed Jun  5 13:20:35 2024, Finished Initialization - Capacity and FF speed in 33 mins
+Wed Jun  5 13:21:58 2024, Finished Highway Skimming - Feedback Loop 1 in 1 mins
+Wed Jun  5 15:27:10 2024, Finished Transit Skimming  in 126 mins
+Wed Jun  5 15:31:56 2024, Finished Internal Truck Model in 2 mins
+Wed Jun  5 15:33:09 2024, Finished Visitor Model in 2 mins
+Wed Jun  5 19:31:40 2024, Finished OMX Re Export in 223 mins
+Wed Jun  5 19:52:22 2024, Finished DaySim Iteration 1 in 21 mins
+Wed Jun  5 20:40:20 2024, Finished Initialization in 5 mins
+Wed Jun  5 20:50:19 2024, Finished Initialization - Area Type in 10 mins
+Wed Jun  5 21:19:53 2024, Finished Initialization - Capacity and FF speed in 29 mins
+Wed Jun  5 21:22:02 2024, Finished Highway Skimming - Feedback Loop 1 in 3 mins
+Wed Jun  5 23:14:16 2024, Finished Transit Skimming  in 112 mins
+Wed Jun  5 23:19:01 2024, Finished Internal Truck Model in 3 mins
+Wed Jun  5 23:20:14 2024, Finished Visitor Model in 1 mins
+Thu Jun  6 03:14:35 2024, Finished OMX Re Export in 219 mins
+Thu Jun  6 04:18:34 2024, Finished DaySim Iteration 1 in 64 mins
+Thu Jun  6 05:07:03 2024, Finished DaySim Trip Tables in 49 mins
+Thu Jun  6 05:08:44 2024, Finished Highay Pre Assignment  in 1 mins
+Thu Jun  6 05:36:02 2024, Finished Highay Assignment  in 28 mins
+Thu Jun  6 05:50:33 2024, Finished Highway Post Processing  in 14 mins
+Thu Jun  6 05:52:08 2024, Finished Update Travel Times  in 2 mins
+Thu Jun  6 05:54:19 2024, Finished Highway Skimming - Feedback Loop 2 in 2 mins
+Thu Jun  6 07:51:07 2024, Finished Transit Skimming  in 117 mins
+Thu Jun  6 07:53:55 2024, Finished Internal Truck Model in 2 mins
+Thu Jun  6 07:55:11 2024, Finished Visitor Model in 2 mins
+Thu Jun  6 11:50:16 2024, Finished OMX Re Export in 220 mins
+Thu Jun  6 12:47:24 2024, Finished DaySim Iteration 1 in 57 mins
+Thu Jun  6 13:36:50 2024, Finished DaySim Trip Tables in 49 mins
+Thu Jun  6 13:37:46 2024, Finished Highay Pre Assignment  in 1 mins
+Thu Jun  6 14:05:07 2024, Finished Highay Assignment  in 28 mins
+Thu Jun  6 14:18:11 2024, Finished Highway Post Processing  in 13 mins
+Thu Jun  6 14:20:11 2024, Finished Update Travel Times  in 2 mins
+Thu Jun  6 14:22:32 2024, Finished Highway Skimming - Feedback Loop 3 in 2 mins
+Thu Jun  6 16:15:59 2024, Finished Transit Skimming  in 113 mins
+Thu Jun  6 16:18:16 2024, Finished Internal Truck Model in 3 mins
+Thu Jun  6 16:19:36 2024, Finished Visitor Model in 1 mins
+Thu Jun  6 20:13:17 2024, Finished OMX Re Export in 219 mins
+Thu Jun  6 21:11:01 2024, Finished DaySim Iteration 1 in 58 mins
+Thu Jun  6 21:16:47 2024, Finished DaySim Summaries in 5 mins
+Thu Jun  6 22:04:18 2024, Finished DaySim Trip Tables in 48 mins
+Thu Jun  6 22:05:26 2024, Finished Highay Pre Assignment  in 1 mins
+Thu Jun  6 22:32:05 2024, Finished Highay Assignment  in 27 mins
+Thu Jun  6 22:42:52 2024, Finished Transit Assignment  in 10 mins
+Thu Jun  6 23:01:55 2024, Finished Transit Report  in 19 mins
+Thu Jun  6 23:16:18 2024, Finished Highway Post Processing  in 15 mins
+Thu Jun  6 23:18:55 2024, Finished Update Travel Times  in 2 mins
+Thu Jun  6 23:26:24 2024, Finished Transit Stop Summary  in 8 mins
+Wed Jun 19 14:39:10 2024, Finished Initialization in 6 mins
+Wed Jun 19 14:49:30 2024, Finished Initialization - Area Type in 10 mins
+Wed Jun 19 15:18:57 2024, Finished Initialization - Capacity and FF speed in 29 mins
+Wed Jun 19 15:20:59 2024, Finished Highway Skimming - Feedback Loop 1 in 2 mins
+Wed Jun 19 17:14:42 2024, Finished Transit Skimming  in 114 mins
+Wed Jun 19 17:19:32 2024, Finished Internal Truck Model in 2 mins
+Wed Jun 19 17:20:43 2024, Finished Visitor Model in 1 mins
+Thu Jun 20 19:35:57 2024, Finished Initialization in 6 mins
+Thu Jun 20 19:48:32 2024, Finished Initialization - Area Type in 13 mins
+Thu Jun 20 20:20:49 2024, Finished Initialization - Capacity and FF speed in 32 mins
+Thu Jun 20 20:24:56 2024, Finished Highway Skimming - Feedback Loop 1 in 4 mins
+Thu Jun 20 23:09:28 2024, Finished Transit Skimming  in 165 mins
+Thu Jun 20 23:18:48 2024, Finished Internal Truck Model in 6 mins
+Thu Jun 20 23:21:08 2024, Finished Visitor Model in 3 mins
+Fri Jun 21 03:36:10 2024, Finished OMX Re Export in 237 mins
+Fri Jun 21 04:47:28 2024, Finished DaySim Iteration 1 in 71 mins
+Fri Jun 21 05:37:47 2024, Finished DaySim Trip Tables in 50 mins
+Fri Jun 21 05:38:50 2024, Finished Highay Pre Assignment  in 1 mins
+Fri Jun 21 06:11:19 2024, Finished Highay Assignment  in 33 mins
+Fri Jun 21 06:29:00 2024, Finished Highway Post Processing  in 18 mins
+Fri Jun 21 06:31:35 2024, Finished Update Travel Times  in 2 mins
+Fri Jun 21 06:35:30 2024, Finished Highway Skimming - Feedback Loop 2 in 4 mins
+Fri Jun 21 09:05:27 2024, Finished Transit Skimming  in 150 mins
+Fri Jun 21 09:07:33 2024, Finished Internal Truck Model in 2 mins
+Fri Jun 21 09:08:46 2024, Finished Visitor Model in 1 mins
+Fri Jun 21 13:17:55 2024, Finished OMX Re Export in 235 mins
+Fri Jun 21 15:24:56 2024, Finished DaySim Iteration 1 in 127 mins
+Fri Jun 21 16:15:33 2024, Finished DaySim Trip Tables in 51 mins
+Fri Jun 21 16:16:21 2024, Finished Highay Pre Assignment  in 1 mins
+Fri Jun 21 16:44:16 2024, Finished Highay Assignment  in 28 mins
+Fri Jun 21 16:59:41 2024, Finished Highway Post Processing  in 15 mins
+Fri Jun 21 17:02:13 2024, Finished Update Travel Times  in 3 mins
+Fri Jun 21 17:04:38 2024, Finished Highway Skimming - Feedback Loop 3 in 2 mins
+Fri Jun 21 19:04:56 2024, Finished Transit Skimming  in 120 mins
+Fri Jun 21 19:07:13 2024, Finished Internal Truck Model in 3 mins
+Fri Jun 21 19:08:30 2024, Finished Visitor Model in 1 mins
+Fri Jun 21 23:05:18 2024, Finished OMX Re Export in 220 mins
+Sat Jun 22 00:17:04 2024, Finished DaySim Iteration 1 in 72 mins
+Sat Jun 22 00:22:55 2024, Finished DaySim Summaries in 5 mins
+Sat Jun 22 01:13:06 2024, Finished DaySim Trip Tables in 51 mins
+Sat Jun 22 01:13:57 2024, Finished Highay Pre Assignment  in 0 mins
+Sat Jun 22 01:44:08 2024, Finished Highay Assignment  in 31 mins
+Sat Jun 22 01:54:52 2024, Finished Transit Assignment  in 10 mins
+Sat Jun 22 02:18:44 2024, Finished Transit Report  in 24 mins
+Sat Jun 22 02:34:50 2024, Finished Highway Post Processing  in 16 mins
+Sat Jun 22 02:37:32 2024, Finished Update Travel Times  in 3 mins
+Sat Jun 22 02:43:46 2024, Finished Transit Stop Summary  in 6 mins

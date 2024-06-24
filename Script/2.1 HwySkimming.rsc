@@ -201,10 +201,10 @@ Macro "Highway Skimming" (Args)    // Highway Skimming
         RunMacro("AddCore", hov_skims, 4)
     end
     
-/* 	RunMacro("HwycadLog", {"Save and copy skims", null})
+ 	RunMacro("HwycadLog", {"Save and copy skims", null})
     //Save and copy skims
     RunMacro("SaveAndCopySkims", sov_skims)
-    RunMacro("SaveAndCopySkims", hov_skims) */
+    RunMacro("SaveAndCopySkims", hov_skims)
 
 	RunMacro("HwycadLog", {"2.1 HwySkimming.rsc", "Finished Highway Skimming"})
 	endtime = RunMacro("RuntimeLog", {"Highway Skimming - Feedback Loop " + i2s(loop), starttime})	

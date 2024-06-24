@@ -1456,6 +1456,9 @@ Macro "PostProcessor" (Args)
 	CopyFile(Scen_Dir+ "outputs\\assignment_result.bin",Scen_Dir+ "outputs\\assignment_result_"+String(loop)+".bin")
 	CopyFile(Scen_Dir+ "outputs\\assignment_result.DCB",Scen_Dir+ "outputs\\assignment_result_"+String(loop)+".DCB")
 
+    hwy_asm = OpenTable("hwy_asm","FFB",{Scen_Dir+ "outputs\\assignment_result_"+String(loop)+".bin"})
+  	ExportView(hwy_asm+"|", "CSV", Scen_Dir+ "outputs\\assignment_result_"+String(loop)+".csv",,{{"CSV Header","TRUE"}})
+
 	endtime = RunMacro("RuntimeLog", {"Highway Post Processing ", starttime})
 	
 	ret_value=1

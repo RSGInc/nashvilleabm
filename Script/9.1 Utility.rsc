@@ -1,15 +1,15 @@
 /* 
 utility that process the moe for scenarios
-•	Totoal Trips 
-•	Total Population
-•	Trips Per Person
-•	VMT
-•	VMT/Person
-•	VHT
-•	VHT/Person
-•	Average Vehicle Speed
-•	VMT @ LOS F (over the capacity)
-•	% LOSF VMT
+ï¿½	Totoal Trips 
+ï¿½	Total Population
+ï¿½	Trips Per Person
+ï¿½	VMT
+ï¿½	VMT/Person
+ï¿½	VHT
+ï¿½	VHT/Person
+ï¿½	Average Vehicle Speed
+ï¿½	VMT @ LOS F (over the capacity)
+ï¿½	% LOSF VMT
 */
 
 macro "MOE1" (Args) //MOE 1 for the table
@@ -547,11 +547,23 @@ macro "MOE1" (Args) //MOE 1 for the table
 	end
 	CloseFile(MOE)
 	CloseMap(temp_map)
+	RunMacro("auto_validation") 
 	ret_value=1
 	quit:	
 	return(ret_value)
 endMacro 
 
+Macro "auto_validation"
+	shared Scen_Dir
+	
+    folder = Scen_Dir + "reports\\validation\\automation"
+    path_info = SplitPath(folder)
+	drive = path_info[1]
+
+    command_line =  "cmd /c " + drive + "&& cd " + folder + " && auto_validation.bat"
+    status = RunProgram(command_line,{{"Maximize", "True"}})
+
+endMacro
 /*
 1. Create a new report file (moe2.bin)
 2. open the MOE.csv

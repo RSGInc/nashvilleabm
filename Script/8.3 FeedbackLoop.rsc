@@ -158,9 +158,11 @@ Macro "Convergence"
             for class=1 to 2 do // sov and hov
                 for p = 1 to periods.Length do
                     directory = Scen_Dir + "outputs\\Skims_iter" + string(feedback_iteration-1)
+                    //directory = Scen_Dir + "outputs"
                     previous_skim_matrix = directory + "\\hwyskim_" + Lower(periods[p]) + "_" +classes[class] + "_" + i2s(feedback_iteration - 1) + ".mtx"
                     
                     directory = Scen_Dir + "outputs\\Skims_iter" + string(feedback_iteration)
+                    //directory = Scen_Dir + "outputs"
                     current_skim_matrix = directory + "\\hwyskim_" + Lower(periods[p]) + "_" +classes[class] + "_"  + i2s(feedback_iteration) + ".mtx"
                     
                     m_prev_skim = OpenMatrix(previous_skim_matrix,)
