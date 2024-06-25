@@ -11744,3 +11744,126 @@ Sat Jun 22 02:54:15 2024,               , District Set 8 of 10
 Sat Jun 22 02:54:15 2024,               , District Set 9 of 10
 Sat Jun 22 02:54:15 2024,               , District Set 10 of 10
 Mon Jun 24 12:10:14 2024,  ******************* FINISHED Nashville ABM 2019 - Version 19.1.0 ******************* 
+Mon Jun 24 15:56:22 2024,  ******************* STARTED Nashville ABM 2019 - Version 19.1.0 ******************* 
+Mon Jun 24 15:56:22 2024, 9.1 Utility.rsc,  Running MOE1
+Mon Jun 24 15:57:31 2024,               , District Set 1 of 10
+Mon Jun 24 16:00:45 2024,               , Step 1 of 20 - Regional
+Mon Jun 24 16:01:11 2024,               , Step 2 of 20 - CBD
+Mon Jun 24 16:01:17 2024,               , Step 3 of 20 - Columbia
+Mon Jun 24 16:01:21 2024,               , Step 4 of 20 - Gallatin
+Mon Jun 24 16:01:25 2024,               , Step 5 of 20 - Inner Core  I-65
+Mon Jun 24 16:01:30 2024,               , Step 6 of 20 - Inner Core I-24
+Mon Jun 24 16:01:35 2024,               , Step 7 of 20 - Inner Core I-24/
+Mon Jun 24 16:01:42 2024,               , Step 8 of 20 - Inner Core I-24W
+Mon Jun 24 16:01:46 2024,               , Step 9 of 20 - Inner Core I-40
+Mon Jun 24 16:01:51 2024,               , Step 10 of 20 - Lebanon
+Mon Jun 24 16:01:55 2024,               , Step 11 of 20 - Maury
+Mon Jun 24 16:02:00 2024,               , Step 12 of 20 - Middle Core I-24
+Mon Jun 24 16:02:05 2024,               , Step 13 of 20 - Middle Core I-40
+Mon Jun 24 16:02:10 2024,               , Step 14 of 20 - Middle Core I-65
+Mon Jun 24 16:02:17 2024,               , Step 15 of 20 - Murfreesboro
+Mon Jun 24 16:02:22 2024,               , Step 16 of 20 - Outer Core I-24
+Mon Jun 24 16:02:27 2024,               , Step 17 of 20 - Outer Core I-40
+Mon Jun 24 16:02:33 2024,               , Step 18 of 20 - Outer Core I-65
+Mon Jun 24 16:02:39 2024,               , Step 19 of 20 - Outer Core SR386
+Mon Jun 24 16:02:44 2024,               , Step 20 of 20 - Springfield
+Mon Jun 24 16:02:48 2024,               , District Set 2 of 10
+Mon Jun 24 16:06:05 2024,               , Step 1 of 8 - Regional
+Mon Jun 24 16:06:31 2024,               , Step 2 of 8 - DAVIDSON
+Mon Jun 24 16:06:42 2024,               , Step 3 of 8 - MAURY
+Mon Jun 24 16:06:46 2024,               , Step 4 of 8 - ROBERTSON
+Mon Jun 24 16:06:52 2024,               , Step 5 of 8 - RUTHERFORD
+Mon Jun 24 16:06:57 2024,               , Step 6 of 8 - SUMNER
+Mon Jun 24 16:07:03 2024,               , Step 7 of 8 - WILLIAMSON
+Mon Jun 24 16:07:09 2024,               , Step 8 of 8 - WILSON
+Mon Jun 24 16:07:15 2024,               , District Set 3 of 10
+Mon Jun 24 16:07:15 2024,               , District Set 4 of 10
+Mon Jun 24 16:07:15 2024,               , District Set 5 of 10
+Mon Jun 24 16:07:15 2024,               , District Set 6 of 10
+Mon Jun 24 16:07:15 2024,               , District Set 7 of 10
+Mon Jun 24 16:07:15 2024,               , District Set 8 of 10
+Mon Jun 24 16:07:15 2024,               , District Set 9 of 10
+Mon Jun 24 16:07:15 2024,               , District Set 10 of 10
+Mon Jun 24 16:16:11 2024,  ******************* FINISHED Nashville ABM 2019 - Version 19.1.0 ******************* 
+Mon Jun 24 19:27:17 2024,  ******************* STARTED Nashville ABM 2019 - Version 19.1.0 ******************* 
+Mon Jun 24 19:27:17 2024, 9.1 Utility.rsc,  Running MOE1
+Mon Jun 24 19:27:56 2024,               , District Set 1 of 10
+Mon Jun 24 19:31:10 2024,               , Step 1 of 20 - Regional
+Mon Jun 24 19:31:36 2024,               , Step 2 of 20 - CBD
+Mon Jun 24 19:31:41 2024,               , Step 3 of 20 - Columbia
+Mon Jun 24 19:31:46 2024,               , Step 4 of 20 - Gallatin
+Mon Jun 24 19:31:50 2024,               , Step 5 of 20 - Inner Core  I-65
+Mon Jun 24 19:31:55 2024,               , Step 6 of 20 - Inner Core I-24
+Mon Jun 24 19:32:00 2024,               , Step 7 of 20 - Inner Core I-24/
+Mon Jun 24 19:32:06 2024,               , Step 8 of 20 - Inner Core I-24W
+Mon Jun 24 19:32:11 2024,               , Step 9 of 20 - Inner Core I-40
+Mon Jun 24 19:32:16 2024,               , Step 10 of 20 - Lebanon
+Mon Jun 24 19:32:20 2024,               , Step 11 of 20 - Maury
+Mon Jun 24 19:32:25 2024,               , Step 12 of 20 - Middle Core I-24
+Mon Jun 24 19:32:31 2024,               , Step 13 of 20 - Middle Core I-40
+Mon Jun 24 19:32:37 2024,               , Step 14 of 20 - Middle Core I-65
+Mon Jun 24 19:32:44 2024,               , Step 15 of 20 - Murfreesboro
+Mon Jun 24 19:32:49 2024,               , Step 16 of 20 - Outer Core I-24
+Mon Jun 24 19:32:54 2024,               , Step 17 of 20 - Outer Core I-40
+Mon Jun 24 19:32:59 2024,               , Step 18 of 20 - Outer Core I-65
+Mon Jun 24 19:33:05 2024,               , Step 19 of 20 - Outer Core SR386
+Mon Jun 24 19:33:10 2024,               , Step 20 of 20 - Springfield
+Mon Jun 24 19:33:15 2024,               , District Set 2 of 10
+Mon Jun 24 19:36:24 2024,               , Step 1 of 8 - Regional
+Mon Jun 24 19:36:49 2024,               , Step 2 of 8 - DAVIDSON
+Mon Jun 24 19:37:01 2024,               , Step 3 of 8 - MAURY
+Mon Jun 24 19:37:05 2024,               , Step 4 of 8 - ROBERTSON
+Mon Jun 24 19:37:10 2024,               , Step 5 of 8 - RUTHERFORD
+Mon Jun 24 19:37:16 2024,               , Step 6 of 8 - SUMNER
+Mon Jun 24 19:37:23 2024,               , Step 7 of 8 - WILLIAMSON
+Mon Jun 24 19:37:28 2024,               , Step 8 of 8 - WILSON
+Mon Jun 24 19:37:34 2024,               , District Set 3 of 10
+Mon Jun 24 19:37:34 2024,               , District Set 4 of 10
+Mon Jun 24 19:37:34 2024,               , District Set 5 of 10
+Mon Jun 24 19:37:34 2024,               , District Set 6 of 10
+Mon Jun 24 19:37:34 2024,               , District Set 7 of 10
+Mon Jun 24 19:37:34 2024,               , District Set 8 of 10
+Mon Jun 24 19:37:34 2024,               , District Set 9 of 10
+Mon Jun 24 19:37:34 2024,               , District Set 10 of 10
+Mon Jun 24 19:46:03 2024,  ******************* FINISHED Nashville ABM 2019 - Version 19.1.0 ******************* 
+Mon Jun 24 19:49:14 2024,  ******************* STARTED Nashville ABM 2019 - Version 19.1.0 ******************* 
+Mon Jun 24 19:49:14 2024, 9.1 Utility.rsc,  Running MOE1
+Mon Jun 24 19:50:08 2024,               , District Set 1 of 10
+Mon Jun 24 19:53:30 2024,               , Step 1 of 20 - Regional
+Mon Jun 24 19:53:56 2024,               , Step 2 of 20 - CBD
+Mon Jun 24 19:54:01 2024,               , Step 3 of 20 - Columbia
+Mon Jun 24 19:54:06 2024,               , Step 4 of 20 - Gallatin
+Mon Jun 24 19:54:10 2024,               , Step 5 of 20 - Inner Core  I-65
+Mon Jun 24 19:54:15 2024,               , Step 6 of 20 - Inner Core I-24
+Mon Jun 24 19:54:21 2024,               , Step 7 of 20 - Inner Core I-24/
+Mon Jun 24 19:54:27 2024,               , Step 8 of 20 - Inner Core I-24W
+Mon Jun 24 19:54:31 2024,               , Step 9 of 20 - Inner Core I-40
+Mon Jun 24 19:54:36 2024,               , Step 10 of 20 - Lebanon
+Mon Jun 24 19:54:40 2024,               , Step 11 of 20 - Maury
+Mon Jun 24 19:54:45 2024,               , Step 12 of 20 - Middle Core I-24
+Mon Jun 24 19:54:50 2024,               , Step 13 of 20 - Middle Core I-40
+Mon Jun 24 19:54:55 2024,               , Step 14 of 20 - Middle Core I-65
+Mon Jun 24 19:55:02 2024,               , Step 15 of 20 - Murfreesboro
+Mon Jun 24 19:55:07 2024,               , Step 16 of 20 - Outer Core I-24
+Mon Jun 24 19:55:12 2024,               , Step 17 of 20 - Outer Core I-40
+Mon Jun 24 19:55:17 2024,               , Step 18 of 20 - Outer Core I-65
+Mon Jun 24 19:55:22 2024,               , Step 19 of 20 - Outer Core SR386
+Mon Jun 24 19:55:27 2024,               , Step 20 of 20 - Springfield
+Mon Jun 24 19:55:32 2024,               , District Set 2 of 10
+Mon Jun 24 19:58:50 2024,               , Step 1 of 8 - Regional
+Mon Jun 24 19:59:16 2024,               , Step 2 of 8 - DAVIDSON
+Mon Jun 24 19:59:27 2024,               , Step 3 of 8 - MAURY
+Mon Jun 24 19:59:32 2024,               , Step 4 of 8 - ROBERTSON
+Mon Jun 24 19:59:37 2024,               , Step 5 of 8 - RUTHERFORD
+Mon Jun 24 19:59:43 2024,               , Step 6 of 8 - SUMNER
+Mon Jun 24 19:59:48 2024,               , Step 7 of 8 - WILLIAMSON
+Mon Jun 24 19:59:54 2024,               , Step 8 of 8 - WILSON
+Mon Jun 24 19:59:59 2024,               , District Set 3 of 10
+Mon Jun 24 19:59:59 2024,               , District Set 4 of 10
+Mon Jun 24 19:59:59 2024,               , District Set 5 of 10
+Mon Jun 24 19:59:59 2024,               , District Set 6 of 10
+Mon Jun 24 19:59:59 2024,               , District Set 7 of 10
+Mon Jun 24 19:59:59 2024,               , District Set 8 of 10
+Mon Jun 24 19:59:59 2024,               , District Set 9 of 10
+Mon Jun 24 19:59:59 2024,               , District Set 10 of 10
+Mon Jun 24 20:12:50 2024,  ******************* FINISHED Nashville ABM 2019 - Version 19.1.0 ******************* 

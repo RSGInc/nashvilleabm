@@ -551,6 +551,7 @@ macro "MOE1" (Args) //MOE 1 for the table
 	ret_value=1
 	quit:	
 	return(ret_value)
+	
 endMacro 
 
 Macro "auto_validation"
