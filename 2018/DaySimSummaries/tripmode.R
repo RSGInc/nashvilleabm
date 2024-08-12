@@ -22,6 +22,9 @@ prep_tomode_NHTS <- function(tourdata)
   tourdata[tmodetp==1,tourmode:= 7]
   #School Bus
   tourdata[tmodetp==8,tourmode:= 8]  
+  #TNC
+  tourdata[tmodetp==9,tourmode:= 9]  
+
   return(tourdata)
 }
 
@@ -46,6 +49,9 @@ prep_tomode_DaySim <- function(tourdata)
   tourdata[tmodetp==1,tourmode:= 8]
   #School Bus
   tourdata[tmodetp==8,tourmode:= 9]
+  #TNC
+  tourdata[tmodetp==9,tourmode:= 9]  
+
   return(tourdata)
 }
 prep_trmode_DaySim <- function(tripdata)
@@ -73,6 +79,8 @@ prep_trmode_DaySim <- function(tripdata)
   tripdata[mode==2,tripmode:= 10]
   #Walk
   tripdata[mode==1,tripmode:= 11]
+  #TNC
+  tripdata[mode==9,tripmode:= 12]
   
   return(tripdata)
 }
@@ -102,6 +110,8 @@ prep_trmode_NHTS <- function(tripdata)
   tripdata[mode==2,tripmode:= 10]
   #Walk
   tripdata[mode==1,tripmode:= 11]
+  #TNC
+  tripdata[mode==9,tripmode:= 12]
 
   return(tripdata)
 }

@@ -35,7 +35,9 @@ prep_modedata_NHTS <- function(tourdata)
   #Walk
   tourdata[tmodetp==1,tourmode:= 7]
   #School Bus
-  tourdata[tmodetp==8,tourmode:= 8]  
+  tourdata[tmodetp==8,tourmode:= 8]
+  #TNC
+  tourdata[tmodetp==9,tourmode:= 9]  
   return(tourdata)
 }
 

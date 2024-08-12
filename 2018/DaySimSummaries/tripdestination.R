@@ -23,9 +23,6 @@ prep_tripdata <- function(tripdata,perdata)
     print("Error!!! - Skims information missing.")
   }
   tripdata <- tripdata[opcl>0 & dpcl>0,]
-  tripdata[dpurp==8,dpurp:=7]
-  tripdata[dpurp==9,dpurp:=4]
-  
   #tripdata[otaz<=0 | dtaz<=0, travtime:=NA]
   #tripdata[otaz<=0 | dtaz<=0, travdist:=NA]
   
