@@ -73,8 +73,9 @@ Macro "Pre_Assignment" (Args)
 	allod={am_od_matrix,md_od_matrix,pm_od_matrix,op_od_matrix}
     
 	// add 4+4 cores to the OD matrix for the vehicle classes assignment
-	labels_vehicle={"Passenger","Commercial","SingleUnit","MU","Preload_EIMU","Preload_IEMU","Preload_EEMU","Preload_IESU","Preload_EESU","Preload_Pass","HOV","HOV2","HOV3","Autos"}
-  
+	// labels_vehicle={"Passenger","Commercial","SingleUnit","MU","Preload_EIMU","Preload_IEMU","Preload_EEMU","Preload_IESU","Preload_EESU","Preload_Pass","HOV","HOV2","HOV3","Autos"}
+    labels_vehicle = {"IICOM", "IISU", "IIMU", "IEAUTO", "IESU", "EEAUTO", "EESU", "Passenger_SOV", "Passenger_HOV2", "Passenger_HOV3", "Preload_MU", "Preload_SU", "PersonTrips", "IEMU", "EIMU", "EEMU", "Passenger", "Commercial", "SingleUnit", "MU", "Preload_EIMU", "Preload_IEMU", "Preload_EEMU", "Preload_IESU", "Preload_EESU", "Preload_Pass", "HOV", "HOV2", "HOV3", "Autos"}
+
 	for p=1 to periods1.length do
 		
 		UpdateProgressBar("Assignment - Processing Matrices for Assignments -"+ periods1[p], )

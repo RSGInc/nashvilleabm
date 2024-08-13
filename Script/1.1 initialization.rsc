@@ -11,43 +11,43 @@
 // Compute Link Attributes and Build Highway Network */
 
 Macro "Initialization" (Args)// Initialization
-   // shared prj_dry_run  if prj_dry_run then return(1)
-   shared Scen_Dir, loop, loop_n, run_type 
-   starttime = RunMacro("RuntimeLog", {"Initialization", null})	
-   RunMacro("HwycadLog", {"1.1 Initialization.rsc", "Initialization"})
-   
-   // Input Files
-   hwy_db = Args.[hwy db]
-   //turn_penalties = Args.[turn penalties]
-   // Output Files
-   //hwy_network = Args.[hwy network]
-   
-   /*
-   // Check on Loops in Feedback
-   if (run_type =3 & loop =1)then openType = "w" 
-   if (run_type =3 & loop > 1) then openType = "a"      
-   test = Scen_Dir +"NumFeedbackLoops.txt"  
-   fptr = OpenFile(test,openType)
-   WriteLine(fptr, "Loop Number: "+String(loop) + "  Total Loops: " + String(loop_n))
-   CloseFile(fptr)
-   */
-   
-   shared prj_dry_run,  Scen_Dir
-	
-    UpdateProgressBar("Updating the network for " +Args.HYEAR + " Scenario", )
+	// shared prj_dry_run  if prj_dry_run then return(1)
+	shared Scen_Dir, loop, loop_n, run_type 
+	starttime = RunMacro("RuntimeLog", {"Initialization", null})	
+	RunMacro("HwycadLog", {"1.1 Initialization.rsc", "Initialization"})
+
+	// Input Files
+	hwy_db = Args.[hwy db]
+	//turn_penalties = Args.[turn penalties]
+	// Output Files
+	//hwy_network = Args.[hwy network]
+
+	/*
+	// Check on Loops in Feedback
+	if (run_type =3 & loop =1)then openType = "w" 
+	if (run_type =3 & loop > 1) then openType = "a"      
+	test = Scen_Dir +"NumFeedbackLoops.txt"  
+	fptr = OpenFile(test,openType)
+	WriteLine(fptr, "Loop Number: "+String(loop) + "  Total Loops: " + String(loop_n))
+	CloseFile(fptr)
+	*/
+
+	shared prj_dry_run,  Scen_Dir
+
+	// UpdateProgressBar("Updating the network for " +Args.HYEAR + " Scenario", )
 	if prj_dry_run then return(1)
 
 	// Input highway
-   hwy_db = Args.[hwy db]
+	hwy_db = Args.[hwy db]
 	demographics = Args.[taz table]	
 	taz_db = Args.[taz]
-	
+
 	layers = GetDBlayers(hwy_db)
-   llayer = layers[2]
-   db_linklyr = highway_layer + "|" + llayer
-   
-   temp_map = CreateMap("temp",{{"scope",Scope(Coord(-80000000, 44500000), 200.0, 100.0, 0)}})
-   temp_layer = AddLayer(temp_map,llayer,hwy_db,llayer)
+	llayer = layers[2]
+	db_linklyr = highway_layer + "|" + llayer
+
+	temp_map = CreateMap("temp",{{"scope",Scope(Coord(-80000000, 44500000), 200.0, 100.0, 0)}})
+	temp_layer = AddLayer(temp_map,llayer,hwy_db,llayer)
 	SetView(llayer)
 	RunMacro("TCB Init")
 
@@ -141,17 +141,17 @@ Macro "Initialization" (Args)// Initialization
     // STEP 3: Removed for now
     // STEP 4: Deduct 10% of the total cost from the preferred truck links
 
-/* 
-    //STEP 1: Create a new field    
-   vw = GetView()
-   strct = GetTableStructure(vw)
-   for i = 1 to strct.length do
-      strct[i] = strct[i] + {strct[i][1]}
-   end
-   strct = strct + {{"TRUCKCOST", "Real", 14, 6, "True", , , , , , , null}}
+	/* 
+		//STEP 1: Create a new field    
+	vw = GetView()
+	strct = GetTableStructure(vw)
+	for i = 1 to strct.length do
+		strct[i] = strct[i] + {strct[i][1]}
+	end
+	strct = strct + {{"TRUCKCOST", "Real", 14, 6, "True", , , , , , , null}}
 
-   ModifyTable(view1, strct)
-*/
+	ModifyTable(view1, strct)
+	*/
 
    // STEP 2: Apply a cost of 126.1 sec/mile to all links
    tollfield={"TRUCKCOST"}
@@ -166,30 +166,30 @@ Macro "Initialization" (Args)// Initialization
    ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
    if !ret_value then goto quit   
 
-/*       
-   // STEP 3: Apply additional cost to links by facility type - not for now
-   dim selections_class[6]	
-   selections_class[1]="select * where (Func_Class=1 or Func_Class=11 or Func_Class=20)"
-   selections_class[2]="select * where (Func_Class=12)"
-   selections_class[3]="select * where (Func_Class=2 or Func_Class=14 or Func_Class=6 or Func_Class=16) and SPD_LMT>=45"
-   selections_class[4]="select * where (Func_Class=2 or Func_Class=14 or Func_Class=6 or Func_Class=16) and SPD_LMT<45 "
-   selections_class[5]="select * where (Func_Class=7 or Func_Class=8 or Func_Class=17)"
-   selections_class[6]="select * where (Func_Class=9 or Func_Class=19 or CCSTYLE=99 or Func_Class=21 or Func_Class=22 or Func_Class=97)"
+	/*       
+	// STEP 3: Apply additional cost to links by facility type - not for now
+	dim selections_class[6]	
+	selections_class[1]="select * where (Func_Class=1 or Func_Class=11 or Func_Class=20)"
+	selections_class[2]="select * where (Func_Class=12)"
+	selections_class[3]="select * where (Func_Class=2 or Func_Class=14 or Func_Class=6 or Func_Class=16) and SPD_LMT>=45"
+	selections_class[4]="select * where (Func_Class=2 or Func_Class=14 or Func_Class=6 or Func_Class=16) and SPD_LMT<45 "
+	selections_class[5]="select * where (Func_Class=7 or Func_Class=8 or Func_Class=17)"
+	selections_class[6]="select * where (Func_Class=9 or Func_Class=19 or CCSTYLE=99 or Func_Class=21 or Func_Class=22 or Func_Class=97)"
 
-   class_names={"INTERSTATE","FREEWAY","ART45","ART","COLLECTOR","LOCAL"}   
-   
-   tollfld_flg={{"TRUCKCOST+0*Length"},{"TRUCKCOST+0*Length"},{"TRUCKCOST+32*Length"},{"TRUCKCOST+64*Length"},{"TRUCKCOST+112*Length"},{"TRUCKCOST+160*Length"}}
-   for i=1 to class_names.length do
-      Opts = null
-      Opts.Input.[View Set] = {hwy_db+"|"+llayer, llayer}
-      Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer, "Selection", selections_class[i]}
-      Opts.Global.Fields = tollfield
-      Opts.Global.Method = "Formula"
-      Opts.Global.Parameter = tollfld_flg[i]
-      ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
-      if !ret_value then goto quit
-   end  
-*/
+	class_names={"INTERSTATE","FREEWAY","ART45","ART","COLLECTOR","LOCAL"}   
+	
+	tollfld_flg={{"TRUCKCOST+0*Length"},{"TRUCKCOST+0*Length"},{"TRUCKCOST+32*Length"},{"TRUCKCOST+64*Length"},{"TRUCKCOST+112*Length"},{"TRUCKCOST+160*Length"}}
+	for i=1 to class_names.length do
+		Opts = null
+		Opts.Input.[View Set] = {hwy_db+"|"+llayer, llayer}
+		Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer, "Selection", selections_class[i]}
+		Opts.Global.Fields = tollfield
+		Opts.Global.Method = "Formula"
+		Opts.Global.Parameter = tollfld_flg[i]
+		ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
+		if !ret_value then goto quit
+	end  
+	*/
    
     if Args.[TruckPreferred]=1 then do   
        // STEP 4: Deduct 10% of the total cost from the preferred truck links (TRUCKNET=1)
@@ -206,7 +206,7 @@ Macro "Initialization" (Args)// Initialization
    // ********************************************************************
    
    //non-base year senario attributes update 1-6-2014
-   	if Args.HYEAR<>"base" then do
+	/*    	if Args.HYEAR<>"base" then do
 		v_clear={
 		"FUNC_CLASS",
 		"Lanes",
@@ -238,13 +238,13 @@ Macro "Initialization" (Args)// Initialization
 		
 		
 		
-		 /*Default Value for the missing records
-	   1. Freeway, system to system ramps
-	   2. Principle Art
-	   3. Minor Art
-	   4. Collector
-	   5. Local
-	   */
+	// 	 Default Value for the missing records
+	//    1. Freeway, system to system ramps
+	//    2. Principle Art
+	//    3. Minor Art
+	//    4. Collector
+	//    5. Local
+	   
 	   
 	   v_fclass={
 	   	"1","11","12","20",
@@ -319,7 +319,7 @@ Macro "Initialization" (Args)// Initialization
 		Opts.Global.Parameter = {"lanes-nz(HOV_m1_"+Args.HYEAR+")"}
 		ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
 		if !ret_value then goto quit		
-   end 
+   end  */
 
 	endtime = RunMacro("RuntimeLog", {"Initialization", starttime})	
 	ret_value = 1
@@ -345,7 +345,7 @@ Macro "AREATYPE" (Args)// Initialization 1 - Area Type
 	RunMacro("HwycadLog", {"1.1 Initialization.rsc", "Area Type"})
 	UpdateProgressBar("Area Type - Initialization", )
 	
-// Input highway and TAZ files. 
+	// Input highway and TAZ files. 
    hwy_db = Args.[hwy db]
 	taz_db = Args.[taz]
 	
@@ -1019,9 +1019,9 @@ macro "CAP_FF" (Args)// Initialization 2 - Capacity and FF speed
 		end
 	end	
 
-endtime = RunMacro("RuntimeLog", {"Initialization - Capacity and FF speed", starttime})
-ret_value = 1
-quit:
-CloseMap("temp")
-return(ret_value)
+	endtime = RunMacro("RuntimeLog", {"Initialization - Capacity and FF speed", starttime})
+	ret_value = 1
+	quit:
+	CloseMap("temp")
+	return(ret_value)
 endmacro

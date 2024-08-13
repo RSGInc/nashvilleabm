@@ -21,7 +21,7 @@ def highway_validation(model_dir, sce_dir):
     results = pd.read_csv(
         os.path.join(
             model_dir, sce_dir,
-            'outputs/assignment_result_1.csv')
+            'outputs/assignment_result_3.csv')
             ).set_index('ID').sort_index()
 
     # ensure all IDs are present in new data and data is ordered

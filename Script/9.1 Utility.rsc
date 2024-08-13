@@ -565,6 +565,7 @@ Macro "auto_validation"
     status = RunProgram(command_line,{{"Maximize", "True"}})
 
 endMacro
+
 /*
 1. Create a new report file (moe2.bin)
 2. open the MOE.csv
@@ -624,7 +625,8 @@ Macro "Build Daily Trip Table" (daily_matrix_file, Args)
 	end
 	
 	//add all time periods
-	matrix_cores = {"Passenger", "Commercial", "SingleUnit", "MU", "Preload_EIMU", "Preload_IEMU", "Preload_EEMU","Preload_IESU","Preload_EESU","Preload_Pass","HOV","HOV2","HOV3"}
+	// matrix_cores = {"Passenger", "Commercial", "SingleUnit", "MU", "Preload_EIMU", "Preload_IEMU", "Preload_EEMU","Preload_IESU","Preload_EESU","Preload_Pass","HOV","HOV2","HOV3"}
+	matrix_cores = {"IICOM", "IISU", "IIMU", "IEAUTO", "IESU", "EEAUTO", "EESU", "Passenger_SOV", "Passenger_HOV2", "Passenger_HOV3", "Preload_MU", "Preload_SU", "PersonTrips", "IEMU", "EIMU", "EEMU", "Passenger", "Commercial", "SingleUnit", "MU", "Preload_EIMU", "Preload_IEMU", "Preload_EEMU", "Preload_IESU", "Preload_EESU", "Preload_Pass", "HOV", "HOV2", "HOV3", "Autos"}
 	for p=1 to periods.length do
 		for core=1 to matrix_cores.Length do
 			mc_daily = RunMacro("TCB Create Matrix Currency", daily_matrix_file, matrix_cores[core], "Rows", "Cols")
