@@ -1,22 +1,22 @@
 work-based subtour mode choice                                                 
 Created by ALOGIT version 4                             15:55:36 on  2 Apr 12
 END
-   1  costutil  F   1.451435404000
-   2  timeutil  F   1.303940837000
-  20  wt-const  F   -2.607087400557   
-  30  s3-const  F   -3.495902892821   
-  40  s2-const  F   -2.419945931817   
-  50  da-const  F   -3.349192186183   
-  54 da-incu25  F   -0.135566794000   
-  55 da-inc2550 F   -0.132438302000   
-  58 da-dtowork F   2.767879803000
-  59 da-stowork F   2.032520508000
-  60  bi-const  F   -5.922119770000   
-  61  bi-male   F   -0.076114630000   
-  69 bi-btowork F   4.253518596000
-  79 wk-wtowork T   5.000000000000
-  88 sr-dtowork F   -0.238528941000   
-  89 sr-stowork F   1.318784366000
+ 1 costutil F 1.451435404 
+ 2 timeutil F 1.303940837 
+ 20 wt-const F -4.778376703402739 
+ 30 s3-const F -4.69391551054945 
+ 40 s2-const F -3.683632232930993 
+ 50 da-const F -4.680279667610288 
+ 54 da-incu25 F -0.135566794 
+ 55 da-inc2550 F -0.132438302 
+ 58 da-dtowork F 2.767879803 
+ 59 da-stowork F 2.032520508 
+ 60 bi-const F -5.92211977 
+ 61 bi-male F -0.07611463 
+ 69 bi-btowork F 4.253518596 
+ 79 wk-wtowork T 5 
+ 88 sr-dtowork F -0.238528941 
+ 89 sr-stowork F 1.318784366 
   99  modenest  F   0.966668229000
   -1
      595  -.704577733112E+03  -.100780587887E+04  -.516050109513E+03

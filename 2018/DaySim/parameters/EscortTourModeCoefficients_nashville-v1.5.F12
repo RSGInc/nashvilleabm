@@ -1,28 +1,28 @@
 Escort tour mode choice                                                        
 Created by ALOGIT version 4                             15:26:24 on  2 Apr 12
 END
-   2  timeutil  F  3.341595105000
-  30  s3-const  F  -2.511217403163
-  31  s3-hhcu5  F  1.166803974000
-  32  s3-hh515  F  0.482284207000
-  33  s3-hhdas  F  0.077733428000
-  36 s3-nocars  F  1.457489738218
-  37 s3-carsltd F  -0.271572152663
-  40  s2-const  F  -1.642944048327
-  41 sr-nocars  T  -6.114691015640
-  42 sr-carsltd F  0.121738261781
-  50 da-const  T   -9.422917225150
-  52 da-carsltd F  -1.290777072760
-  60  bi-const  T  -15.000000000000
-  67 bi-nocars  F  0.000000000000
-  68 bi-carsltd F  0.000000000000
-  70  wk-const  F  -0.072110841533
-  73 wk-ageo50  F  -2.380501963000
-  76  wk-dintd  F  0.001510360000
-  77 wk-nocars  F  1.214909391821
-  78 wk-carsltd F  1.650016479871
-  81  wk-hhcu5  F  0.915003358000
-  82  wk-hh515  F  -0.027232831000
+ 2 timeutil F 3.341595105 
+ 30 s3-const F -2.548085286362458 
+ 31 s3-hhcu5 F 1.166803974 
+ 32 s3-hh515 F 0.482284207 
+ 33 s3-hhdas F 0.077733428 
+ 36 s3-nocars F 2.400505879937105 
+ 37 s3-carsltd F -0.193288528232778 
+ 40 s2-const F -1.528111688885248 
+ 41 sr-nocars T -7.793356982085974 
+ 42 sr-carsltd F 0.104879409323394 
+ 50 da-const T -10.158505708186286 
+ 52 da-carsltd F -3.795188896990166 
+ 60 bi-const T -15 
+ 67 bi-nocars F 0 
+ 68 bi-carsltd F 0 
+ 70 wk-const F -0.719588202407728 
+ 73 wk-ageo50 F -2.380501963 
+ 76 wk-dintd F 0.00151036 
+ 77 wk-nocars F 0.208421295597423 
+ 78 wk-carsltd F 1.770890344094648 
+ 81 wk-hhcu5 F 0.915003358 
+ 82 wk-hh515 F -0.027232831 
   83  wk-hhdas  F  -1.415484193000
   -1
     1432  -.124804256077E+04  -.222563580474E+04  -.111399388909E+04
