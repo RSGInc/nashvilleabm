@@ -14,7 +14,7 @@ Script contains following macros that are used in the model
 */
 
 Macro "SetParameters" (Args)
-		// Set highway, transit, daysim, and airport parameters
+	// Set highway, transit, daysim, and airport parameters
     RunMacro("SetTransitParameters", Args)
     RunMacro("SetHighwayParameters", Args)
     RunMacro("SetDaySimParameters", Args)
@@ -61,49 +61,15 @@ Macro "ExportToOMX" (mode, mat, core, inDir, outDir)
     end
 	
 	CopyMatrix(mc, {
-        {"File Name", outDir + mat + "_temp.omx"},
+        {"File Name", outDir + mat + ".omx"},
+		{"Type", "Double"},
+		{"Compression", 1},
 		{"Indices", "Current"},
         {"OMX", "True"}
-      } 
+      } 	
     )
 
 endMacro
-
-Macro "Run OMX Re Export" (Args)
-    shared Scen_Dir, OutDir, drive, loop
-    shared DaySimDir
-
-	/*
-	PURPOSE:
-	- Generate new OMX skims using R from TransCAD generated OMX files
- 
-	*/
-	
-	starttime = RunMacro("RuntimeLog", {"OMX Re Exprot", null})
-	RunMacro("HwycadLog", {"Runing OMX Re Export in feedback loop " + i2s(loop), null})
-    RunMacro("SetParameters", Args)
-	
-	path_info = SplitPath(Scen_Dir)
-    drive = path_info[1]
-	
-	pos = Position(Scen_Dir, "2018") //TODO - remove hard coded folder name (2018)
-	ModelDir = Left(Scen_Dir, pos-1)
-	
-	// script directory
-	ScriptDir = ModelDir + "Script\\"
-	
-	// Launch R batch file
-	command_line = "cmd /c " + drive + " && cd " + ScriptDir + " && run_convert_to_omx.cmd"
-	
-	status = RunProgram(command_line,{{"Maximize", "True"}})
-	status = 0
-	
-	endtime = RunMacro("RuntimeLog", {"OMX Re Export", starttime})
-	
-	Return(1)
-
-endMacro
-
 
 Macro "Run DaySim" (Args)
     shared Scen_Dir, OutDir, loop
@@ -126,44 +92,26 @@ STEPS:
 	RunMacro("HwycadLog", {"7.1 RunDaySim.rsc", "  ****** Run DaySim ****** "})
 	RunMacro("SetParameters", Args)
 	RunMacro("ConverSkimsToOMX", Args) 
-	RunMacro("Run OMX Re Export", Args)
-    
-    // number of daysim iterations
-	//removed shadow pricing runs as districts constants are used in work location. stable shadow prices are used as inputs
-    itercount = 1
-    
+        
     path_info = SplitPath(Scen_Dir)
     drive = path_info[1]
 
 	RunMacro("HwycadLog", {"Copy DaySim inputs in feedback loop " + i2s(loop), null})
 	
-	// copy roster file to outputs folder
-	infile = DaySimDir + "inputs\\nashville-roster_matrix_omx.csv"
-	outfile = OutDir + "nashville-roster_matrix_omx.csv"
-	CopyFile(infile,outfile)
-	
-	// copy roster combination file to outputs folder
-	infile = DaySimDir + "inputs\\nashville_roster.combinations.csv"
-	outfile = OutDir + "nashville_roster.combinations.csv"
-	CopyFile(infile,outfile)    
-
-	// copy shadow_prices.txt to working folder
-	infile = DaySimDir + "inputs\\shadow_prices.txt"
-	file_info = GetFileInfo(infile)
-	if file_info != null then do
-		outfile = DaySimDir + "working\\shadow_prices.txt"
-		CopyFile(infile,outfile) 
-	end
-
-	// copy park_and_ride_shadow_prices.txt to working folder
-	infile = DaySimDir + "inputs\\park_and_ride_shadow_prices.txt"
-	file_info = GetFileInfo(infile)
-	if file_info != null then do
-		outfile = DaySimDir + "working\\park_and_ride_shadow_prices.txt"
-		CopyFile(infile,outfile) 
-	end
+    // number of daysim iterations for shadow prices
+    itercount = 5
     
     if loop=1 then do
+
+		// copy roster file to outputs folder
+		infile = DaySimDir + "inputs\\nashville-roster_matrix_omx.csv"
+		outfile = OutDir + "nashville-roster_matrix_omx.csv"
+		CopyFile(infile,outfile)
+		
+		// copy roster combination file to outputs folder
+		infile = DaySimDir + "inputs\\nashville_roster.combinations.csv"
+		outfile = OutDir + "nashville_roster.combinations.csv"
+		CopyFile(infile,outfile)    
 		
 		// create properties file
 		properties_template = DaySimDir + "Configuration_template.properties"
@@ -198,6 +146,21 @@ STEPS:
 		CloseFile(ptr2)
 		
     end
+	else do
+		// number of daysim iterations. for feedback loop > 1, do not run daysim shadow price, instead use the stable shadow price from feedback loop 1.
+		itercount = 1
+		
+		// copy shadow_prices.txt to working folder
+		infile = DaySimDir + "inputs\\shadow_prices.txt"
+		outfile = DaySimDir + "working\\shadow_prices.txt"
+		CopyFile(infile,outfile) 
+		
+		// copy park_and_ride_shadow_prices.txt to working folder
+		infile = DaySimDir + "inputs\\park_and_ride_shadow_prices.txt"
+		outfile = DaySimDir + "working\\park_and_ride_shadow_prices.txt"
+		CopyFile(infile,outfile) 		
+
+	end
 
     for i=1 to itercount do
 		starttime = RunMacro("RuntimeLog", {"DaySim Iteration " + i2s(i) + " in feedback loop " + i2s(loop), null})
@@ -205,17 +168,29 @@ STEPS:
             config_file = "Configuration_full.properties"
         end
         else do
+			//shadow prices runs (itercount-1)
             config_file = "Configuration_shadow_price.properties"
         end
 
         // Launch Daysim
 		RunMacro("HwycadLog", {"Runing DaySim for iteration " + i2s(i) + " in feedback loop " + i2s(loop), null})
         command_line = "cmd /c " + drive + " && cd " + DaySimDir + " && software\\Daysim.exe -c " + config_file
-		//command_line = "cmd /c " + drive + " && cd " + " && E:\\Projects\\Clients\\NashvilleMPO\\ModelUpdate2023\\Tasks\\Task2_UpdateSoftware\\" + " && DaySim_exe_08152023\\Daysim.exe -c " + config_file 
         status = RunProgram(command_line,{{"Maximize", "True"}})
 		
 		endtime = RunMacro("RuntimeLog", {"DaySim Iteration " + i2s(i), starttime})
-        
+
+		//copy stable shadow prices (itercount-1) from the first feedback loop to inputs directory for other feedback loops
+		if (loop=1 and i=itercount-1) then do	
+			// copy shadow_prices.txt to input folder
+			infile = DaySimDir + "working\\shadow_prices.txt"
+			outfile = DaySimDir + "inputs\\shadow_prices.txt"
+			CopyFile(infile,outfile) 
+
+			// copy park_and_ride_shadow_prices.txt to inputs folder
+			infile = DaySimDir + "working\\park_and_ride_shadow_prices.txt"
+			outfile = DaySimDir + "inputs\\park_and_ride_shadow_prices.txt"
+			CopyFile(infile,outfile) 
+		end        
     end
 	
     status = 0
@@ -686,15 +661,6 @@ Macro "Fill Highway Airport Trips" (Args)
 	RunMacro("SetParameters", Args)
 		
     PA_Matrix=Args.[PA Matrix]
-
-/*		
-    mc_hbo = Scen_Dir + "outputs\\mc_hbo.mtx"
-    mc_nhbw = Scen_Dir + "outputs\\mc_nhbw.mtx"
-    mc_nhbo = Scen_Dir + "outputs\\mc_nhbo.mtx"
-    
-    purposes = {"HBO","NHBW","NHBO"}
-    modes = {"DA","SR2","SR3"}
-*/
     
     for p=1 to purposes.Length do
 		
@@ -797,17 +763,7 @@ STEPS:
 	 factors to devide trips into four time periods
 */
 		
-		RunMacro("SetParameters", Args)
-
-/*		
-    mc_hbo = Scen_Dir + "outputs\\mc_hbo.mtx"
-    mc_nhbw = Scen_Dir + "outputs\\mc_nhbw.mtx"
-    mc_nhbo = Scen_Dir + "outputs\\mc_nhbo.mtx"
-    
-    purposes = {"HBO","NHBW","NHBO"}
-    purposesPeriod = {"OP","OP","PK"}
-	AirPeriodFactors = {0.5,0.5,0.5,0.5}  // corresponding to Periods = {"AM","MD","PM","OP"}, factors to distribute trips from PK and OP periods
-*/
+	RunMacro("SetParameters", Args)
  
     for ipurp=1 to purposes.length do
 		
