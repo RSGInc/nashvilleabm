@@ -66,7 +66,6 @@ Macro "Settings" (Args)
 	mf.tazfile 			= Args.[taz]
 	mf.netfile			= Args.[Network File]
 	mf.linefile			= Args.[hwy db]
-	mf.h_bed_file		= mf.path + "Inputs\\visitor\\SPECIAL_GEN.csv"
 	mf.v_spec_gen		= mf.path + "Inputs\\visitor\\special_generators.bin"
 	mf.skimfile			= Args.[md skim]
 	mf.VKFactor			= mf.path + "Inputs\\visitor\\Visitor_KF.mtx"	
@@ -96,51 +95,26 @@ Macro "01_Model_Inputs" (tazvw)
 	end
 
 	parcel_lu_file_vw = OpenTable("parcel_lu_file_vw", "CSV", {mf.parcel_lu_file},{{"Delimiter", " "}})
-	hotel_file_vw = OpenTable("hotel_file_vw", "CSV", {mf.h_bed_file,})
-
-	jnvw = JoinViews(parcel_lu_file_vw + hotel_file_vw, parcel_lu_file_vw+".parcelid", hotel_file_vw+".ID", {{"N", }}) //
-	//Aggregate trips over some custom segments
-	aggflds = {{"hh_p","sum",},{"ENROLL_UG","sum",},{"nodes3_1","sum",},{"nodes4_1","sum",},{"emptot_p","sum",},{"Hospital_Beds","sum",},{"Hotel_Beds","sum",}}
 	
-	SetView(jnvw)
+	// Aggregate trips over some custom segments
+	aggflds = {{"hh_p","sum",},{"empfoo_p","sum",},{"empret_p","sum",},{"emptot_p","sum",}}
+
+	SetView(parcel_lu_file_vw)
 	
 	zonalfile = mf.output_path + "ZonalSE.bin"
-	sevw = RunMacro("AggregateTable", jnvw+"|", "taz_p", aggflds, zonalfile)
-	CloseView(jnvw)
-
-	hh_file_vw = OpenTable("hh_file_vw", "CSV", {mf.hh_file},{{"Delimiter", " "}})
-	
-	//Aggregate trips over some custom segments
-	aggflds = {{"hhincome","avg",}}
-	
-	SetView(hh_file_vw)
-	
-	hhincfile = mf.output_path + "AvgInc.bin"
-	hhvw = RunMacro("AggregateTable", hh_file_vw+"|", "hhtaz", aggflds, hhincfile)
+	sevw = RunMacro("AggregateTable", parcel_lu_file_vw+"|", "taz_p", aggflds, zonalfile)
+	CloseView(parcel_lu_file_vw)
 
 	zonevw = OpenTable("zonevw", "FFB", {mf.output_path + "ZonalSE.bin",})
-	RunMacro("addfields", zonevw, {"Intersection", "IntDensx1000000", "AvgInc", "Spec_Gen", "SpecGen_Coeff"}  , {"i","r","r","i","r"})
-	{TAZID, Int3, Int4} = GetDataVectors(zonevw + "|", {"taz_p","nodes3_1","nodes4_1"}, {{"Sort Order",{{"taz_p","Ascending"}}}} )
+	RunMacro("addfields", zonevw, {"Spec_Gen", "SpecGen_Coeff"}  , {"i","r"})
+	TAZID = GetDataVector(zonevw+"|", "taz_p", {{"Sort Order",{{"taz_p","Ascending"}}}} )
 
-	{TAZ, ZoneArea} = GetDataVectors(tazvw + "|", {"ID", "SHAPE_AREA"}, {{"Sort Order",{{"ID","Ascending"}}}} )
-	
 	specvw = OpenTable("specvw", "FFB", {mf.v_spec_gen,})
 	
-	
-	hhvw = OpenTable("hhvw", "FFB", {mf.output_path + "AvgInc.bin",})
-
 	tazcount = VectorStatistic(TAZID, "Count", )
 	zerovec = Vector(tazcount, "Long", {{"Constant", 0}})
-	Intersection = nz(Int3) + nz(Int4)
-	IntscnDens = Intersection*1000000/ZoneArea
-	SetDataVectors(zonevw+"|", {{"Intersection", Intersection}, {"IntDensx1000000", IntscnDens}, {"AvgInc", zerovec}, {"Spec_Gen", zerovec}}, {{"Sort Order",{{zonevw+".taz_p","Ascending"}}}})
+	SetDataVectors(zonevw+"|", {{"Spec_Gen", zerovec}}, {{"Sort Order",{{zonevw+".taz_p","Ascending"}}}})
 	
-	jnvw = JoinViews(zonevw + hhvw, zonevw+".taz_p", hhvw+".hhtaz", {{"I", }})
-	HHIncome = GetDataVector(jnvw+"|", "AVG hhincome", {{"Sort Order",{{"taz_p","Ascending"}}}} )
-	SetDataVector(jnvw+"|", "AvgInc", HHIncome, {{"Sort Order",{{"taz_p","Ascending"}}}})
-	Closeview(jnvw)
-	
-
 	jnvw = JoinViews(zonevw + specvw, zonevw+".taz_p", specvw+".TAZID", {{"I", }})
 	SetView(jnvw)
 	int_zones = SelectByQuery("Internal", "Several", "Select * where "+mf.intsel,)
@@ -149,18 +123,15 @@ Macro "01_Model_Inputs" (tazvw)
 	CloseView(jnvw)
 	
 	SetView(zonevw)
-	RunMacro("addfields", zonevw, {"TAZID"}  , {"i"})
-	{taz, special, coeffs} = GetDataVectors(zonevw + "|", {"taz_p", "Spec_Gen", "SpecGen_Coeff"}, {{"Sort Order",{{"taz_p","Ascending"}}}} )
+	RunMacro("addfields", zonevw, {"TAZID", "EmpFlag"}  , {"i", "i"})
+	{taz, special, coeffs, emptot_p} = GetDataVectors(zonevw + "|", {"taz_p", "Spec_Gen", "SpecGen_Coeff", "emptot_p"}, {{"Sort Order",{{"taz_p","Ascending"}}}} )
 	specgen = if special > 0 then 1 else 0
 	SG_coeffs = if coeffs > 0 then coeffs else 0
-	SetDataVectors(zonevw+"|", {{"Spec_Gen", specgen}, {"SpecGen_Coeff", SG_coeffs}, {"TAZID", taz}}, {{"Sort Order",{{zonevw+".taz_p","Ascending"}}}})
+	empflag = if emptot_p >= 5000 then 1 else 0
+	SetDataVectors(zonevw+"|", {{"Spec_Gen", specgen}, {"SpecGen_Coeff", SG_coeffs}, {"TAZID", taz}, {"EmpFlag", empflag}}, {{"Sort Order",{{zonevw+".taz_p","Ascending"}}}})
 
 	
 	CloseView(zonevw)
-	CloseView(parcel_lu_file_vw)
-	CloseView(hotel_file_vw)
-	CloseView(hh_file_vw)
-	CloseView(hhvw)
 	CloseView(specvw)
 
 	ok=1
@@ -195,22 +166,23 @@ Macro "02_VTripGen" (tazvw)
 	SetView(zonevw)
 
 
-	{TAZID,HH,Tot_Emp,SpecGen,IntDens,AvgInc,Hospital,UgStd,SpecCoeff} = GetDataVectors(zonevw + "|", {"TAZID","hh_p","emptot_p","Spec_Gen","IntDensx1000000","AvgInc","HOSPITAL_BEDS","ENROLL_UG","SpecGen_Coeff"}, {{"Sort Order",{{"TAZID","Ascending"}}}} )
+	{TAZID,HH,Tot_Emp, Food_Emp, Ret_Emp, SpecGen,SpecCoeff, EmpFlag} = GetDataVectors(zonevw + "|", 
+	{"TAZID","hh_p","emptot_p","empfoo_p","empret_p","Spec_Gen","SpecGen_Coeff", "EmpFlag"}, {{"Sort Order",{{"TAZID","Ascending"}}}} )
 
 	SetView(tazvw)
 	
-	//Trip production coefficients
-	HH_Coef = 0.0189
-	Inc_Coef = 0.0000748
-	Emp_Low_Coef = 0.0468
-	Emp_High_Coef = 0.00573			 
-	Hospital_Coef = 0.274
-	StdUg_Coef = 0.00887
-	IntDens_Coef = 13759
+	//Trip production coefficients, updated 09/25
+	Intercept = 48.3089028
+	HH_Coef = 0.1184377
+	EmpFlagConstant = 506.2384980 // activate when emp_tot > 5,000
+	empfoo_p_coef = 0.8730775
+	empfoo_p_flag_coef = - 0.2826828
+	empret_p_coef = 0.8555347
+	empret_p_flag_coef = - 0.6971820
+
 
 	//Productions & Attractions
-	Visitor_Prod = if Tot_Emp < 5000 then (HH_Coef * HH + Emp_Low_Coef * Tot_Emp + Inc_Coef * AvgInc + Hospital_Coef * Hospital + IntDens * IntDens_Coef/1000000 + StdUg_Coef * UgStd + SpecGen*Tot_Emp*SpecCoeff) else 
-			  (HH_Coef * HH + Emp_High_Coef * Tot_Emp + Inc_Coef * AvgInc + Hospital_Coef * Hospital + IntDens * IntDens_Coef/1000000 + StdUg_Coef * UgStd + SpecGen*Tot_Emp*SpecCoeff) 	
+	Visitor_Prod = Intercept + EmpFlag * EmpFlagConstant + HH_Coef * HH + ((empfoo_p_flag_coef * EmpFlag) + empfoo_p_coef)*Food_Emp  + ((empret_p_flag_coef * EmpFlag) + empret_p_coef)*Ret_Emp + SpecGen*Tot_Emp*SpecCoeff 	
 
 	Visitor_Attr = Visitor_Prod
 
@@ -260,9 +232,9 @@ Macro "03_VTripDist"
 		Opts.Global.Iterations = {100}
 		Opts.Global.Convergence = {0.001}
 		Opts.Global.[Fric Factor Type] = {"Gamma"}
-		Opts.Global.[A List] = {4393.841349}
-		Opts.Global.[B List] = {1.089942}
-		Opts.Global.[C List] = {0.065423}
+		Opts.Global.[A List] = {26447.4547}
+		Opts.Global.[B List] = {1.4192}
+		Opts.Global.[C List] = {0.0929}
 		Opts.Global.[Minimum Friction Value] = {0}
 		Opts.Field.[Prod Fields] = {"V_Prod"}
 		Opts.Field.[Attr Fields] = {"V_Attr"}
