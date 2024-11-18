@@ -592,7 +592,7 @@ Macro "PreloadAssignment"(Args, allod, periods1)
     Opts.Global.[Number of Classes] = 6
     Opts.Global.[Class PCEs] = {2.5, 2.5, 2.5, 1.5, 1.5, 1}
     Opts.Global.[Class VOIs] = {1, 1, 1, 1, 1, 1}
-    Opts.Global.[VDF DLL] = "C:\\Program Files\\TransCAD 6.0\\bpr.vdf"
+    Opts.Global.[VDF DLL] = "C:\\Program Files\\TransCAD 9.0\\bpr.vdf"
     Opts.Global.[VDF Defaults] = {, , 0.15, 4, 0}
     Opts.Output.[Flow Table] = Scen_Dir+ "outputs\\Assignment_Preload_"+periods1+".bin"
  
@@ -714,7 +714,7 @@ Macro "GeneralAssignment"(Args, allod, periods1)
     Opts.Global.[Number of Classes] = assign_num_classes
     Opts.Global.[Class PCEs] = assign_class_pces
     Opts.Global.[Class VOIs] = assign_class_vois
-    Opts.Global.[VDF DLL] = "C:\\Program Files\\TransCAD 6.0\\bpr.vdf"
+    Opts.Global.[VDF DLL] = "C:\\Program Files\\TransCAD 9.0\\bpr.vdf"
     Opts.Global.[VDF Defaults] = {, , 0.15, 4, 0}
 
     Opts.Output.[Flow Table] = Scen_Dir+ "outputs\\Assignment_"+periods1+".bin"

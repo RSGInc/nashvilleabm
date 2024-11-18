@@ -300,7 +300,7 @@ Macro "Truck_Model"
 	Opts.Global.[Fric Factor Type]= {"Exponential"      , "Exponential"      }
 	Opts.Global.[A List]          = {1                  , 1                  }
 	Opts.Global.[B List]          = {0.3                , 0.3                }    
-	Opts.Global.[C List]          = {0.0215             , 0.001             } //chattanooga - 0.9713 
+	Opts.Global.[C List]          = {0.140              , 0.001             } //chattanooga - 0.9713 
 	Opts.Flag.[Use K Factors]     = {1                  , 1                  }
 	Opts.Flag.[Post Process] = "False"
 	Opts.Output.[Output Matrix].Label = "Truck Trip Matrix"
@@ -486,7 +486,7 @@ Macro "4TCV_Model"
 	Opts.Global.[Fric Factor Type]= {"Exponential"}
 	Opts.Global.[A List]          = {1            }
 	Opts.Global.[B List]          = {0.3          }    
-	Opts.Global.[C List]          = {0.0255       }
+	Opts.Global.[C List]          = {0.1420       }
 	Opts.Flag.[Use K Factors]     = {1            }
 	Opts.Flag.[Post Process] = "False"
 	Opts.Output.[Output Matrix].Label = "CV Trip Matrix"
