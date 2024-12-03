@@ -172,13 +172,13 @@ Macro "02_VTripGen" (tazvw)
 	SetView(tazvw)
 	
 	//Trip production coefficients, updated 09/25
-	Intercept = 48.3089028
-	HH_Coef = 0.1184377
-	EmpFlagConstant = 506.2384980 // activate when emp_tot > 5,000
-	empfoo_p_coef = 0.8730775
-	empfoo_p_flag_coef = - 0.2826828
-	empret_p_coef = 0.8555347
-	empret_p_flag_coef = - 0.6971820
+	Intercept = 19.28635005
+	HH_Coef = 0.03811277
+	EmpFlagConstant = 139.92229011 // activate when emp_tot > 5,000
+	empfoo_p_coef = 0.25287973
+	empfoo_p_flag_coef = - 0.07583832
+	empret_p_coef = 0.29075875
+	empret_p_flag_coef = - 0.22637241
 
 
 	//Productions & Attractions
@@ -232,9 +232,9 @@ Macro "03_VTripDist"
 		Opts.Global.Iterations = {100}
 		Opts.Global.Convergence = {0.001}
 		Opts.Global.[Fric Factor Type] = {"Gamma"}
-		Opts.Global.[A List] = {26447.4547}
-		Opts.Global.[B List] = {1.4192}
-		Opts.Global.[C List] = {0.0929}
+		Opts.Global.[A List] = {182229.8423}
+		Opts.Global.[B List] = {0.7941}
+		Opts.Global.[C List] = {0.1690}
 		Opts.Global.[Minimum Friction Value] = {0}
 		Opts.Field.[Prod Fields] = {"V_Prod"}
 		Opts.Field.[Attr Fields] = {"V_Attr"}
