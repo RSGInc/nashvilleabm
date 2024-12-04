@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DaySimBufferingTool>
+  <INPUTS>
+    <FILEPATHS>
+      <ParcelFile>C:\Projects\Clients\Nashville\GitHub\nashvilleabm_tcad9\ParcelInputs\BufferTool\2050\landuse_2050.csv</ParcelFile>
+      <IntersectionFile>C:\Projects\Clients\Nashville\GitHub\nashvilleabm_tcad9\ParcelInputs\BufferTool\2050\intersections_nashville.txt</IntersectionFile>
+      <TransitStopsFile>C:\Projects\Clients\Nashville\GitHub\nashvilleabm_tcad9\ParcelInputs\BufferTool\2050\stops_transit_2023.csv</TransitStopsFile>
+      <OpenSpacesFile />
+      <CircuityFile />
+      <NodeDistanceType>DaySim Format</NodeDistanceType>
+      <NodeFile>C:\Projects\Clients\Nashville\GitHub\nashvilleabm_tcad9\ParcelInputs\BufferTool\2050\input_node.csv</NodeFile>
+      <NodeDistanceFile>C:\Projects\Clients\Nashville\GitHub\nashvilleabm_tcad9\ParcelInputs\BufferTool\2050\node_node_distances.dat</NodeDistanceFile>
+      <ParcelNodeFile>C:\Projects\Clients\Nashville\GitHub\nashvilleabm_tcad9\ParcelInputs\BufferTool\2050\maz_node.dat</ParcelNodeFile>
+      <OpenSpacesNodeFile />
+    </FILEPATHS>
+    <PARAMETERS>
+      <DistCalcType>Node-to-Node</DistCalcType>
+      <BuffType>Logistic decay</BuffType>
+      <BuffDist1>660</BuffDist1>
+      <BuffDecaySlope1>0.76</BuffDecaySlope1>
+      <BuffExpParam1>-2.5205</BuffExpParam1>
+      <BuffOffset1>2640</BuffOffset1>
+      <BuffDist2>1320</BuffDist2>
+      <BuffDecaySlope2>0.76</BuffDecaySlope2>
+      <BuffExpParam2>-0.4365</BuffExpParam2>
+      <BuffOffset2>2640</BuffOffset2>
+    </PARAMETERS>
+  </INPUTS>
+  <OUTPUTS>
+    <BufferedParcelFile>C:\Projects\Clients\Nashville\GitHub\nashvilleabm_tcad9\ParcelInputs\BufferTool\2050\nashville_mzbuffer_allstreets_2050.dat</BufferedParcelFile>
+    <SaveXMLFile>C:\Projects\Clients\Nashville\GitHub\nashvilleabm_tcad9\ParcelInputs\BufferTool\2050\nashville_buffconfig_allstreets_2050.xml</SaveXMLFile>
+  </OUTPUTS>
+</DaySimBufferingTool>

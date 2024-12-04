@@ -1,0 +1,25 @@
+INFO: DaySim Buffering Tool Log Started: Friday, September 6, 2024 @ 11:24:19 PM
+INFO: Started buffering process: Friday, September 6, 2024 @ 11:24:19 PM
+INFO: Started buffering process: Friday, September 6, 2024 @ 11:24:19 PM
+INFO: Started reading node data: Friday, September 6, 2024 @ 11:24:19 PM
+INFO: Finished reading node data: Friday, September 6, 2024 @ 11:24:19 PM
+INFO: Started reading parcel data: Friday, September 6, 2024 @ 11:24:19 PM
+INFO: Finished reading parcel data: Friday, September 6, 2024 @ 11:24:19 PM
+INFO: Started reading intersection data: Friday, September 6, 2024 @ 11:24:19 PM
+INFO: Finished reading intersection data: Friday, September 6, 2024 @ 11:24:20 PM
+INFO: Started reading transit stops data: Friday, September 6, 2024 @ 11:24:20 PM
+INFO: Finished reading transit stops data: Friday, September 6, 2024 @ 11:24:20 PM
+INFO: Started reading open spaces data: Friday, September 6, 2024 @ 11:24:20 PM
+INFO: Finished reading open spaces data: Friday, September 6, 2024 @ 11:24:20 PM
+INFO: Started creating node correspondences: Friday, September 6, 2024 @ 11:24:20 PM
+INFO: Started creating parcel-node correspondence: Friday, September 6, 2024 @ 11:24:20 PM
+INFO: Finished creating parcel-node correspondence: Friday, September 6, 2024 @ 11:24:23 PM
+INFO: Started creating intersection-node correspondence: Friday, September 6, 2024 @ 11:24:23 PM
+INFO: Started creating stop-node correspondence: Friday, September 6, 2024 @ 11:24:52 PM
+INFO: Finished creating node correspondences: Friday, September 6, 2024 @ 11:24:52 PM
+INFO: Started precalculating distance decay weights: Friday, September 6, 2024 @ 11:24:52 PM
+INFO: Finished precalculating distance decay weights: Friday, September 6, 2024 @ 11:24:52 PM
+INFO: Started writing out buffered parcel data: Friday, September 6, 2024 @ 11:24:52 PM
+INFO: Reading node-node distance information from C:\Projects\Clients\Nashville\GitHub\nashvilleabm_tcad9\ParcelInputs\BufferTool\2023\node_node_distances.dat: Friday, September 6, 2024 @ 11:24:52 PM
+INFO: Finished writing out buffered parcel data: Friday, September 6, 2024 @ 11:28:20 PM
+INFO: Finished buffering process: Friday, September 6, 2024 @ 11:28:20 PM
