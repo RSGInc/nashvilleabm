@@ -12,11 +12,49 @@ utility that process the moe for scenarios
 �	% LOSF VMT
 */
 
+Macro "summarizing_HH_POP_EMP"
+	shared Scen_Dir
+	
+    folder = Scen_Dir + "reports\\moe"
+    path_info = SplitPath(folder)
+	drive = path_info[1]
+
+    command_line =  "cmd /c " + drive + "&& cd " + folder + " && summarizing_HH_POP_EMP.bat"
+    status = RunProgram(command_line,{{"Maximize", "True"}})
+endmacro
+
+Macro "Update_TAZ_fields" (Args)
+	shared Scen_Dir
+	// Opentable
+	new_data_path = Scen_Dir + "reports\\moe\\taz_summary.csv"
+	new_data = OpenTable("new_data", "CSV", {new_data_path, })
+
+	taz_db_path = SplitPath(Args.[taz])
+	taz_bin = OpenTable("taz_bin", "FFB", {taz_db_path[1]+taz_db_path[2]+taz_db_path[3]+".bin", })
+
+	// joinviews 
+	jnvw = JoinViews("jv" , taz_bin+".TAZ_ID", new_data+".TAZID", )
+
+	SetView(jnvw)
+	// getdatavectors
+	{households, population, employment} = GetDataVectors(jnvw+"|", 
+	{"households", "population" , "employment" }, {{"Sort Order", {{jnvw+".TAZ_ID", "Ascending"}}},{"Missing as Zero", "True"}})	
+
+	// setdatavectors
+	SetDataVectors(jnvw + "|",{{"HH",households}, {"POP",population},{"EMP",employment}}  ,{{"Sort Order",{{"TAZ_ID","Ascending"}}}})
+
+	// closeview (first close the join you created, and then close the two tables you created)
+	CloseView(jnvw)
+	CloseView(new_data)
+endMacro
+
 macro "MOE1" (Args) //MOE 1 for the table
 	RunMacro("TCB Init")
 	RunMacro("HwycadLog", {"9.1 Utility.rsc", " Running MOE1"})
 	
 	shared Scen_Dir
+	RunMacro("summarizing_HH_POP_EMP") 
+	RunMacro("Update_TAZ_fields", Args)
 	//create an MOE file
 	MOE_file = Scen_Dir + "reports\\moe\\scenario_moe.csv"
 	MOE = OpenFile(MOE_file,"w")
