@@ -865,7 +865,7 @@ Macro "BuildTransitPaths"
                 Opts.Global.[Global Max WACC Path] = 50
                 Opts.Global.[Global Max PACC Path] = 5
                 Opts.Global.[Path Method] = 3
-                Opts.Global.[Path Threshold] = 0.8				      // path combination factor - changed by nagendra.dhakar@rsginc.com on 12/30/2015.   
+                Opts.Global.[Path Threshold] = 0.8				      // path combination factor  
                 Opts.Global.[Value of Time] = ValueofTime
                 Opts.Global.[Max Xfer Number] = 4
                 Opts.Global.[Max Trip Time] = 240

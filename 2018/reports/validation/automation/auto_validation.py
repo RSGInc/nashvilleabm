@@ -66,7 +66,16 @@ def transit_validation(model_dir, sce_dir):
         
         for line in results:
             col_counter = 0
-            for val in re.split(' +',line):
+            print(line)
+            split_line = re.split(' +',line)
+
+            # If needed, add extra worksheet columns to fill w/ data
+            addl_cols = len(split_line) - wksht.max_column
+            if addl_cols > 0:
+                wksht.insert_cols(wksht.max_column,addl_cols)
+
+            for val in split_line:
+                # print(val)
                 try:
                     # Convert string to appropriate float value
                     wksht[row_counter][col_counter].value = locale.atof(val)

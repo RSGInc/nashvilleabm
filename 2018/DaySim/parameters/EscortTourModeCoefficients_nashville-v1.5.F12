@@ -11,7 +11,7 @@ END
  40 s2-const F -1.528111688885248 
  41 sr-nocars T -7.793356982085974 
  42 sr-carsltd F 0.104879409323394 
- 50 da-const T -10.158505708186286 
+ 50 da-const T -10.15850570818629 
  52 da-carsltd F -3.795188896990166 
  60 bi-const T -15 
  67 bi-nocars F 0 

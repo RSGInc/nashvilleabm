@@ -3,10 +3,10 @@ Created by ALOGIT version 4                             15:55:36 on  2 Apr 12
 END
  1 costutil F 1.451435404 
  2 timeutil F 1.303940837 
- 20 wt-const F -4.778376703402739 
- 30 s3-const F -4.69391551054945 
- 40 s2-const F -3.683632232930993 
- 50 da-const F -4.680279667610288 
+ 20 wt-const F -4.541402207019896 
+ 30 s3-const F -4.528950192736351 
+ 40 s2-const F -3.533453216438205 
+ 50 da-const F -4.524631058378043 
  54 da-incu25 F -0.135566794 
  55 da-inc2550 F -0.132438302 
  58 da-dtowork F 2.767879803 

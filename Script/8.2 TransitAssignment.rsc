@@ -618,7 +618,7 @@ Macro "TRNSTAT"
     dim ModeChoiceFiles[nfiles]
     dim Flows[nfiles+1,nchoice]       //dim1 is purpose and dim2 is mode
     dim modename[maxmode],ambrd[maxmode],mdbrd[maxmode],pmbrd[maxmode],opbrd[maxmode],totbrd[maxmode]  //assuming max of 10 modes
-    dim modenum[400],ambrdrte[400],mdbrdrte[400],pmbrdrte[400],opbrdrte[400],totbrdrte[400]  //assuming max of 400 routes
+    dim modenum[400],ambrdrte[400],mdbrdrte[400],pmbrdrte[400],opbrdrte[400],totbrdrte[400]  //assuming max of 400 routes (route ids)
     dim totrte[nfiles+1],tot[nfiles+1],xfer[nfiles+1],xferr[nfiles+1] // 2 Periods+1
     k1=1
     for iper=1 to Periods.length do
@@ -704,9 +704,9 @@ Macro "TRNSTAT"
 
         mat = OpenMatrix(OutDir+ModeChoiceFiles[k],)
         stat_array = MatrixStatistics(mat, )
-        Flows[k][1] = stat_array.[DA].Sum
-        Flows[k][2] = stat_array.[SR2].Sum
-        Flows[k][3] = stat_array.[SR3].Sum
+        Flows[k][1] = 0
+        Flows[k][2] = 0
+        Flows[k][3] = 0
         Flows[k][4] = stat_array.[WLKLOCBUS].Sum
         Flows[k][5] = stat_array.[WLKBRT].Sum
         Flows[k][6] = stat_array.[WLKEXPBUS].Sum
@@ -745,28 +745,26 @@ Macro "TRNSTAT"
         Flows[5][19] = Flows[5][19] + Flows[k][19]
 
         if k=1 then do
-					WriteLine(sfile,"TRIPS BY TOD AND MODE (MODE CHOICE MODEL RESULTS)")
-					WriteLine(sfile,"==================================================================================================================================================================================================================|============")
-					WriteLine(sfile," Per    DriveAlo  ShrRide 2  ShrRide 3+  WalkLocal  WalkBrt  WalkExpBus  WalkUrbRail  WalkComRail  PnRLocal  PnRBrt  PnRExpBus  PnRUrbRail  PnRComRail  KnRLocal  KnRBrt  KnRExpBus  KnRUrbRail  KnrComRail | Total Trips")
-					WriteLine(sfile,"==================================================================================================================================================================================================================|============")
+					WriteLine(sfile,"TRANSIT TRIPS BY TOD AND MODE")
+					WriteLine(sfile,"=============================================================================================================================================================================|============")
+					WriteLine(sfile," Per    WalkLocal  WalkBrt  WalkExpBus  WalkUrbRail  WalkComRail  PnRLocal  PnRBrt  PnRExpBus  PnRUrbRail  PnRComRail  KnRLocal  KnRBrt  KnRExpBus  KnRUrbRail  KnrComRail   | Total Trips")
+					WriteLine(sfile,"=============================================================================================================================================================================|============")
         end
-        WriteLine(sfile,Lpad(Periods[k],5)+"   "+Format(Flows[k][1],",0000000")+"  "+Format(Flows[k][2],",0000000")+"     "+Format(Flows[k][3],",000000")
-                                                               +"     "+Format(Flows[k][4],",00000")+"     "+Format(Flows[k][5],",00000")+"     "+Format(Flows[k][6],",00000")
-                                                               +"     "+Format(Flows[k][7],",00000")+"     "+Format(Flows[k][8],",00000")+"     "+Format(Flows[k][9],",00000")
-                                                               +"     "+Format(Flows[k][10],",00000")+"     "+Format(Flows[k][11],",00000")+"     "+Format(Flows[k][12],",00000")
-                                                               +"     "+Format(Flows[k][13],",00000")+"     "+Format(Flows[k][14],",00000")+"     "+Format(Flows[k][15],",00000")
-                                                               +"     "+Format(Flows[k][16],",00000")+"     "+Format(Flows[k][17],",00000")+"     "+Format(Flows[k][18],",00000")
-                                                               +" |   "+Format(Flows[k][19],",0000000"))
+        WriteLine(sfile,Lpad(Periods[k],5)  +"      "+Format(Flows[k][4],",00000")+"   "+Format(Flows[k][5],",00000")+"      "+Format(Flows[k][6],",00000")
+                                            +"       "+Format(Flows[k][7],",00000")+"       "+Format(Flows[k][8],",00000")+"    "+Format(Flows[k][9],",00000")
+                                            +"   "+Format(Flows[k][10],",00000")+"     "+Format(Flows[k][11],",00000")+"     "+Format(Flows[k][12],",00000")
+                                            +"      "+Format(Flows[k][13],",00000")+"    "+Format(Flows[k][14],",00000")+"  "+Format(Flows[k][15],",00000")
+                                            +"     "+Format(Flows[k][16],",00000")+"      "+Format(Flows[k][17],",00000")+"      "+Format(Flows[k][18],",00000")
+                                            +"   |   "+Format(Flows[k][19],",0000000"))
     end
 		
-    WriteLine(sfile,"==================================================================================================================================================================================================================|============")
-    WriteLine(sfile,"TOTAL       "+Format(Flows[5][1],",0000000")+"  "+Format(Flows[5][2],",0000000")+"   "+Format(Flows[5][3],",0000000")
-                          +"     "+Format(Flows[5][4],",00000")+"     "+Format(Flows[5][5],",00000")+"     "+Format(Flows[5][6],",00000")
-                          +"     "+Format(Flows[5][7],",00000")+"     "+Format(Flows[5][8],",00000")+"     "+Format(Flows[5][9],",00000")
-                          +"     "+Format(Flows[5][10],",00000")+"     "+Format(Flows[5][11],",00000")+"     "+Format(Flows[5][12],",00000")
-                          +"     "+Format(Flows[5][13],",00000")+"     "+Format(Flows[5][14],",00000")+"     "+Format(Flows[5][15],",00000")
-                          +"     "+Format(Flows[5][16],",00000")+"     "+Format(Flows[5][17],",00000")+"     "+Format(Flows[5][18],",00000")
-                          +" |   "+Format(Flows[5][19],",0000000"))
+    WriteLine(sfile,"=============================================================================================================================================================================|============")
+    WriteLine(sfile,"TOTAL     "  +Format(Flows[5][4],",00000")+"   "+Format(Flows[5][5],",00000")+"      "+Format(Flows[5][6],",00000")
+                          +"       "+Format(Flows[5][7],",00000")+"       "+Format(Flows[5][8],",00000")+"    "+Format(Flows[5][9],",00000")
+                          +"   "+Format(Flows[5][10],",00000")+"     "+Format(Flows[5][11],",00000")+"     "+Format(Flows[5][12],",00000")
+                          +"      "+Format(Flows[5][13],",00000")+"    "+Format(Flows[5][14],",00000")+"  "+Format(Flows[5][15],",00000")
+                          +"     "+Format(Flows[5][16],",00000")+"      "+Format(Flows[5][17],",00000")+"      "+Format(Flows[5][18],",00000")
+                          +"    |   "+Format(Flows[5][19],",0000000"))
 
 												
     While !FileAtEOF(sfile1) do
@@ -828,9 +826,9 @@ Macro "TRNSTAT"
     CloseFile(sfile1)
 
     WriteLine(sfile,"\n\n\nTRANSIT BOARDINGS BY MODE (TRANSIT ASSIGNMENT RESULTS)")
-    WriteLine(sfile,"=======================================================================================|=========")
-    WriteLine(sfile," Mode         Mode Name      Dwell Factor         AM         MD         PM         OP    |    Total")
-    WriteLine(sfile,"=======================================================================================|=========")
+    WriteLine(sfile,"==========================================================================================|=========")
+    WriteLine(sfile," Mode         Mode Name      Dwell Factor         AM         MD         PM          OP    |    Total")
+    WriteLine(sfile,"==========================================================================================|=========")
     
 	for k=1 to maxmode do
 		if (totbrd[k] > 0) then do
@@ -838,12 +836,12 @@ Macro "TRNSTAT"
 			Format(mdbrd[k],",00000")+"      "+Format(pmbrd[k],",00000")+"      "+Format(opbrd[k],",00000")+"   |   "+Format(totbrd[k],",00000"))
 		end
     end
-    WriteLine(sfile,"=====================================================================================================================================================================|=========")
+    WriteLine(sfile,"==========================================================================================|=========")
     WriteLine(sfile,"        TOTAL                                "+Format(tot[1],",00000")+"      "+Format(tot[2],",00000")+"      "+Format(tot[3],",00000")+"      "+Format(tot[4],",00000")+"   |   "+Format(tot[5],",00000"))
 
     WriteLine(sfile,"\n\n\nTRANSFER RATES BY TOD")
     WriteLine(sfile,"=======================================")
-    WriteLine(sfile," Period    Transfers   (Rate)")
+    WriteLine(sfile," Period     Transfers   (Rate)")
     WriteLine(sfile,"=======================================")
     
     for k=1 to 4 do
@@ -855,12 +853,12 @@ Macro "TRNSTAT"
     xfer[5]=(tot[5]-(Flows[5][4]+Flows[5][5]+Flows[5][6]+Flows[5][7]+Flows[5][8]+Flows[5][9]+Flows[5][10]+Flows[5][11]+Flows[5][12]+Flows[5][13]+Flows[5][14]+Flows[5][15]+Flows[5][16]+Flows[5][17]+Flows[5][18]))
     xferr[5]=(tot[5]/(Flows[5][4]+Flows[5][5]+Flows[5][6]+Flows[5][7]+Flows[5][8]+Flows[5][9]+Flows[5][10]+Flows[5][11]+Flows[5][12]+Flows[5][13]+Flows[5][14]+Flows[5][15]+Flows[5][16]+Flows[5][17]+Flows[5][18])-1)*100
     WriteLine(sfile,"=======================================")
-    WriteLine(sfile,"  TOTAL                 "+Format(xfer[k],",00000")+" ("+Format(xferr[k],"00.00")+"%) ")
+    WriteLine(sfile,"  TOTAL        "+Format(xfer[k],",00000")+" ("+Format(xferr[k],"00.00")+"%) ")
 
     WriteLine(sfile,"\n\n\nTRANSIT BOARDINGS BY ROUTE (TRANSIT ASSIGNMENT RESULTS)")
-    WriteLine(sfile,"===========================================================================|=========")
-    WriteLine(sfile," Route   Mode     Route Name         AM         MD         PM         OP   |    Total")
-    WriteLine(sfile,"===========================================================================|=========")
+    WriteLine(sfile,"================================================================================|=========")
+    WriteLine(sfile," Route   Mode     Route Name           AM          MD          PM          OP   |    Total")
+    WriteLine(sfile,"================================================================================|=========")
     
 	for k=1 to 400 do
 		if (totbrdrte[k] > 0) then do
@@ -868,8 +866,8 @@ Macro "TRNSTAT"
 		end
     end
     
-	WriteLine(sfile,"===================================================================================================================|=========")
-    WriteLine(sfile,"        TOTAL                     "+Format(totrte[1],",00000")+"      "+Format(totrte[2],",00000")+"      "+Format(totrte[3],",00000")+"      "+Format(totrte[4],",00000")+"   |   "+Format(totrte[5],",00000"))
+	WriteLine(sfile,"================================================================================|=========")
+    WriteLine(sfile,"        TOTAL                      "+Format(totrte[1],",00000")+"      "+Format(totrte[2],",00000")+"      "+Format(totrte[3],",00000")+"      "+Format(totrte[4],",00000")+"   |   "+Format(totrte[5],",00000"))
 
     // Now dump the transit summary file in the report
     stat_file2 = OutDir + "TrnSummary.asc"
@@ -879,7 +877,7 @@ Macro "TRNSTAT"
     			"============================================================================================================================================================================="+
     			"============================================================================================================================================================================="+
     			"====================================================================================================================")
-    WriteLine(sfile," RTE_ID              RTE_NAME          MODE HDAM HDMD HDPM HDOP  RTE  AM_MILES   AM_TIME   MD_MILES   MD_TIME   PM_MILES   PM_TIME  OP_MILES   OP_TIME  TOT_ON 1_WL 1_WB 1_WE 1_WU 1_WC 1_PL 1_PB 1_PE 1_PU 1_PC 1_KL 1_KB 1_KE 1_KU 1_KC 2_WL"+
+    WriteLine(sfile," RTE_ID              RTE_NAME      MODE HDAM HDMD HDPM HDOP  RTE  AM_MILES   AM_TIME   MD_MILES   MD_TIME   PM_MILES   PM_TIME  OP_MILES   OP_TIME  TOT_ON 1_WL 1_WB 1_WE 1_WU 1_WC 1_PL 1_PB 1_PE 1_PU 1_PC 1_KL 1_KB 1_KE 1_KU 1_KC 2_WL"+
     			" 2_WB 2_WE 2_WU 2_WC 2_PL 2_PB 2_PE 2_PU 2_PC 2_KL 2_KB 2_KE 2_KU 2_KC 3_WL 3_WB 3_WE 3_WU 3_WC 3_PL 3_PB 3_PE 3_PU 3_PC 3_KL 3_KB 3_KE 3_KU 3_KC 4_WL 4_WB 4_WE 4_WU 4_WC 4_PL 4_PB"+
     			" 4_PE 4_PU 4_PC 4_KL 4_KB 4_KE 4_KU 4_KC 5_WL 5_WB 5_WE 5_WU 5_WC 5_PL 5_PB 5_PE 5_PU 5_PC 5_KL 5_KB 5_KE 5_KU 5_KC 6_WL 6_WB 6_WE 6_WU 6_WC 6_PL 6_PB 6_PE 6_PU 6_PC 6_KL 6_KB 6_KE 6_KU 6_KC"+
     			" 7_WL 7_WB 7_WE 7_WU 7_WC 7_PL 7_PB 7_PE 7_PU 7_PC 7_KL 7_KB 7_KE 7_KU 7_KC  TOT_PH  TOT_PM")
