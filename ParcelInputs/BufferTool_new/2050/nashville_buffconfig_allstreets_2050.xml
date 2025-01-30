@@ -2,7 +2,7 @@
 <DaySimBufferingTool>
   <INPUTS>
     <FILEPATHS>
-      <ParcelFile>C:\Projects\Clients\Nashville\GitHub\nashvilleabm_tcad9\ParcelInputs\BufferTool\2050\landuse_2050.csv</ParcelFile>
+      <ParcelFile>C:\Projects\Clients\Nashville\GitHub\nashvilleabm_tcad9\ParcelInputs\BufferTool\2050\new_buffer_prep_2050.csv</ParcelFile>
       <IntersectionFile>C:\Projects\Clients\Nashville\GitHub\nashvilleabm_tcad9\ParcelInputs\BufferTool\2050\intersections_nashville.txt</IntersectionFile>
       <TransitStopsFile>C:\Projects\Clients\Nashville\GitHub\nashvilleabm_tcad9\ParcelInputs\BufferTool\2050\stops_transit_2023.csv</TransitStopsFile>
       <OpenSpacesFile />

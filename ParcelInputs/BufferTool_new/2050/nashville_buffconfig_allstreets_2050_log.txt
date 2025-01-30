@@ -1,25 +1,25 @@
-INFO: DaySim Buffering Tool Log Started: Monday, November 18, 2024 @ 4:33:30 PM
-INFO: Started buffering process: Monday, November 18, 2024 @ 4:33:30 PM
-INFO: Started buffering process: Monday, November 18, 2024 @ 4:33:30 PM
-INFO: Started reading node data: Monday, November 18, 2024 @ 4:33:30 PM
-INFO: Finished reading node data: Monday, November 18, 2024 @ 4:33:30 PM
-INFO: Started reading parcel data: Monday, November 18, 2024 @ 4:33:30 PM
-INFO: Finished reading parcel data: Monday, November 18, 2024 @ 4:33:30 PM
-INFO: Started reading intersection data: Monday, November 18, 2024 @ 4:33:30 PM
-INFO: Finished reading intersection data: Monday, November 18, 2024 @ 4:33:30 PM
-INFO: Started reading transit stops data: Monday, November 18, 2024 @ 4:33:30 PM
-INFO: Finished reading transit stops data: Monday, November 18, 2024 @ 4:33:30 PM
-INFO: Started reading open spaces data: Monday, November 18, 2024 @ 4:33:30 PM
-INFO: Finished reading open spaces data: Monday, November 18, 2024 @ 4:33:30 PM
-INFO: Started creating node correspondences: Monday, November 18, 2024 @ 4:33:30 PM
-INFO: Started creating parcel-node correspondence: Monday, November 18, 2024 @ 4:33:30 PM
-INFO: Finished creating parcel-node correspondence: Monday, November 18, 2024 @ 4:33:33 PM
-INFO: Started creating intersection-node correspondence: Monday, November 18, 2024 @ 4:33:33 PM
-INFO: Started creating stop-node correspondence: Monday, November 18, 2024 @ 4:34:01 PM
-INFO: Finished creating node correspondences: Monday, November 18, 2024 @ 4:34:02 PM
-INFO: Started precalculating distance decay weights: Monday, November 18, 2024 @ 4:34:02 PM
-INFO: Finished precalculating distance decay weights: Monday, November 18, 2024 @ 4:34:02 PM
-INFO: Started writing out buffered parcel data: Monday, November 18, 2024 @ 4:34:02 PM
-INFO: Reading node-node distance information from C:\Projects\Clients\Nashville\GitHub\nashvilleabm_tcad9\ParcelInputs\BufferTool\2050\node_node_distances.dat: Monday, November 18, 2024 @ 4:34:02 PM
-INFO: Finished writing out buffered parcel data: Monday, November 18, 2024 @ 4:38:07 PM
-INFO: Finished buffering process: Monday, November 18, 2024 @ 4:38:07 PM
+INFO: DaySim Buffering Tool Log Started: Wednesday, January 29, 2025 @ 10:43:52 PM
+INFO: Started buffering process: Wednesday, January 29, 2025 @ 10:43:52 PM
+INFO: Started buffering process: Wednesday, January 29, 2025 @ 10:43:52 PM
+INFO: Started reading node data: Wednesday, January 29, 2025 @ 10:43:52 PM
+INFO: Finished reading node data: Wednesday, January 29, 2025 @ 10:43:52 PM
+INFO: Started reading parcel data: Wednesday, January 29, 2025 @ 10:43:52 PM
+INFO: Finished reading parcel data: Wednesday, January 29, 2025 @ 10:43:52 PM
+INFO: Started reading intersection data: Wednesday, January 29, 2025 @ 10:43:52 PM
+INFO: Finished reading intersection data: Wednesday, January 29, 2025 @ 10:43:53 PM
+INFO: Started reading transit stops data: Wednesday, January 29, 2025 @ 10:43:53 PM
+INFO: Finished reading transit stops data: Wednesday, January 29, 2025 @ 10:43:53 PM
+INFO: Started reading open spaces data: Wednesday, January 29, 2025 @ 10:43:53 PM
+INFO: Finished reading open spaces data: Wednesday, January 29, 2025 @ 10:43:53 PM
+INFO: Started creating node correspondences: Wednesday, January 29, 2025 @ 10:43:53 PM
+INFO: Started creating parcel-node correspondence: Wednesday, January 29, 2025 @ 10:43:53 PM
+INFO: Finished creating parcel-node correspondence: Wednesday, January 29, 2025 @ 10:43:55 PM
+INFO: Started creating intersection-node correspondence: Wednesday, January 29, 2025 @ 10:43:55 PM
+INFO: Started creating stop-node correspondence: Wednesday, January 29, 2025 @ 10:44:18 PM
+INFO: Finished creating node correspondences: Wednesday, January 29, 2025 @ 10:44:18 PM
+INFO: Started precalculating distance decay weights: Wednesday, January 29, 2025 @ 10:44:18 PM
+INFO: Finished precalculating distance decay weights: Wednesday, January 29, 2025 @ 10:44:18 PM
+INFO: Started writing out buffered parcel data: Wednesday, January 29, 2025 @ 10:44:18 PM
+INFO: Reading node-node distance information from C:\Projects\Clients\Nashville\GitHub\nashvilleabm_tcad9\ParcelInputs\BufferTool\2050\node_node_distances.dat: Wednesday, January 29, 2025 @ 10:44:18 PM
+INFO: Finished writing out buffered parcel data: Wednesday, January 29, 2025 @ 10:51:42 PM
+INFO: Finished buffering process: Wednesday, January 29, 2025 @ 10:51:42 PM
