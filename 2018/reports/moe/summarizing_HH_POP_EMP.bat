@@ -1,5 +1,5 @@
 @echo off
-set PYTHON_EXEC=%~dp0..\..\..\..\..\..\GitHub\nashvillePopSim\Setup\software\Anaconda2\envs\py3env\python.exe
+set PYTHON_EXEC=E:\Projects\Clients\NashvilleMPO\ModelUpdate2023\GitHub\nashvillePopSim\Setup\software\Anaconda2\envs\py3env\python.exe
 set SCRIPT_DIR=%~dp0
 set LOG_FILE=%SCRIPT_DIR%error_log.txt
 
