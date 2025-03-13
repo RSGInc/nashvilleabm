@@ -100,8 +100,11 @@ STEPS:
 	
     // number of daysim iterations for shadow prices
     itercount = 5
+	
+	//0-do not run shadow price daysim runs, instead copy from inputs. 1-run shadow price daysim runs.
+	run_shadowprice = 0 
     
-    if loop=1 then do
+    if (loop=1) then do
 
 		// copy roster file to outputs folder
 		infile = DaySimDir + "inputs\\nashville-roster_matrix_omx.csv"
@@ -146,7 +149,8 @@ STEPS:
 		CloseFile(ptr2)
 		
     end
-	else do
+	
+	if (loop>1 or run_shadowprice=0) then do
 		// number of daysim iterations. for feedback loop > 1, do not run daysim shadow price, instead use the stable shadow price from feedback loop 1.
 		itercount = 1
 		

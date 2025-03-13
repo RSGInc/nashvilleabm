@@ -264,7 +264,8 @@ Macro "Build Hwy Network" (Args)
         {"beta", {llayer+".beta", llayer+".beta", , , "False"}},
         {"TRUCKNET", {llayer+".TRUCKNET", llayer+".TRUCKNET", , , "False"}},
         {"TRUCKCOST", {llayer+".TRUCKCOST", llayer+".TRUCKCOST", , , "False"}},
-		{"RiverX", {llayer+".RiverX", llayer+".RiverX", , , "False"}}}
+		{"RiverX", {llayer+".RiverX", llayer+".RiverX", , , "False"}},
+		{"PEN_FACTYPE", {llayer+".PEN_FACTYPE", llayer+".PEN_FACTYPE", , , "False"}}}
         Opts.Global.[Length Units] = "Miles"
         Opts.Global.[Time Units] = "Minutes"
         Opts.Output.[Network File] = network_file

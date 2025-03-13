@@ -458,8 +458,9 @@ Macro "Traffic Assignment" (Args)// Trip Assignment
 	// Create temp maps and matrices  
 	temp_map = CreateMap("temp",{{"scope",Scope(Coord(-80000000, 44500000), 200.0, 100.0, 0)}})
 	temp_layer = AddLayer(temp_map,llayer,hwy_db,llayer)
-	temp_layer = AddLayer(temp_map,nlayer,hwy_db,nlayer)	    
-    
+	temp_layer = AddLayer(temp_map,nlayer,hwy_db,nlayer)
+	
+/*    
     // Runs AM traffic assignment -preload
 	RunMacro("HwycadLog", {"Highway Assignment - Preload Assignment for AM", null})
 	UpdateProgressBar("Assignment - Preload Assignments", )
@@ -503,7 +504,7 @@ Macro "Traffic Assignment" (Args)// Trip Assignment
 		if !ok then goto quit
 	
 	end
- 
+*/ 
     // Runs AM traffic assignment
 	RunMacro("HwycadLog", {"Highway Assignment - General Assignment for AM", null})
     ok = RunMacro("GeneralAssignment", Args, Args.[AM OD Matrix],"AM")
@@ -652,31 +653,34 @@ Macro "GeneralAssignment"(Args, allod, periods1)
 	end
 	*/ 	
 	
+	assign_cost = "PEN_FACTYPE"
+	
 	if (auto_assign_classes=1) then do 
 		//17 pass 18 com 19 su 20 MU
+		//21 MU-EI, 22 MU-IE, 23 MU-EE, 24 SU-IE, 25 SU-EE, 26 PASS-EE
 		//autos = sov+hov2+hov3
-		assign_num_classes = 4
-		assign_exclusion_link_sets = {, exclude_hov, exclude_truck ,exclude_truck }
-		assign_turn_Attributes = {, , , }
-		assign_veh_classes = {17, 18, 19, 20}
-		assign_toll_fields = {"n/a", "n/a", trucktoll, trucktoll}
-		assign_pce_fields = {"None", "None", "None", "None"}
-		assign_class_pces = {1, 1, 1.5, 2.5}
-		assign_class_vois = {1, 1, 1, 1}
+		assign_num_classes = 10
+		assign_exclusion_link_sets = {, exclude_hov, exclude_truck, exclude_truck, exclude_truck, exclude_truck, exclude_truck, exclude_truck, exclude_truck, }
+		assign_turn_Attributes = {, , , , , , , , ,}
+		assign_veh_classes = {17, 18, 19, 20, 21, 22, 23, 24, 25, 26}
+		assign_toll_fields = {"n/a", "n/a", trucktoll, trucktoll, assign_cost, assign_cost, assign_cost, assign_cost, assign_cost, assign_cost}
+		assign_pce_fields = {"None", "None", "None", "None", "None", "None", "None", "None", "None", "None"}
+		assign_class_pces = {1, 1, 1.5, 2.5, 2.5, 2.5, 2.5, 1.5, 1.5, 1}
+		assign_class_vois = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 	end
 
 	if (auto_assign_classes=2) then do	
 		//17 pass 18 com 19 su 20 MU 27 HOV
 		//passenger = sov
 		//hov = hov2+hov3
-		assign_num_classes = 5
-		assign_exclusion_link_sets = {exclude_hov, exclude_hov, exclude_truck ,exclude_truck , }
-		assign_turn_Attributes = {, , , , }
-		assign_veh_classes = {17, 18, 19, 20, 27}
-		assign_toll_fields = {"n/a", "n/a", trucktoll, trucktoll, "n/a"}
-		assign_pce_fields = {"None", "None", "None", "None", "None"}
-		assign_class_pces = {1, 1, 1.5, 2.5, 1}
-		assign_class_vois = {1, 1, 1, 1, 1}
+		assign_num_classes = 11
+		assign_exclusion_link_sets = {exclude_hov, exclude_hov, exclude_truck ,exclude_truck , exclude_truck, exclude_truck, exclude_truck, exclude_truck, exclude_truck, }
+		assign_turn_Attributes = {, , , , , , , , , ,}
+		assign_veh_classes = {17, 18, 19, 20, 27, 21, 22, 23, 24, 25, 26}
+		assign_toll_fields = {"n/a", "n/a", trucktoll, trucktoll, "n/a", assign_cost, assign_cost, assign_cost, assign_cost, assign_cost, assign_cost}
+		assign_pce_fields = {"None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None"}
+		assign_class_pces = {1, 1, 1.5, 2.5, 1, 2.5, 2.5, 2.5, 1.5, 1.5, 1}
+		assign_class_vois = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 	end
 
 	if (auto_assign_classes=3) then do
@@ -684,14 +688,14 @@ Macro "GeneralAssignment"(Args, allod, periods1)
 		//passenger = sov
 		//hov2 = hov2
 		//hov3 = hov3
-		assign_num_classes = 6
-		assign_exclusion_link_sets = {exclude_hov, exclude_hov, exclude_truck ,exclude_truck , , }
-		assign_turn_Attributes = {, , , , , }
-		assign_veh_classes = {17, 18, 19, 20, 28, 29}
-		assign_toll_fields = {"n/a", "n/a", trucktoll, trucktoll, "n/a", "n/a"}
-		assign_pce_fields = {"None", "None", "None", "None", "None", "None"}
-		assign_class_pces = {1, 1, 1.5, 2.5, 1, 1}
-		assign_class_vois = {1, 1, 1, 1, 1, 1}
+		assign_num_classes = 12
+		assign_exclusion_link_sets = {exclude_hov, exclude_hov, exclude_truck ,exclude_truck, , ,exclude_truck, exclude_truck, exclude_truck, exclude_truck, exclude_truck, }
+		assign_turn_Attributes = {, , , , , , , , , , ,}
+		assign_veh_classes = {17, 18, 19, 20, 28, 29, 21, 22, 23, 24, 25, 26}
+		assign_toll_fields = {"n/a", "n/a", trucktoll, trucktoll, "n/a", "n/a", assign_cost, assign_cost, assign_cost, assign_cost, assign_cost, assign_cost}
+		assign_pce_fields = {"None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None"}
+		assign_class_pces = {1, 1, 1.5, 2.5, 1, 1, 2.5, 2.5, 2.5, 1.5, 1.5, 1}
+		assign_class_vois = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 	end
 	
 	UpdateProgressBar(periods1+" Assignment ", )
@@ -704,7 +708,7 @@ Macro "GeneralAssignment"(Args, allod, periods1)
     Opts.Field.[Vehicle Classes] = assign_veh_classes
     Opts.Field.[Fixed Toll Fields] = assign_toll_fields
     Opts.Field.[PCE Fields] = assign_pce_fields
-    Opts.Field.[VDF Fld Names] = {"[time_FF_AB_time_FF_BA]", "[capacity_"+Lower(periods1)+"_AB_capacity_"+Lower(periods1)+"_BA]", "alpha", "beta", "[Preload"+periods1+"AB/BA PCE]"}
+    Opts.Field.[VDF Fld Names] = {"[time_FF_AB_time_FF_BA]", "[capacity_"+Lower(periods1)+"_AB_capacity_"+Lower(periods1)+"_BA]", "alpha", "beta", "None"}
     Opts.Global.[Load Method] = "BFW"
     Opts.Global.[Loading Multiplier] = 1
     Opts.Global.[N Conjugate] = 2
@@ -1103,12 +1107,12 @@ Macro "PostProcessor" (Args)
 	
 	
 	//open assignment result tables
-	
+/*	
 	OpenTable("AM preload","FFB",{Scen_Dir+ "outputs\\Assignment_Preload_AM.bin",})
 	OpenTable("MD preload","FFB",{Scen_Dir+ "outputs\\Assignment_Preload_MD.bin",})
 	OpenTable("PM preload","FFB",{Scen_Dir+ "outputs\\Assignment_Preload_PM.bin",})
 	OpenTable("OP preload","FFB",{Scen_Dir+ "outputs\\Assignment_Preload_OP.bin",})
-	
+*/	
 	OpenTable("AM Assignment Result","FFB",{Scen_Dir+ "outputs\\Assignment_AM.bin",})
 	OpenTable("MD Assignment Result","FFB",{Scen_Dir+ "outputs\\Assignment_MD.bin",})
 	OpenTable("PM Assignment Result","FFB",{Scen_Dir+ "outputs\\Assignment_PM.bin",})
@@ -1124,9 +1128,25 @@ Macro "PostProcessor" (Args)
 		//preload
 		preload=Scen_Dir+ "outputs\\Assignment_Preload_"+periods[p]+".bin"
 		result=Args.[Assignment Result]
-		
+/*		
 		Opts = null
 		Opts.Input.[Dataview Set] = {{result, preload, {"ID"}, {"ID1"}}, "Assignment Result + Preload"+ periods[p]}
+		Opts.Global.Fields = {
+			"VOL_MU"+periods[p]+"AB","VOL_MU"+periods[p]+"BA",
+			"VOL_SU"+periods[p]+"AB","VOL_SU"+periods[p]+"BA",
+			"VOL_PASS"+periods[p]+"AB","VOL_PASS"+periods[p]+"BA"
+			}
+		Opts.Global.Method = "Formula"
+		Opts.Global.Parameter = {
+			"nz(AB_FLOW_PRELOAD_EIMU)+nz(AB_FLOW_PRELOAD_IEMU)+   nz(AB_FLOW_PRELOAD_EEMU)+nz(VOL_MU"+periods[p]+"AB)","nz(BA_FLOW_PRELOAD_EIMU)+nz(BA_FLOW_PRELOAD_IEMU)+nz(BA_FLOW_PRELOAD_EEMU)+nz(VOL_MU"+periods[p]+"BA)",
+			"nz(AB_FLOW_PRELOAD_IESU)+nz(AB_FLOW_PRELOAD_EESU)+nz(VOL_SU"+periods[p]+"AB)","nz(BA_FLOW_PRELOAD_IESU)+nz(BA_FLOW_PRELOAD_EESU)+nz(VOL_SU"+periods[p]+"BA)",
+			"nz(AB_FLOW_PRELOAD_Pass)+nz(VOL_PASS"+periods[p]+"AB)","nz(BA_FLOW_PRELOAD_Pass)+nz(VOL_PASS"+periods[p]+"BA)"
+			}
+		ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
+		if !ret_value then goto quit
+*/
+		Opts = null
+			Opts.Input.[Dataview Set] = {{result, Scen_Dir+ "outputs\\Assignment_"+periods[p]+".bin", {"ID"}, {"ID1"}}, "Assignment Result+"+periods[p]+" Assignment"}
 		Opts.Global.Fields = {
 			"VOL_MU"+periods[p]+"AB","VOL_MU"+periods[p]+"BA",
 			"VOL_SU"+periods[p]+"AB","VOL_SU"+periods[p]+"BA",

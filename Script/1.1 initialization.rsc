@@ -113,7 +113,8 @@ Macro "Initialization" (Args)// Initialization
 	"capacity",
 	"MOD_CLASS",
 	"MOD_AREA",
-    "TRUCKCOST"
+    "TRUCKCOST",
+	"PEN_FACTYPE"
 	}
 
 	dim v_null[v_clear.length]
@@ -141,7 +142,7 @@ Macro "Initialization" (Args)// Initialization
     // STEP 3: Removed for now
     // STEP 4: Deduct 10% of the total cost from the preferred truck links
 
-	/* 
+/*	 
 		//STEP 1: Create a new field    
 	vw = GetView()
 	strct = GetTableStructure(vw)
@@ -149,25 +150,27 @@ Macro "Initialization" (Args)// Initialization
 		strct[i] = strct[i] + {strct[i][1]}
 	end
 	strct = strct + {{"TRUCKCOST", "Real", 14, 6, "True", , , , , , , null}}
+	strct = strct + {{"PEN_FACTYPE", "Real", 14, 6, "True", , , , , , , null}}
 
 	ModifyTable(view1, strct)
-	*/
+*/	
 
    // STEP 2: Apply a cost of 126.1 sec/mile to all links
-   tollfield={"TRUCKCOST"}
-   tollfld_flg={"126.1*Length"}
+   tollfield={"TRUCKCOST", "PEN_FACTYPE"}
+   tollfld_flg={"126.1*Length", "126.1*Length"}
    
-   Opts = null
-   Opts.Input.[View Set] = {hwy_db+"|"+llayer, llayer}
-   Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer}
-   Opts.Global.Fields = tollfield
-   Opts.Global.Method = "Formula"
-   Opts.Global.Parameter = tollfld_flg
-   ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
-   if !ret_value then goto quit   
-
-	/*       
-	// STEP 3: Apply additional cost to links by facility type - not for now
+   for i=1 to tollfield.length do
+	   Opts = null
+	   Opts.Input.[View Set] = {hwy_db+"|"+llayer, llayer}
+	   Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer}
+	   Opts.Global.Fields = {tollfield[i]}
+	   Opts.Global.Method = "Formula"
+	   Opts.Global.Parameter = tollfld_flg[i]
+	   ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
+	   if !ret_value then goto quit
+   end   
+       
+	// STEP 3: Modify cost to links by facility type. More cost to lower facility classes to promote use of higher facility classes.
 	dim selections_class[6]	
 	selections_class[1]="select * where (Func_Class=1 or Func_Class=11 or Func_Class=20)"
 	selections_class[2]="select * where (Func_Class=12)"
@@ -178,19 +181,19 @@ Macro "Initialization" (Args)// Initialization
 
 	class_names={"INTERSTATE","FREEWAY","ART45","ART","COLLECTOR","LOCAL"}   
 	
-	tollfld_flg={{"TRUCKCOST+0*Length"},{"TRUCKCOST+0*Length"},{"TRUCKCOST+32*Length"},{"TRUCKCOST+64*Length"},{"TRUCKCOST+112*Length"},{"TRUCKCOST+160*Length"}}
+	tollfld_flg={{"PEN_FACTYPE*1.0"},{"PEN_FACTYPE*1.0"},{"PEN_FACTYPE*1.1"},{"PEN_FACTYPE*1.2"},{"PEN_FACTYPE*1.3"},{"PEN_FACTYPE*1.3"}}
 	for i=1 to class_names.length do
 		Opts = null
 		Opts.Input.[View Set] = {hwy_db+"|"+llayer, llayer}
 		Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer, "Selection", selections_class[i]}
-		Opts.Global.Fields = tollfield
+		Opts.Global.Fields = {"PEN_FACTYPE"}
 		Opts.Global.Method = "Formula"
 		Opts.Global.Parameter = tollfld_flg[i]
 		ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
 		if !ret_value then goto quit
-	end  
-	*/
-   
+	end
+	
+	tollfield={"TRUCKCOST"}
     if Args.[TruckPreferred]=1 then do   
        // STEP 4: Deduct 10% of the total cost from the preferred truck links (TRUCKNET=1)
        Opts = null
