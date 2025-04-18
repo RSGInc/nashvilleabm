@@ -102,7 +102,7 @@ STEPS:
     itercount = 5
 	
 	//0-do not run shadow price daysim runs, instead copy from inputs. 1-run shadow price daysim runs.
-	run_shadowprice = 0 
+	run_shadowprice = 1
     
     if (loop=1) then do
 

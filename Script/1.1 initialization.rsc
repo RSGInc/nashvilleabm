@@ -209,7 +209,7 @@ Macro "Initialization" (Args)// Initialization
    // ********************************************************************
    
    //non-base year senario attributes update 1-6-2014
-	/*    	if Args.HYEAR<>"base" then do
+	    	if Args.HYEAR<>"base" then do
 		v_clear={
 		"FUNC_CLASS",
 		"Lanes",
@@ -322,7 +322,7 @@ Macro "Initialization" (Args)// Initialization
 		Opts.Global.Parameter = {"lanes-nz(HOV_m1_"+Args.HYEAR+")"}
 		ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
 		if !ret_value then goto quit		
-   end  */
+   end  
 
 	endtime = RunMacro("RuntimeLog", {"Initialization", starttime})	
 	ret_value = 1
