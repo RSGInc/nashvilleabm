@@ -181,7 +181,7 @@ Macro "Initialization" (Args)// Initialization
 
 	class_names={"INTERSTATE","FREEWAY","ART45","ART","COLLECTOR","LOCAL"}   
 	
-	tollfld_flg={{"PEN_FACTYPE*1.0"},{"PEN_FACTYPE*1.0"},{"PEN_FACTYPE*1.1"},{"PEN_FACTYPE*1.2"},{"PEN_FACTYPE*1.3"},{"PEN_FACTYPE*1.3"}}
+	tollfld_flg={{"PEN_FACTYPE*1.0"},{"PEN_FACTYPE*1.0"},{"PEN_FACTYPE*1.2"},{"PEN_FACTYPE*1.3"},{"PEN_FACTYPE*1.4"},{"PEN_FACTYPE*1.5"}}
 	for i=1 to class_names.length do
 		Opts = null
 		Opts.Input.[View Set] = {hwy_db+"|"+llayer, llayer}
