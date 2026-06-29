@@ -1,6 +1,6 @@
-//**************************************
+//****************************************************************************
 //*					Run DaySim and Format DaySim Outputs					 *
-//**************************************
+//****************************************************************************
 // Author: nagendra.dhakar@rsginc.com
 // Updated: 10/29/2015
 
@@ -28,15 +28,16 @@ Macro "ConverSkimsToOMX" (Args)
 	auto_modes = {"sov", "hov"}
 	transit_modes = {"Local", "ExpBus", "Brt", "UrbRail", "ComRail"}
 	transit_access = {"Walk", "Drive"}
-	
-	matrix_name = "hwyskim_ff"
-	RunMacro("ExportToOMX", "auto" ,matrix_name, "Length", OutDir, OutDir)
-
+	vots = {"low","med","high"}
 	
 	for p=1 to Periods.length do
 		for m=1 to auto_modes.length do
-			matrix_name = "hwyskim_" + Lower(Periods[p]) + "_" + auto_modes[m]
-			RunMacro("ExportToOMX", "auto", matrix_name, "Length", OutDir, OutDir)
+			for v=1 to vots.length do
+				matrix_name1 = "hwyskim_" + Lower(Periods[p]) + "_" + auto_modes[m] + "_" + vots[v]
+                matrix_name2 = "hwyskim_ff_sov_" + vots[v]
+				RunMacro("ExportToOMX", "auto", matrix_name1, "Length", OutDir, OutDir)
+                RunMacro("ExportToOMX", "auto", matrix_name2, "Length", OutDir, OutDir)
+			end
 		end
 		
 		for m=1 to transit_modes.length do
@@ -107,8 +108,8 @@ STEPS:
     if (loop=1) then do
 
 		// copy roster file to outputs folder
-		infile = DaySimDir + "inputs\\nashville-roster_matrix_omx.csv"
-		outfile = OutDir + "nashville-roster_matrix_omx.csv"
+		infile = DaySimDir + "inputs\\nashville-roster_matrix_omx-ML.csv"
+		outfile = OutDir + "nashville-roster_matrix_omx-ML.csv"
 		CopyFile(infile,outfile)
 		
 		// copy roster combination file to outputs folder
@@ -117,8 +118,8 @@ STEPS:
 		CopyFile(infile,outfile)    
 		
 		// create properties file
-		properties_template = DaySimDir + "Configuration_template.properties"
-		properties_full = DaySimDir + "Configuration_full.properties"
+		properties_template = DaySimDir + "Configuration_template-ML.properties"
+		properties_full = DaySimDir + "Configuration_full-ML.properties"
 		properties_shadow_price = DaySimDir + "Configuration_shadow_price.properties"
 		
 		fptr = OpenFile(properties_template, "r")
@@ -169,7 +170,7 @@ STEPS:
     for i=1 to itercount do
 		starttime = RunMacro("RuntimeLog", {"DaySim Iteration " + i2s(i) + " in feedback loop " + i2s(loop), null})
         if i=itercount then do
-            config_file = "Configuration_full.properties"
+            config_file = "Configuration_full-ML.properties"
         end
         else do
 			//shadow prices runs (itercount-1)
@@ -319,7 +320,7 @@ Macro "JoinDaySimTripTourFiles"
 	view_set = joinedview + "|"
 	
 	//export joined view - include only selected fields 
-	ExportView(view_set, "CSV", TripTourFile,{"half","otaz","dtaz","mode","pathtype","deptm","arrtm","trexpfac","tmodetp"},{{"CSV Header", "True"}})
+	ExportView(view_set, "CSV", TripTourFile,{"half","otaz","dtaz","mode","pathtype","deptm","arrtm","trexpfac","tmodetp","vot"},{{"CSV Header", "True"}})
 	
 	CloseView(tripfile_view)
 	CloseView(tourfile_view)
@@ -373,13 +374,28 @@ Macro "FormatAssignmentInputs" (Args)
 		rsgtod = CreateExpression(tripvw, "rsgtod", "if trtime >= 0 and trtime < 360 then 4 else if trtime >= 360 and trtime < 540 then 1 else if trtime >= 540 and trtime < 900 then 2 else if trtime >= 900 and trtime < 1140 then 3 else if trtime >= 1140 and trtime <= 1440 then 4" , {"Integer", 1, 0}) 
 
 		//Define matrix core names	
-		dim tripnames[17]
-		tripnames = {"IICOM", "IISU", "IIMU","IEAUTO", "IESU", "EEAUTO", "EESU","Passenger_SOV","Passenger_HOV2","Passenger_HOV3","Commercial","SingleUnit","MU","Preload_MU", "Preload_SU", "Preload_Pass", "PersonTrips"}
+		dim tripnames[23]
+		tripnames = {"IICOM", "IISU", "IIMU","IEAUTO", "IESU", "EEAUTO", "EESU",
+                    "Passenger_SOV_low", "Passenger_SOV_med", "Passenger_SOV_high",  
+                    "Passenger_HOV2_low", "Passenger_HOV2_med", "Passenger_HOV2_high", 
+                    "Passenger_HOV3_low", "Passenger_HOV3_med", "Passenger_HOV3_high",
+                    "Commercial","SingleUnit","MU","Preload_MU", "Preload_SU", "Preload_Pass", 
+                    "PersonTrips"}
 
-		core01 = "if MODE = 3 then 'Passenger_SOV'"
-		core02 = " else if MODE = 4 then 'Passenger_HOV2'"
-		core03 = " else if MODE = 5 then 'Passenger_HOV3'"
-		corestr = core01 + core02 + core03
+        //add conditions on vot-group (low, medium, or high)
+		//VotLowMedium Cutoff = 6.78
+		//VotMediumHigh Cutoff = 20.89
+
+		core01 = "if MODE = 3 and VOT < 6.79 then 'Passenger_SOV_low'"
+		core02 = " else if MODE = 4 and VOT < 6.79 then 'Passenger_HOV2_low'"
+		core03 = " else if MODE = 5 and VOT < 6.79 then 'Passenger_HOV3_low'"
+        core04 = " else if MODE = 3 and VOT > 6.78 and VOT < 20.90 then 'Passenger_SOV_med'"
+		core05 = " else if MODE = 4 and VOT > 6.78 and VOT < 20.90 then 'Passenger_HOV2_med'"
+		core06 = " else if MODE = 5 and VOT > 6.78 and VOT < 20.90 then 'Passenger_HOV3_med'"
+        core07 = " else if MODE = 3 and VOT > 20.89 then 'Passenger_SOV_high'"
+		core08 = " else if MODE = 4 and VOT > 20.89 then 'Passenger_HOV2_high'"
+		core09 = " else if MODE = 5 and VOT > 20.89 then 'Passenger_HOV3_high'"
+		corestr = core01 + core02 + core03 + core04 + core05 + core06 + core07 + core08 + core09
 		core_fld = CreateExpression(tripvw, "core_fld", corestr, {"String", 10, 0}) 
 
 		//DaySim O/D TAZ fields
@@ -388,7 +404,7 @@ Macro "FormatAssignmentInputs" (Args)
 		tazvw = OpenTable("tazname", "CSV", {tazfile},)
 		tazinfo = GetTableStructure(tazvw)
 		tazIDfield = tazinfo[1][1]
-			
+		
 		//Match field to matrix core (core_fld) & fill values (tripPCE) ; Matrix Made Easy!
 		for todloop = 1 to Periods.Length do
 			RunMacro("HwycadLog", {"Processing trips for: ", Periods[todloop]})
@@ -400,6 +416,7 @@ Macro "FormatAssignmentInputs" (Args)
 			tripmc = CreateMatrixCurrencies(triptable, null, null, null)
 			for ft = 1 to tripmc.length do FillMatrix(tripmc[ft][2], null, null, {"Copy", 0}, ) end
 
+            ////Still might need to fix these lines to make sure they are transferring trips by VOT properly
 			//SOV
 			SetView(tripvw)
 			numsel = SelectByQuery("sel", "Several", "Select * where (MODE = 3) and rsgtod = "+i2s(todloop), )
@@ -415,7 +432,8 @@ Macro "FormatAssignmentInputs" (Args)
 
 			DeleteSet("sel")
 
-			tripmc.PersonTrips := 1*tripmc.Passenger_SOV + 2*tripmc.Passenger_HOV2 + 3.5*tripmc.Passenger_HOV3
+			tripmc.PersonTrips := 1*tripmc.Passenger_SOV_low + 1*tripmc.Passenger_SOV_med + 1*tripmc.Passenger_SOV_high + 2*tripmc.Passenger_HOV2_low + 
+            2*tripmc.Passenger_HOV2_med +2*tripmc.Passenger_HOV2_high + 3.5*tripmc.Passenger_HOV3_low + 3.5*tripmc.Passenger_HOV3_med + 3.5*tripmc.Passenger_HOV3_high
 
 		end
 		
@@ -506,7 +524,7 @@ Macro "Read Trips" (tod)
 
 	STEPS:
 	1. Goes through each trip record
-	2. Trip time is trip arriavl time if the trip is in first of the tour, otherwise trip deptarture time
+	2. Trip time is trip arrival time if the trip is in first of the tour, otherwise trip deptarture time
 	3. Identify time period of the trip, and then highway trip or transit trip
 	4. for highway save in [da/sr2/sr3][origin][destination] - 3*2900*2900
 	5. for transit save as [walk/pnr/knr by submode][origin][destination] - 15*2900*2900

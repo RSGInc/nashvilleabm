@@ -1,8 +1,7 @@
 //**************************************
-//*  					Part 7  					   	*
+//*  					Part 7  					   	 *
 //*					Highway Assignment					 *
 //**************************************
-
 
 //Pre Assignment
 Macro "Pre_Assignment" (Args)
@@ -31,7 +30,7 @@ Macro "Pre_Assignment" (Args)
 	//auto assignment classes
 	auto_assign_classes = Args.[Auto_Assign_Classes]	
 
-    // Output Files
+    //// This needs to be changed to capture all of the (up to 27) new output matrices (6 for each period) - a complete path spec for each
 	OD = {Args.[AM OD Matrix], Args.[MD OD Matrix], Args.[PM OD Matrix], Args.[OP OD Matrix]}
 
     // Open the highway layer
@@ -40,11 +39,11 @@ Macro "Pre_Assignment" (Args)
 	nlayer = layers[1]
 	db_linklyr = highway_layer + "|" + llayer
 
-	// combine all OD 
+	// combine all OD preloads
 	intitialization:
 	nonhh    = {"IICOM", "IISU", "IIMU","IEAUTO", "IESU","EEMU","EESU"}
 
-	modes    = {"DA","SR2","SR3"}
+	//modes    = {"DA","SR2","SR3"}
 	periods1 = {"AM","MD","PM","OP"}
 	periods2 = {0,1,2,3}
 
@@ -65,15 +64,26 @@ Macro "Pre_Assignment" (Args)
 	
 	RunMacro("HwycadLog", {"Add external auto demand ", ""})
 	RunMacro("Add External Auto Demand", Args)	   //AUTO by 4 time periods
-			
+
+	////These lines need to be updated too, the reflect the new demand matrices	
 	am_od_matrix = OpenMatrix(Args.[AM OD Matrix],)
 	pm_od_matrix = OpenMatrix(Args.[PM OD Matrix],)
 	md_od_matrix = OpenMatrix(Args.[MD OD Matrix],)
 	op_od_matrix = OpenMatrix(Args.[OP OD Matrix],)
 	allod={am_od_matrix,md_od_matrix,pm_od_matrix,op_od_matrix}
     
-	// add 4+4 cores to the OD matrix for the vehicle classes assignment
-	labels_vehicle={"Passenger","Commercial","SingleUnit","MU","Preload_EIMU","Preload_IEMU","Preload_EEMU","Preload_IESU","Preload_EESU","Preload_Pass","HOV","HOV2","HOV3","Autos"}
+	//add these cores to each of the new OD matrices for the eventual vehicle classes assignment
+	labels_vehicle={"Passenger_low","Passenger_med","Passenger_high","Commercial",
+					"SingleUnit","MU","Preload_EIMU","Preload_IEMU","Preload_EEMU",
+					"Preload_IESU","Preload_EESU","Preload_Pass","HOV_low","HOV_med",
+					"HOV_high","HOV2_low","HOV2_med","HOV2_high","HOV3_low","HOV3_med",
+					"HOV3_high","Autos_low","Autos_med","Autos_high"}
+
+	/*Other currencies established below are pre-populated with trips from DaySim: "Passenger_SOV_low", 
+	"Passenger_SOV_med", "Passenger_SOV_high",  "Passenger_HOV2_low", "Passenger_HOV2_med", 
+	"Passenger_HOV2_high", "Passenger_HOV3_low", "Passenger_HOV3_med", "Passenger_HOV3_high", 
+	"IICOM", "IISU", "IESU", "EESU", "IIMU", "EEMU", "EIMU", "IEMU", "IEAUTO", "EEAUTO", "Preload_MU", 
+	"Preload_SU"*/
 
 	for p=1 to periods1.length do
 		
@@ -90,77 +100,160 @@ Macro "Pre_Assignment" (Args)
 			AddMatrixCore(allod[p], labels_vehicle[i])
 		end
                             
-        RunMacro("TCB Init")
-        mc1 = RunMacro("TCB Create Matrix Currency", OD[p], "Passenger", "Rows", "Cols")
+        //Matrices mc1, mc2, and mc3 pertain to the SOVs in auto_assign_classes = 2 after the HOVF is applied 
+		RunMacro("TCB Init")
+        mc1 = RunMacro("TCB Create Matrix Currency", OD[p], "Passenger_low", "Rows", "Cols")
         ok = (mc1 <> null)
         if !ok then goto quit
         
-        mc2 = RunMacro("TCB Create Matrix Currency", OD[p], "IEAUTO", "Rows", "Cols")
+        mc2 = RunMacro("TCB Create Matrix Currency", OD[p], "Passenger_med", "Rows", "Cols")
         ok = (mc2 <> null)
         if !ok then goto quit
 
-        mc3 = RunMacro("TCB Create Matrix Currency", OD[p], "EEAUTO", "Rows", "Cols")
+        mc3 = RunMacro("TCB Create Matrix Currency", OD[p], "Passenger_high", "Rows", "Cols")
         ok = (mc3 <> null)
         if !ok then goto quit
-        
-        mc4 = RunMacro("TCB Create Matrix Currency", OD[p], "Preload_PASS", "Rows", "Cols")
+
+		//Preloads apply to all auto_assign_classes - mc6 = mc5 + mc4
+        mc4 = RunMacro("TCB Create Matrix Currency", OD[p], "IEAUTO", "Rows", "Cols")
         ok = (mc4 <> null)
         if !ok then goto quit
-		       
-        mc14 = RunMacro("TCB Create Matrix Currency", OD[p], "Passenger_SOV", "Rows", "Cols")
-        ok = (mc14 <> null)
+
+        mc5 = RunMacro("TCB Create Matrix Currency", OD[p], "EEAUTO", "Rows", "Cols")
+        ok = (mc5 <> null)
         if !ok then goto quit
         
-        mc15 = RunMacro("TCB Create Matrix Currency", OD[p], "Passenger_HOV2", "Rows", "Cols")
-        ok = (mc15 <> null)
+        mc6 = RunMacro("TCB Create Matrix Currency", OD[p], "Preload_PASS", "Rows", "Cols")
+        ok = (mc6 <> null)
+        if !ok then goto quit
+		       
+		//mc7 to mc15 pertain to auto_assign_classes = 3 before the HOVF is applied
+        mc7 = RunMacro("TCB Create Matrix Currency", OD[p], "Passenger_SOV_low", "Rows", "Cols")
+        ok = (mc7 <> null)
+        if !ok then goto quit
+
+        mc8 = RunMacro("TCB Create Matrix Currency", OD[p], "Passenger_SOV_med", "Rows", "Cols")
+        ok = (mc8 <> null)
+        if !ok then goto quit
+
+        mc9 = RunMacro("TCB Create Matrix Currency", OD[p], "Passenger_SOV_high", "Rows", "Cols")
+        ok = (mc9 <> null)
+        if !ok then goto quit
+        
+        mc10 = RunMacro("TCB Create Matrix Currency", OD[p], "Passenger_HOV2_low", "Rows", "Cols")
+        ok = (mc10 <> null)
+        if !ok then goto quit
+
+        mc11 = RunMacro("TCB Create Matrix Currency", OD[p], "Passenger_HOV2_med", "Rows", "Cols")
+        ok = (mc11 <> null)
+        if !ok then goto quit
+
+        mc12 = RunMacro("TCB Create Matrix Currency", OD[p], "Passenger_HOV2_high", "Rows", "Cols")
+        ok = (mc12 <> null)
         if !ok then goto quit
 		
-        mc16 = RunMacro("TCB Create Matrix Currency", OD[p], "Passenger_HOV3", "Rows", "Cols")
-        ok = (mc16 <> null)
+        mc13 = RunMacro("TCB Create Matrix Currency", OD[p], "Passenger_HOV3_low", "Rows", "Cols")
+        ok = (mc13 <> null)
+        if !ok then goto quit			
+
+        mc14 = RunMacro("TCB Create Matrix Currency", OD[p], "Passenger_HOV3_med", "Rows", "Cols")
+        ok = (mc14 <> null)
+        if !ok then goto quit			
+
+        mc15 = RunMacro("TCB Create Matrix Currency", OD[p], "Passenger_HOV3_high", "Rows", "Cols")
+        ok = (mc15 <> null)
         if !ok then goto quit			
         
-        mc17 = RunMacro("TCB Create Matrix Currency", OD[p], "HOV2", "Rows", "Cols")
+		//mc16 to 21 pertain to auto_assign_classes = 3 after the HOVF is applied
+        mc16 = RunMacro("TCB Create Matrix Currency", OD[p], "HOV2_low", "Rows", "Cols")
+        ok = (mc16 <> null)
+        if !ok then goto quit
+
+        mc17 = RunMacro("TCB Create Matrix Currency", OD[p], "HOV2_med", "Rows", "Cols")
         ok = (mc17 <> null)
         if !ok then goto quit
 
-        mc18 = RunMacro("TCB Create Matrix Currency", OD[p], "HOV3", "Rows", "Cols")
+        mc18 = RunMacro("TCB Create Matrix Currency", OD[p], "HOV2_high", "Rows", "Cols")
         ok = (mc18 <> null)
         if !ok then goto quit
 
-        mc19 = RunMacro("TCB Create Matrix Currency", OD[p], "HOV", "Rows", "Cols")
+        mc19 = RunMacro("TCB Create Matrix Currency", OD[p], "HOV3_low", "Rows", "Cols")
         ok = (mc19 <> null)
         if !ok then goto quit
 
-        mc20 = RunMacro("TCB Create Matrix Currency", OD[p], "Autos", "Rows", "Cols")
+        mc20 = RunMacro("TCB Create Matrix Currency", OD[p], "HOV3_med", "Rows", "Cols")
         ok = (mc20 <> null)
+        if !ok then goto quit
+
+        mc21 = RunMacro("TCB Create Matrix Currency", OD[p], "HOV3_high", "Rows", "Cols")
+        ok = (mc21 <> null)
+        if !ok then goto quit
+
+		//Matrices mc22, mc23, and mc24 pertain to auto_assign_classes = 2
+        mc22 = RunMacro("TCB Create Matrix Currency", OD[p], "HOV_low", "Rows", "Cols")
+        ok = (mc22 <> null)
+        if !ok then goto quit
+
+        mc23 = RunMacro("TCB Create Matrix Currency", OD[p], "HOV_med", "Rows", "Cols")
+        ok = (mc23 <> null)
+        if !ok then goto quit
+
+        mc24 = RunMacro("TCB Create Matrix Currency", OD[p], "HOV_high", "Rows", "Cols")
+        ok = (mc24 <> null)
+        if !ok then goto quit
+
+		//mc25-27 pertain to auto_assign_classes = 1
+        mc25 = RunMacro("TCB Create Matrix Currency", OD[p], "Autos_low", "Rows", "Cols")
+        ok = (mc25 <> null)
+        if !ok then goto quit		
+
+        mc26 = RunMacro("TCB Create Matrix Currency", OD[p], "Autos_med", "Rows", "Cols")
+        ok = (mc26 <> null)
+        if !ok then goto quit		
+
+        mc27 = RunMacro("TCB Create Matrix Currency", OD[p], "Autos_high", "Rows", "Cols")
+        ok = (mc27 <> null)
         if !ok then goto quit		
 
         //preload EI and IE PASS
-        mc4 := nz(mc3)+nz(mc2)
+        mc6 := nz(mc5)+nz(mc4)
 		
         HOVF=Args.HOVF
         HOVF2=1-HOVF
 		
-		// Passenger not using HOV lane
-		mc1 := nz(mc14) + HOVF*nz(mc15) + HOVF*nz(mc16)
+		// Passenger not using HOV lane, by vot (low, med, high)
+		mc1 := nz(mc7) + HOVF*(nz(mc10) + nz(mc13))
+		mc2 := nz(mc8) + HOVF*(nz(mc11) + nz(mc14))
+		mc3 := nz(mc9) + HOVF*(nz(mc12) + nz(mc15))
 		
 		//HOV2
-		mc17:=HOVF2*(nz(mc15))
+		mc16:=HOVF2*(nz(mc10))
+		mc17:=HOVF2*(nz(mc11))
+		mc18:=HOVF2*(nz(mc12))
 		
 		//HOV3+
-		mc18:=HOVF2*(nz(mc16))
+		mc19:=HOVF2*(nz(mc13))
+		mc20:=HOVF2*(nz(mc14))
+		mc21:=HOVF2*(nz(mc15))
 		
 		//HOV = HOV2+HOV3
-		mc19 := mc17 + mc18
+		mc22 := mc16 + mc19
+		mc23 := mc17 + mc20
+		mc24 := mc18 + mc21
 		
 		//All Autos = SOV+HOV2+HOV3
-		mc20 := mc1 + mc19
+		mc25 := mc1 + mc22
+		mc26 := mc2 + mc23
+		mc27 := mc3 + mc24
 		
 		//if only one auto assignment class then add all autos (sov and hov) into passenger class
-		if (auto_assign_classes=1) then do
-			//passenger = sov+hov2+hov3
-			mc1 := mc1 + mc19
-		end
+		///doesn't seem like we need this?
+		// if (auto_assign_classes=1) then do
+		// 	//passenger = sov+hov2+hov3
+		// 	mc1 := mc1 + mc22
+		// 	mc2 := mc2 + mc23
+		// 	mc3 := mc3 + mc24
+		// end
         
         // Commercial Vehicle trips
         mc1 = RunMacro("TCB Create Matrix Currency", OD[p], "Commercial", "Rows", "Cols")
@@ -281,13 +374,17 @@ Macro "Add Visitor Demand" (Args)
 	//SOV_MD, SR2_MD, SR3_MD
 	//SOV_PM, SR2_PM, SR3_PM
 	//SOV_OP, SR2_OP, SR3_OP
-		
+
+	//This line works because these are the DaySim output matrices	
 	OD = {Args.[AM OD Matrix], Args.[MD OD Matrix], Args.[PM OD Matrix], Args.[OP OD Matrix]}
+	
 	//II_Visitor = Args.[II Visitor OD Matrix]
 	II_Visitor = Scen_Dir + "outputs\\Visitor_OD.mtx"
 	
 	cores_source = {"SOV_", "SR2_", "SR3_"} //visitor matrix cored
-	cores_target = {"Passenger_SOV","Passenger_HOV2","Passenger_HOV3"} //OD Tables
+
+	//Visitor trips will get added into the general passenger OD matrices corresponding to "high" VOT
+	cores_target = {"Passenger_SOV_high","Passenger_HOV2_high","Passenger_HOV3_high"} //OD Tables
 	
 	for p=1 to periods1.length do				
 		for core=1 to cores_source.length do
@@ -423,7 +520,6 @@ endMacro
 Macro "Traffic Assignment" (Args)// Trip Assignment
 
 	shared Scen_Dir, feedback_iteration
-	//shared auto_assign_Classes
 	
 	starttime = RunMacro("RuntimeLog", {"Highay Assignment ", null})
 	RunMacro("HwycadLog", {"Highway Assignment - Network Settings", null})
@@ -435,7 +531,7 @@ Macro "Traffic Assignment" (Args)// Trip Assignment
 	HourlyTable=Args.[Hourly]
 	PA_Matrix=Args.[PA Matrix]
     
-	// Output Files
+	////This line needs to be updated to reflect the expanded set of OD demand matrices
 	OD = {Args.[AM OD Matrix], Args.[MD OD Matrix], Args.[PM OD Matrix], Args.[OP OD Matrix]}
  	
     // Open the highway layer
@@ -537,8 +633,7 @@ endMacro
 
 Macro "PreloadAssignment"(Args, allod, periods1) 
 	shared Scen_Dir
-	
-    //21 MU-EI, 22 MU-IE, 23 MU-EE, 24 SU-IE, 25 SU-EE, 26 PASS-EE	 // TODO - check for new matrix indices
+
 	UpdateProgressBar("Assignment - Preload Assignments "+periods1, )
    
  	layers = GetDBlayers(Args.[hwy db])
@@ -548,11 +643,11 @@ Macro "PreloadAssignment"(Args, allod, periods1)
     db_linklyr = hwy_db + "|" + llayer
     db_nodelyr = hwy_db + "|" + nlayer
 
-    exclude_hov={db_linklyr, llayer, "hov", "Select * where hov = 1"}
+    exclude_hov={db_linklyr, llayer, "hov", "Select * where HOV_m1_"+Args.HYEAR+" = 1"}
     
     // the exclusion set should not have links that are not in the network file, therefore add network link set condition as well.
-    if Args.TruckProhibit =1 then query="Select * where (Lanes>0 and Assignment_LOC=1) and (hov=1|TRUCKNET=2)"
-    else query="Select * where (hov=1)"
+    if Args.TruckProhibit =1 then query="Select * where (Lanes>0 and Assignment_LOC=1) and (HOV_m1_"+Args.HYEAR+" = 1|TRUCKNET=2)"
+    else query="Select * where HOV_m1_"+Args.HYEAR+" = 1"
 
     exclude_hov_truck={db_linklyr, llayer, "hov_truck", query}
     
@@ -569,19 +664,25 @@ Macro "PreloadAssignment"(Args, allod, periods1)
 	end
 	*/    
 
-    trucktoll = "n/a"
+    trucktoll = "PEN_FACTYPE"
     if Args.TruckPreferred =1 then do
-        trucktoll = "TRUCKCOST"
+        trucktoll = "TCST"
     end
-	
+
+	//21 MU-EI - now 29
+	//22 MU-IE - now 30
+	//23 MU-EE - now 31
+	//24 SU-IE - now 32
+	//25 SU-EE - now 33
+	//26 PASS-EE - now 34 
 	Opts = null
     Opts.Input.Database = Args.[hwy db]
     Opts.Input.Network = Args.[Network File]
     Opts.Input.[OD Matrix Currency] = {allod, , , }
     Opts.Input.[Exclusion Link Sets] = {exclude_hov_truck,exclude_hov_truck,exclude_hov_truck,exclude_hov_truck,exclude_hov_truck,exclude_hov}
-    Opts.Field.[Turn Attributes] = {, , , , , }
-    Opts.Field.[Vehicle Classes] = {21, 22, 23, 24, 25, 26}
-    Opts.Field.[Fixed Toll Fields] = {trucktoll, trucktoll, trucktoll, trucktoll, trucktoll, "n/a"}
+    Opts.Field.[Turn Attributes] = { , , , , , }
+    Opts.Field.[Vehicle Classes] = {29, 30, 31, 32, 33, 34}
+    Opts.Field.[Fixed Toll Fields] = {trucktoll, trucktoll, trucktoll, trucktoll, trucktoll, "SCST"}
     Opts.Field.[PCE Fields] = {"None", "None", "None", "None", "None", "None"}
     Opts.Field.[VDF Fld Names] = {"[time_FF_AB_time_FF_BA]", "[capacity_"+Lower(periods1)+"_AB_capacity_"+Lower(periods1)+"_BA]", "alpha", "beta", "None"}
     Opts.Global.[Load Method] = "BFW"
@@ -626,11 +727,11 @@ Macro "GeneralAssignment"(Args, allod, periods1)
     db_linklyr = hwy_db + "|" + llayer
     db_nodelyr = hwy_db + "|" + nlayer
     
-	query_hov = "Select * where (Lanes>0 and Assignment_LOC=1) and (hov = 1)"
+	query_hov = "Select * where (Lanes>0 and Assignment_LOC=1) and (HOV_m1_"+Args.HYEAR+" = 1)"
     exclude_hov={db_linklyr, llayer, "hov", query_hov}
     
     // the exclusion set should not have links that are not in the network file, therefore add network link set condition as well.
-    if Args.TruckProhibit =1 then query_truck="Select * where (Lanes>0 and Assignment_LOC=1) and (hov=1|TRUCKNET=2)"
+    if Args.TruckProhibit =1 then query_truck="Select * where (Lanes>0 and Assignment_LOC=1) and (HOV_m1_"+Args.HYEAR+" = 1|TRUCKNET=2)"
     else query_truck=query_hov
 
     exclude_truck={db_linklyr, llayer, "hov_truck", query_truck}    
@@ -639,10 +740,13 @@ Macro "GeneralAssignment"(Args, allod, periods1)
     num_select = SelectByQuery("truck","Several",query_truck,)
     if num_select=0 then exclude_truck=null    
     
-    trucktoll = "n/a"
-    if Args.TruckPreferred =1 then do
+	//Truck toll for internal trips can now be TCST, since it incorporates TRUCKCOST if Args.TruckPreferred = 1
+    trucktoll = "TCST"
+
+    /*if Args.TruckPreferred =1 then do
+		//Update TRUCKCOST to be TRUCKCOST + TCST
         trucktoll = "TRUCKCOST"
-    end
+    end*/
  
 	/*
  	SetView(llayer)
@@ -650,55 +754,278 @@ Macro "GeneralAssignment"(Args, allod, periods1)
 	if Args.HYEAR<>"base" then do 
 		n=SelectByQuery("HOV", "Several", qry,)
 		HOVSET={Args.[hwy db]+"|"+llayer, llayer, "HOV", "Select * where HOV<>null and lanes>0"}
-	end
-	*/ 	
+	end*/ 	
 	
+	//The new composition of allod is:
+
+	/*	#1 to #7 are raw matrices from DaySim used to populate #26 to #34
+		1.	IICOM
+		2.	IISU
+		3.	IIMU
+		4.	IEAUTO
+		5.	IESU
+		6.	EEAUTO
+		7.	EESU
+
+		#8 - #16 are raw matrices from DaySim pertain to auto_assign_classes = 3 before the HOVF is applied
+		8.	Passenger_SOV_low
+		9.	Passenger_SOV_med
+		10.	Passenger_SOV_high
+		11.	Passenger_HOV2_low
+		12.	Passenger_HOV2_med
+		13.	Passenger_HOV2_high
+		14.	Passenger_HOV3_low
+		15.	Passenger_HOV3_med
+		16.	Passenger_HOV3_high
+
+		#17 and #18 are raw matrices from DaySim
+		17.	Preload_MU
+		18.	Preload_SU
+
+		19.	PersonTrips (= 1*Passenger_SOV_low + 1*Passenger_SOV_med + 1*Passenger_SOV_high + 2*Passenger_HOV2_low + 
+            2*Passenger_HOV2_med + Passenger_HOV2_high + 3.5*Passenger_HOV3_low + 3.5*Passenger_HOV3_med + 3.5*Passenger_HOV3_high)
+
+		#20 to #22 are raw matrices from DaySim used to populate #29 to #31
+		20.	IEMU
+		21.	EIMU
+		22.	EEMU
+
+		#23 - #25 pertain to the SOVs in auto_assign_classes = 2 or 3 after the HOVF is applied
+		23.	Passenger_low
+		24.	Passenger_med
+		25.	Passenger_high
+
+		#26 to #34 are assignment matrices derived from DaySim outputs
+		26.	Commercial (= nz(IICOM))
+		27.	SingleUnit (= nz(IISU))
+		28.	MU (= nz(IIMU))
+		29.	Preload_EIMU (= nz(EIMU))
+		30.	Preload_IEMU (= nz(IEMU))
+		31.	Preload_EEMU (= nz(EEMU))
+		32.	Preload_IESU (= nz(IESU))
+		33.	Preload_EESU (= nz(EESU))
+		34.	Preload_Pass (= IEAUTO + EEAUTO)
+
+		#35 to 37 pertain to auto_assign_classes = 2
+		35.	HOV_low
+		36.	HOV_med
+		37.	HOV_high
+
+		#38 to #43 pertain to auto_assign_classes = 3 after the HOVF is applied
+		38.	HOV2_low
+		39.	HOV2_med
+		40.	HOV2_high
+		41.	HOV3_low
+		42.	HOV3_med
+		43.	HOV3_high
+
+		#44 to #46 pertain to auto_assign_classes = 1
+		44.	Autos_low
+		45.	Autos_med
+		46.	Autos_high */
+ 
 	assign_cost = "PEN_FACTYPE"
+	scst_cost = "SCST" + periods1
+	hcst_cost = "HCST" + periods1
 	
 	if (auto_assign_classes=1) then do 
-		//17 pass 18 com 19 su 20 MU
-		//21 MU-EI, 22 MU-IE, 23 MU-EE, 24 SU-IE, 25 SU-EE, 26 PASS-EE
-		//autos = sov+hov2+hov3
-		assign_num_classes = 10
-		assign_exclusion_link_sets = {, exclude_hov, exclude_truck, exclude_truck, exclude_truck, exclude_truck, exclude_truck, exclude_truck, exclude_truck, }
-		assign_turn_Attributes = {, , , , , , , , ,}
-		assign_veh_classes = {17, 18, 19, 20, 21, 22, 23, 24, 25, 26}
-		assign_toll_fields = {"n/a", "n/a", trucktoll, trucktoll, assign_cost, assign_cost, assign_cost, assign_cost, assign_cost, assign_cost}
-		assign_pce_fields = {"None", "None", "None", "None", "None", "None", "None", "None", "None", "None"}
-		assign_class_pces = {1, 1, 1.5, 2.5, 2.5, 2.5, 2.5, 1.5, 1.5, 1}
-		assign_class_vois = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+		//17 pass (= sov+hov2+hov3) - now 44 to 46
+		//18 com  - now 26
+		//19 su - now 27
+		//20 MU - now 28
+		//21 MU-EI - now 29
+		//22 MU-IE - now 30
+		//23 MU-EE - now 31
+		//24 SU-IE - now 32
+		//25 SU-EE - now 33
+		//26 PASS-EE - now 34
+		assign_num_classes = 12
+		//Exclude 44 to 46 and 34 from the hov lane (but we didn't reduce the number of GP lanes)
+		assign_exclusion_link_sets = { 	exclude_hov,
+										exclude_hov,
+										exclude_hov, 
+										exclude_hov, 
+										exclude_truck, 
+										exclude_truck, 
+										exclude_truck, 
+										exclude_truck, 
+										exclude_truck, 
+										exclude_truck, 
+										exclude_truck, 
+										exclude_hov}
+		assign_turn_Attributes = { , , , , , , , , , , , }
+		assign_veh_classes = {44, 45, 46, 26, 27, 28, 29, 30, 31, 32, 33, 34}
+		assign_toll_fields = {	scst_cost,
+								scst_cost,
+								scst_cost, 
+								scst_cost, 
+								//trucktoll includes Toll_TRK or TRUCKCOST
+								trucktoll, 
+								trucktoll,
+								//Uses the facility type penalty only for external truck traffic, not tolls 
+								assign_cost, 
+								assign_cost, 
+								assign_cost, 
+								assign_cost, 
+								assign_cost, 
+								scst_cost}
+		assign_pce_fields = {"None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None"}
+		assign_class_pces = {	1,
+								1,
+								1, 
+								1, 
+								1.5, 
+								2.5, 
+								2.5, 
+								2.5, 
+								2.5, 
+								1.5, 
+								1.5, 
+								1}
+		assign_class_vois = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 	end
 
-	if (auto_assign_classes=2) then do	
-		//17 pass 18 com 19 su 20 MU 27 HOV
-		//passenger = sov
-		//hov = hov2+hov3
-		assign_num_classes = 11
-		assign_exclusion_link_sets = {exclude_hov, exclude_hov, exclude_truck ,exclude_truck , exclude_truck, exclude_truck, exclude_truck, exclude_truck, exclude_truck, }
-		assign_turn_Attributes = {, , , , , , , , , ,}
-		assign_veh_classes = {17, 18, 19, 20, 27, 21, 22, 23, 24, 25, 26}
-		assign_toll_fields = {"n/a", "n/a", trucktoll, trucktoll, "n/a", assign_cost, assign_cost, assign_cost, assign_cost, assign_cost, assign_cost}
-		assign_pce_fields = {"None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None"}
-		assign_class_pces = {1, 1, 1.5, 2.5, 1, 2.5, 2.5, 2.5, 1.5, 1.5, 1}
-		assign_class_vois = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+	if (auto_assign_classes=2) then do
+		//17 pass (= sov) now 23 to 25
+		//18 com  - now 26
+		//19 su - now 27
+		//20 MU - now 28
+		//21 MU-EI - now 29
+		//22 MU-IE - now 30
+		//23 MU-EE - now 31
+		//24 SU-IE - now 32
+		//25 SU-EE - now 33
+		//26 PASS-EE - now 34
+		//27 HOV (= hov2+hov3) now 35 to 37
+		assign_num_classes = 15
+		assign_exclusion_link_sets = {	exclude_hov,
+										exclude_hov,
+										exclude_hov, 
+										exclude_hov, 
+										exclude_truck,
+										exclude_truck, 
+										exclude_truck, 
+										exclude_truck, 
+										exclude_truck, 
+										exclude_truck, 
+										exclude_truck, 
+													,
+													,	
+													,
+													}
+		assign_turn_Attributes = { , , , , , , , , , , , , , , }
+		assign_veh_classes = {23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37}
+		assign_toll_fields = {	scst_cost,
+								scst_cost,
+								scst_cost, 
+								scst_cost, 
+								trucktoll, 
+								trucktoll, 
+								assign_cost, 
+								assign_cost, 
+								assign_cost, 
+								assign_cost, 
+								assign_cost, 
+								hcst_cost,
+								hcst_cost,
+								hcst_cost, 
+								hcst_cost}
+		assign_pce_fields = {"None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None"}
+		assign_class_pces = {	1, 
+								1,
+								1,
+								1, 
+								1.5, 
+								2.5, 
+								1, 
+								2.5, 
+								2.5, 
+								2.5, 
+								1.5, 
+								1.5, 
+								1,
+								1,
+								1}
+		assign_class_vois = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 	end
 
 	if (auto_assign_classes=3) then do
-		//17 pass 18 com 19 su 20 MU 28 HOV2 29 HOV3
-		//passenger = sov
-		//hov2 = hov2
-		//hov3 = hov3
-		assign_num_classes = 12
-		assign_exclusion_link_sets = {exclude_hov, exclude_hov, exclude_truck ,exclude_truck, , ,exclude_truck, exclude_truck, exclude_truck, exclude_truck, exclude_truck, }
-		assign_turn_Attributes = {, , , , , , , , , , ,}
-		assign_veh_classes = {17, 18, 19, 20, 28, 29, 21, 22, 23, 24, 25, 26}
-		assign_toll_fields = {"n/a", "n/a", trucktoll, trucktoll, "n/a", "n/a", assign_cost, assign_cost, assign_cost, assign_cost, assign_cost, assign_cost}
-		assign_pce_fields = {"None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None"}
-		assign_class_pces = {1, 1, 1.5, 2.5, 1, 1, 2.5, 2.5, 2.5, 1.5, 1.5, 1}
-		assign_class_vois = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+		//17 pass (= sov) now 23 to 25
+		//18 com  - now 26
+		//19 su - now 27
+		//20 MU - now 28
+		//21 MU-EI - now 29
+		//22 MU-IE - now 30
+		//23 MU-EE - now 31
+		//24 SU-IE - now 32
+		//25 SU-EE - now 33
+		//26 PASS-EE - now 34 
+		//28 HOV2 - now 38 to 40
+		//29 HOV3 - now 41 to 43
+
+		assign_num_classes = 18
+		assign_exclusion_link_sets = {	exclude_hov,
+										exclude_hov,
+										exclude_hov, 
+										exclude_hov, 
+										exclude_truck,
+										exclude_truck, 
+										exclude_truck, 
+										exclude_truck, 
+										exclude_truck, 
+										exclude_truck, 
+										exclude_truck, 
+													,
+													,	
+													,
+													,
+													,
+													,
+													}
+		assign_turn_Attributes = { , , , , , , , , , , , , , , , , , }
+		assign_veh_classes = {23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 38, 39, 40, 41, 42, 43}
+		assign_toll_fields = {	scst_cost,
+								scst_cost,
+								scst_cost, 
+								scst_cost, 
+								trucktoll, 
+								trucktoll, 
+								assign_cost, 
+								assign_cost, 
+								assign_cost, 
+								assign_cost, 
+								assign_cost, 
+								hcst_cost,
+								hcst_cost,
+								hcst_cost, 
+								hcst_cost, 
+								hcst_cost, 
+								hcst_cost, 
+								hcst_cost}
+		assign_pce_fields = {"None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None"}
+		assign_class_pces = {	1, 
+								1,
+								1,
+								1, 
+								1.5, 
+								2.5, 
+								1, 
+								2.5, 
+								2.5, 
+								2.5, 
+								1.5, 
+								1.5, 
+								1,
+								1,
+								1,
+								1,
+								1,
+								1}
+		assign_class_vois = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 	end
 	
 	UpdateProgressBar(periods1+" Assignment ", )
+
 	Opts = null
     Opts.Input.Database = Args.[hwy db]
     Opts.Input.Network = Args.[Network File]
@@ -719,7 +1046,7 @@ Macro "GeneralAssignment"(Args, allod, periods1)
     Opts.Global.[Class PCEs] = assign_class_pces
     Opts.Global.[Class VOIs] = assign_class_vois
     Opts.Global.[VDF DLL] = "C:\\Program Files\\TransCAD 9.0\\bpr.vdf"
-    Opts.Global.[VDF Defaults] = {, , 0.15, 4, 0}
+    Opts.Global.[VDF Defaults] = { , , 0.15, 4, 0}
 
     Opts.Output.[Flow Table] = Scen_Dir+ "outputs\\Assignment_"+periods1+".bin"
     
@@ -752,23 +1079,26 @@ Macro "PostProcessor" (Args)
 	end    
     
 	// Input highway layer
-   hwy_db = Args.[hwy db]
-   	
+	hwy_db = Args.[hwy db]
+		
 	//auto assignment classes
 	auto_assign_classes = Args.[Auto_Assign_Classes]
-	
+
+	//assignment results table
+	result=Args.[Assignment Result]
+		
 	layers = GetDBlayers(hwy_db)
-   llayer = layers[2]
-   nlayer = layers[1]
-   
-   db_linklyr = highway_layer + "|" + llayer
-   
-   temp_map = CreateMap("temp",{{"scope",Scope(Coord(-80000000, 44500000), 200.0, 100.0, 0)}})
-   temp_layer = AddLayer(temp_map,llayer,hwy_db,llayer)
-   temp_layer = AddLayer(temp_map,nlayer,hwy_db,nlayer)
+	llayer = layers[2]
+	nlayer = layers[1]
+	
+	db_linklyr = highway_layer + "|" + llayer
+	
+	temp_map = CreateMap("temp",{{"scope",Scope(Coord(-80000000, 44500000), 200.0, 100.0, 0)}})
+	temp_layer = AddLayer(temp_map,llayer,hwy_db,llayer)
+	temp_layer = AddLayer(temp_map,nlayer,hwy_db,nlayer)
    	
 	UpdateProgressBar("Post Process ", )
-	CreateTable("Assignment Result", Args.[Assignment Result], "FFB", {
+	CreateTable("Assignment Result", result, "FFB", {
 		{"ID", "Integer", 9, null, "No"},
 		{"CNT", "String", 9, null, "No"},
 		{"FCLASS", "Integer", 9, null, "No"},
@@ -786,143 +1116,275 @@ Macro "PostProcessor" (Args)
 		{"VOL_BA","Real",8,2,"No"},
 		
 		{"VOL_AM","Real",8,2,"No"},
-		{"VOL_AMAB","Real",8,2,"No"},
-		{"VOL_AMBA","Real",8,2,"No"},
+		{"VOL_AM_AB","Real",8,2,"No"},
+		{"VOL_AM_BA","Real",8,2,"No"},
 		
 		{"VOL_MD","Real",8,2,"No"},
-		{"VOL_MDAB","Real",8,2,"No"},
-		{"VOL_MDBA","Real",8,2,"No"},
+		{"VOL_MD_AB","Real",8,2,"No"},
+		{"VOL_MD_BA","Real",8,2,"No"},
 		
 		{"VOL_PM","Real",8,2,"No"},
-		{"VOL_PMAB","Real",8,2,"No"},
-		{"VOL_PMBA","Real",8,2,"No"},
+		{"VOL_PM_AB","Real",8,2,"No"},
+		{"VOL_PM_BA","Real",8,2,"No"},
 		
 		{"VOL_OP","Real",8,2,"No"},
-		{"VOL_OPAB","Real",8,2,"No"},
-		{"VOL_OPBA","Real",8,2,"No"},	
+		{"VOL_OP_AB","Real",8,2,"No"},
+		{"VOL_OP_BA","Real",8,2,"No"},	
 
 		{"VOL_PASS","Real",8,2,"No"},
-		{"VOL_PASSAB","Real",8,2,"No"},
-		{"VOL_PASSBA","Real",8,2,"No"},
+		{"VOL_PASS_AB","Real",8,2,"No"},
+		{"VOL_PASS_BA","Real",8,2,"No"},
+		{"VOL_PASS_LOW","Real",8,2,"No"},
+		{"VOL_PASS_LOW_AB","Real",8,2,"No"},
+		{"VOL_PASS_LOW_BA","Real",8,2,"No"},
+		{"VOL_PASS_MED","Real",8,2,"No"},
+		{"VOL_PASS_MED_AB","Real",8,2,"No"},
+		{"VOL_PASS_MED_BA","Real",8,2,"No"},
+		{"VOL_PASS_HIGH","Real",8,2,"No"},
+		{"VOL_PASS_HIGH_AB","Real",8,2,"No"},
+		{"VOL_PASS_HIGH_BA","Real",8,2,"No"},
 		
-		{"VOL_PASSAM","Real",8,2,"No"},
-		{"VOL_PASSAMAB","Real",8,2,"No"},
-		{"VOL_PASSAMBA","Real",8,2,"No"},
+		{"VOL_PASS_AM","Real",8,2,"No"},
+		{"VOL_PASS_AM_AB","Real",8,2,"No"},
+		{"VOL_PASS_AM_BA","Real",8,2,"No"},
+		{"VOL_PASS_LOW_AM","Real",8,2,"No"},
+		{"VOL_PASS_LOW_AM_AB","Real",8,2,"No"},
+		{"VOL_PASS_LOW_AM_BA","Real",8,2,"No"},
+		{"VOL_PASS_MED_AM","Real",8,2,"No"},
+		{"VOL_PASS_MED_AM_AB","Real",8,2,"No"},
+		{"VOL_PASS_MED_AM_BA","Real",8,2,"No"},
+		{"VOL_PASS_HIGH_AM","Real",8,2,"No"},
+		{"VOL_PASS_HIGH_AM_AB","Real",8,2,"No"},
+		{"VOL_PASS_HIGH_AM_BA","Real",8,2,"No"},
 		
-		{"VOL_PASSMD","Real",8,2,"No"},
-		{"VOL_PASSMDAB","Real",8,2,"No"},
-		{"VOL_PASSMDBA","Real",8,2,"No"},
+		{"VOL_PASS_MD","Real",8,2,"No"},
+		{"VOL_PASS_MD_AB","Real",8,2,"No"},
+		{"VOL_PASS_MD_BA","Real",8,2,"No"},
+		{"VOL_PASS_LOW_MD","Real",8,2,"No"},
+		{"VOL_PASS_LOW_MD_AB","Real",8,2,"No"},
+		{"VOL_PASS_LOW_MD_BA","Real",8,2,"No"},
+		{"VOL_PASS_MED_MD","Real",8,2,"No"},
+		{"VOL_PASS_MED_MD_AB","Real",8,2,"No"},
+		{"VOL_PASS_MED_MD_BA","Real",8,2,"No"},
+		{"VOL_PASS_HIGH_MD","Real",8,2,"No"},
+		{"VOL_PASS_HIGH_MD_AB","Real",8,2,"No"},
+		{"VOL_PASS_HIGH_MD_BA","Real",8,2,"No"},
 		
-		{"VOL_PASSPM","Real",8,2,"No"},
-		{"VOL_PASSPMAB","Real",8,2,"No"},
-		{"VOL_PASSPMBA","Real",8,2,"No"},
+		{"VOL_PASS_PM","Real",8,2,"No"},
+		{"VOL_PASS_PM_AB","Real",8,2,"No"},
+		{"VOL_PASS_PM_BA","Real",8,2,"No"},
+		{"VOL_PASS_LOW_PM","Real",8,2,"No"},
+		{"VOL_PASS_LOW_PM_AB","Real",8,2,"No"},
+		{"VOL_PASS_LOW_PM_BA","Real",8,2,"No"},
+		{"VOL_PASS_MED_PM","Real",8,2,"No"},
+		{"VOL_PASS_MED_PM_AB","Real",8,2,"No"},
+		{"VOL_PASS_MED_PM_BA","Real",8,2,"No"},
+		{"VOL_PASS_HIGH_PM","Real",8,2,"No"},
+		{"VOL_PASS_HIGH_PM_AB","Real",8,2,"No"},
+		{"VOL_PASS_HIGH_PM_BA","Real",8,2,"No"},
 		
-		{"VOL_PASSOP","Real",8,2,"No"},
-		{"VOL_PASSOPAB","Real",8,2,"No"},
-		{"VOL_PASSOPBA","Real",8,2,"No"},
+		{"VOL_PASS_OP","Real",8,2,"No"},
+		{"VOL_PASS_OP_AB","Real",8,2,"No"},
+		{"VOL_PASS_OP_BA","Real",8,2,"No"},
+		{"VOL_PASS_LOW_OP","Real",8,2,"No"},
+		{"VOL_PASS_LOW_OP_AB","Real",8,2,"No"},
+		{"VOL_PASS_LOW_OP_BA","Real",8,2,"No"},
+		{"VOL_PASS_MED_OP","Real",8,2,"No"},
+		{"VOL_PASS_MED_OP_AB","Real",8,2,"No"},
+		{"VOL_PASS_MED_OP_BA","Real",8,2,"No"},
+		{"VOL_PASS_HIGH_OP","Real",8,2,"No"},
+		{"VOL_PASS_HIGH_OP_AB","Real",8,2,"No"},
+		{"VOL_PASS_HIGH_OP_BA","Real",8,2,"No"},
 
 		{"VOL_HOV2","Real",8,2,"No"},
-		{"VOL_HOV2AB","Real",8,2,"No"},
-		{"VOL_HOV2BA","Real",8,2,"No"},
+		{"VOL_HOV2_AB","Real",8,2,"No"},
+		{"VOL_HOV2_BA","Real",8,2,"No"},
+		{"VOL_HOV2_LOW","Real",8,2,"No"},
+		{"VOL_HOV2_LOW_AB","Real",8,2,"No"},
+		{"VOL_HOV2_LOW_BA","Real",8,2,"No"},
+		{"VOL_HOV2_MED","Real",8,2,"No"},
+		{"VOL_HOV2_MED_AB","Real",8,2,"No"},
+		{"VOL_HOV2_MED_BA","Real",8,2,"No"},
+		{"VOL_HOV2_HIGH","Real",8,2,"No"},
+		{"VOL_HOV2_HIGH_AB","Real",8,2,"No"},
+		{"VOL_HOV2_HIGH_BA","Real",8,2,"No"},
 		
-		{"VOL_HOV2AM","Real",8,2,"No"},
-		{"VOL_HOV2AMAB","Real",8,2,"No"},
-		{"VOL_HOV2AMBA","Real",8,2,"No"},
+		{"VOL_HOV2_AM","Real",8,2,"No"},
+		{"VOL_HOV2_AM_AB","Real",8,2,"No"},
+		{"VOL_HOV2_AM_BA","Real",8,2,"No"},
+		{"VOL_HOV2_LOW_AM","Real",8,2,"No"},
+		{"VOL_HOV2_LOW_AM_AB","Real",8,2,"No"},
+		{"VOL_HOV2_LOW_AM_BA","Real",8,2,"No"},
+		{"VOL_HOV2_MED_AM","Real",8,2,"No"},
+		{"VOL_HOV2_MED_AM_AB","Real",8,2,"No"},
+		{"VOL_HOV2_MED_AM_BA","Real",8,2,"No"},
+		{"VOL_HOV2_HIGH_AM","Real",8,2,"No"},
+		{"VOL_HOV2_HIGH_AM_AB","Real",8,2,"No"},
+		{"VOL_HOV2_HIGH_AM_BA","Real",8,2,"No"},
 		
-		{"VOL_HOV2MD","Real",8,2,"No"},
-		{"VOL_HOV2MDAB","Real",8,2,"No"},
-		{"VOL_HOV2MDBA","Real",8,2,"No"},
+		{"VOL_HOV2_MD","Real",8,2,"No"},
+		{"VOL_HOV2_MD_AB","Real",8,2,"No"},
+		{"VOL_HOV2_MD_BA","Real",8,2,"No"},
+		{"VOL_HOV2_LOW_MD","Real",8,2,"No"},
+		{"VOL_HOV2_LOW_MD_AB","Real",8,2,"No"},
+		{"VOL_HOV2_LOW_MD_BA","Real",8,2,"No"},
+		{"VOL_HOV2_MED_MD","Real",8,2,"No"},
+		{"VOL_HOV2_MED_MD_AB","Real",8,2,"No"},
+		{"VOL_HOV2_MED_MD_BA","Real",8,2,"No"},
+		{"VOL_HOV2_HIGH_MD","Real",8,2,"No"},
+		{"VOL_HOV2_HIGH_MD_AB","Real",8,2,"No"},
+		{"VOL_HOV2_HIGH_MD_BA","Real",8,2,"No"},
 		
-		{"VOL_HOV2PM","Real",8,2,"No"},
-		{"VOL_HOV2PMAB","Real",8,2,"No"},
-		{"VOL_HOV2PMBA","Real",8,2,"No"},
+		{"VOL_HOV2_PM","Real",8,2,"No"},
+		{"VOL_HOV2_PM_AB","Real",8,2,"No"},
+		{"VOL_HOV2_PM_BA","Real",8,2,"No"},
+		{"VOL_HOV2_LOW_PM","Real",8,2,"No"},
+		{"VOL_HOV2_LOW_PM_AB","Real",8,2,"No"},
+		{"VOL_HOV2_LOW_PM_BA","Real",8,2,"No"},
+		{"VOL_HOV2_MED_PM","Real",8,2,"No"},
+		{"VOL_HOV2_MED_PM_AB","Real",8,2,"No"},
+		{"VOL_HOV2_MED_PM_BA","Real",8,2,"No"},
+		{"VOL_HOV2_HIGH_PM","Real",8,2,"No"},
+		{"VOL_HOV2_HIGH_PM_AB","Real",8,2,"No"},
+		{"VOL_HOV2_HIGH_PM_BA","Real",8,2,"No"},
 		
-		{"VOL_HOV2OP","Real",8,2,"No"},
-		{"VOL_HOV2OPAB","Real",8,2,"No"},
-		{"VOL_HOV2OPBA","Real",8,2,"No"},
+		{"VOL_HOV2_OP","Real",8,2,"No"},
+		{"VOL_HOV2_OP_AB","Real",8,2,"No"},
+		{"VOL_HOV2_OP_BA","Real",8,2,"No"},
+		{"VOL_HOV2_LOW_OP","Real",8,2,"No"},
+		{"VOL_HOV2_LOW_OP_AB","Real",8,2,"No"},
+		{"VOL_HOV2_LOW_OP_BA","Real",8,2,"No"},
+		{"VOL_HOV2_MED_OP","Real",8,2,"No"},
+		{"VOL_HOV2_MED_OP_AB","Real",8,2,"No"},
+		{"VOL_HOV2_MED_OP_BA","Real",8,2,"No"},
+		{"VOL_HOV2_HIGH_OP","Real",8,2,"No"},
+		{"VOL_HOV2_HIGH_OP_AB","Real",8,2,"No"},
+		{"VOL_HOV2_HIGH_OP_BA","Real",8,2,"No"},
 		
 		{"VOL_HOV3","Real",8,2,"No"},
-		{"VOL_HOV3AB","Real",8,2,"No"},
-		{"VOL_HOV3BA","Real",8,2,"No"},
+		{"VOL_HOV3_AB","Real",8,2,"No"},
+		{"VOL_HOV3_BA","Real",8,2,"No"},
+		{"VOL_HOV3_LOW","Real",8,2,"No"},
+		{"VOL_HOV3_LOW_AB","Real",8,2,"No"},
+		{"VOL_HOV3_LOW_BA","Real",8,2,"No"},
+		{"VOL_HOV3_MED","Real",8,2,"No"},
+		{"VOL_HOV3_MED_AB","Real",8,2,"No"},
+		{"VOL_HOV3_MED_BA","Real",8,2,"No"},
+		{"VOL_HOV3_HIGH","Real",8,2,"No"},
+		{"VOL_HOV3_HIGH_AB","Real",8,2,"No"},
+		{"VOL_HOV3_HIGH_BA","Real",8,2,"No"},
 		
-		{"VOL_HOV3AM","Real",8,2,"No"},
-		{"VOL_HOV3AMAB","Real",8,2,"No"},
-		{"VOL_HOV3AMBA","Real",8,2,"No"},
+		{"VOL_HOV3_AM","Real",8,2,"No"},
+		{"VOL_HOV3_AM_AB","Real",8,2,"No"},
+		{"VOL_HOV3_AM_BA","Real",8,2,"No"},
+		{"VOL_HOV3_LOW_AM","Real",8,2,"No"},
+		{"VOL_HOV3_LOW_AM_AB","Real",8,2,"No"},
+		{"VOL_HOV3_LOW_AM_BA","Real",8,2,"No"},
+		{"VOL_HOV3_MED_AM","Real",8,2,"No"},
+		{"VOL_HOV3_MED_AM_AB","Real",8,2,"No"},
+		{"VOL_HOV3_MED_AM_BA","Real",8,2,"No"},
+		{"VOL_HOV3_HIGH_AM","Real",8,2,"No"},
+		{"VOL_HOV3_HIGH_AM_AB","Real",8,2,"No"},
+		{"VOL_HOV3_HIGH_AM_BA","Real",8,2,"No"},
 		
-		{"VOL_HOV3MD","Real",8,2,"No"},
-		{"VOL_HOV3MDAB","Real",8,2,"No"},
-		{"VOL_HOV3MDBA","Real",8,2,"No"},
+		{"VOL_HOV3_MD","Real",8,2,"No"},
+		{"VOL_HOV3_MD_AB","Real",8,2,"No"},
+		{"VOL_HOV3_MD_BA","Real",8,2,"No"},
+		{"VOL_HOV3_LOW_MD","Real",8,2,"No"},
+		{"VOL_HOV3_LOW_MD_AB","Real",8,2,"No"},
+		{"VOL_HOV3_LOW_MD_BA","Real",8,2,"No"},
+		{"VOL_HOV3_MED_MD","Real",8,2,"No"},
+		{"VOL_HOV3_MED_MD_AB","Real",8,2,"No"},
+		{"VOL_HOV3_MED_MD_BA","Real",8,2,"No"},
+		{"VOL_HOV3_HIGH_MD","Real",8,2,"No"},
+		{"VOL_HOV3_HIGH_MD_AB","Real",8,2,"No"},
+		{"VOL_HOV3_HIGH_MD_BA","Real",8,2,"No"},
 		
-		{"VOL_HOV3PM","Real",8,2,"No"},
-		{"VOL_HOV3PMAB","Real",8,2,"No"},
-		{"VOL_HOV3PMBA","Real",8,2,"No"},
+		{"VOL_HOV3_PM","Real",8,2,"No"},
+		{"VOL_HOV3_PM_AB","Real",8,2,"No"},
+		{"VOL_HOV3_PM_BA","Real",8,2,"No"},
+		{"VOL_HOV3_LOW_PM","Real",8,2,"No"},
+		{"VOL_HOV3_LOW_PM_AB","Real",8,2,"No"},
+		{"VOL_HOV3_LOW_PM_BA","Real",8,2,"No"},
+		{"VOL_HOV3_MED_PM","Real",8,2,"No"},
+		{"VOL_HOV3_MED_PM_AB","Real",8,2,"No"},
+		{"VOL_HOV3_MED_PM_BA","Real",8,2,"No"},
+		{"VOL_HOV3_HIGH_PM","Real",8,2,"No"},
+		{"VOL_HOV3_HIGH_PM_AB","Real",8,2,"No"},
+		{"VOL_HOV3_HIGH_PM_BA","Real",8,2,"No"},
 		
-		{"VOL_HOV3OP","Real",8,2,"No"},
-		{"VOL_HOV3OPAB","Real",8,2,"No"},
-		{"VOL_HOV3OPBA","Real",8,2,"No"},
+		{"VOL_HOV3_OP","Real",8,2,"No"},
+		{"VOL_HOV3_OP_AB","Real",8,2,"No"},
+		{"VOL_HOV3_OP_BA","Real",8,2,"No"},
+		{"VOL_HOV3_LOW_OP","Real",8,2,"No"},
+		{"VOL_HOV3_LOW_OP_AB","Real",8,2,"No"},
+		{"VOL_HOV3_LOW_OP_BA","Real",8,2,"No"},
+		{"VOL_HOV3_MED_OP","Real",8,2,"No"},
+		{"VOL_HOV3_MED_OP_AB","Real",8,2,"No"},
+		{"VOL_HOV3_MED_OP_BA","Real",8,2,"No"},
+		{"VOL_HOV3_HIGH_OP","Real",8,2,"No"},
+		{"VOL_HOV3_HIGH_OP_AB","Real",8,2,"No"},
+		{"VOL_HOV3_HIGH_OP_BA","Real",8,2,"No"},
 		
 		{"VOL_COM","Real",8,2,"No"},
-		{"VOL_COMAB","Real",8,2,"No"},
-		{"VOL_COMBA","Real",8,2,"No"},
+		{"VOL_COM_AB","Real",8,2,"No"},
+		{"VOL_COM_BA","Real",8,2,"No"},
 		
-		{"VOL_COMAM","Real",8,2,"No"},
-		{"VOL_COMAMAB","Real",8,2,"No"},
-		{"VOL_COMAMBA","Real",8,2,"No"},
+		{"VOL_COM_AM","Real",8,2,"No"},
+		{"VOL_COM_AM_AB","Real",8,2,"No"},
+		{"VOL_COM_AM_BA","Real",8,2,"No"},
 		
-		{"VOL_COMMD","Real",8,2,"No"},
-		{"VOL_COMMDAB","Real",8,2,"No"},
-		{"VOL_COMMDBA","Real",8,2,"No"},
+		{"VOL_COM_MD","Real",8,2,"No"},
+		{"VOL_COM_MD_AB","Real",8,2,"No"},
+		{"VOL_COM_MD_BA","Real",8,2,"No"},
 		
-		{"VOL_COMPM","Real",8,2,"No"},
-		{"VOL_COMPMAB","Real",8,2,"No"},
-		{"VOL_COMPMBA","Real",8,2,"No"},
+		{"VOL_COM_PM","Real",8,2,"No"},
+		{"VOL_COM_PM_AB","Real",8,2,"No"},
+		{"VOL_COM_PM_BA","Real",8,2,"No"},
 		
-		{"VOL_COMOP","Real",8,2,"No"},
-		{"VOL_COMOPAB","Real",8,2,"No"},
-		{"VOL_COMOPBA","Real",8,2,"No"},
-
-
+		{"VOL_COM_OP","Real",8,2,"No"},
+		{"VOL_COM_OP_AB","Real",8,2,"No"},
+		{"VOL_COM_OP_BA","Real",8,2,"No"},
 
 		{"VOL_SU","Real",8,2,"No"},
-		{"VOL_SUAB","Real",8,2,"No"},
-		{"VOL_SUBA","Real",8,2,"No"},
+		{"VOL_SU_AB","Real",8,2,"No"},
+		{"VOL_SU_BA","Real",8,2,"No"},
 		
-		{"VOL_SUAM","Real",8,2,"No"},
-		{"VOL_SUAMAB","Real",8,2,"No"},
-		{"VOL_SUAMBA","Real",8,2,"No"},
+		{"VOL_SU_AM","Real",8,2,"No"},
+		{"VOL_SU_AM_AB","Real",8,2,"No"},
+		{"VOL_SU_AM_BA","Real",8,2,"No"},
 		
-		{"VOL_SUMD","Real",8,2,"No"},
-		{"VOL_SUMDAB","Real",8,2,"No"},
-		{"VOL_SUMDBA","Real",8,2,"No"},
+		{"VOL_SU_MD","Real",8,2,"No"},
+		{"VOL_SU_MD_AB","Real",8,2,"No"},
+		{"VOL_SU_MD_BA","Real",8,2,"No"},
 		
-		{"VOL_SUPM","Real",8,2,"No"},
-		{"VOL_SUPMAB","Real",8,2,"No"},
-		{"VOL_SUPMBA","Real",8,2,"No"},
+		{"VOL_SU_PM","Real",8,2,"No"},
+		{"VOL_SU_PM_AB","Real",8,2,"No"},
+		{"VOL_SU_PM_BA","Real",8,2,"No"},
 		
-		{"VOL_SUOP","Real",8,2,"No"},
-		{"VOL_SUOPAB","Real",8,2,"No"},
-		{"VOL_SUOPBA","Real",8,2,"No"},
+		{"VOL_SU_OP","Real",8,2,"No"},
+		{"VOL_SU_OP_AB","Real",8,2,"No"},
+		{"VOL_SU_OP_BA","Real",8,2,"No"},
 		
-
 		{"VOL_MU","Real",8,2,"No"},
-		{"VOL_MUAB","Real",8,2,"No"},
-		{"VOL_MUBA","Real",8,2,"No"},
+		{"VOL_MU_AB","Real",8,2,"No"},
+		{"VOL_MU_BA","Real",8,2,"No"},
 		
-		{"VOL_MUAM","Real",8,2,"No"},
-		{"VOL_MUAMAB","Real",8,2,"No"},
-		{"VOL_MUAMBA","Real",8,2,"No"},
+		{"VOL_MU_AM","Real",8,2,"No"},
+		{"VOL_MU_AM_AB","Real",8,2,"No"},
+		{"VOL_MU_AM_BA","Real",8,2,"No"},
 		
-		{"VOL_MUMD","Real",8,2,"No"},
-		{"VOL_MUMDAB","Real",8,2,"No"},
-		{"VOL_MUMDBA","Real",8,2,"No"},
+		{"VOL_MU_MD","Real",8,2,"No"},
+		{"VOL_MU_MD_AB","Real",8,2,"No"},
+		{"VOL_MU_MD_BA","Real",8,2,"No"},
 		
-		{"VOL_MUPM","Real",8,2,"No"},
-		{"VOL_MUPMAB","Real",8,2,"No"},
-		{"VOL_MUPMBA","Real",8,2,"No"},
+		{"VOL_MU_PM","Real",8,2,"No"},
+		{"VOL_MU_PM_AB","Real",8,2,"No"},
+		{"VOL_MU_PM_BA","Real",8,2,"No"},
 		
-		{"VOL_MUOP","Real",8,2,"No"},
-		{"VOL_MUOPAB","Real",8,2,"No"},
-		{"VOL_MUOPBA","Real",8,2,"No"},
+		{"VOL_MU_OP","Real",8,2,"No"},
+		{"VOL_MU_OP_AB","Real",8,2,"No"},
+		{"VOL_MU_OP_BA","Real",8,2,"No"},
 		
 		{"SPD_AMAB","Real",8,2,"No"},
 		{"SPD_AMBA","Real",8,2,"No"},
@@ -1105,7 +1567,6 @@ Macro "PostProcessor" (Args)
 		
 		}, )
 	
-	
 	//open assignment result tables
 /*	
 	OpenTable("AM preload","FFB",{Scen_Dir+ "outputs\\Assignment_Preload_AM.bin",})
@@ -1113,22 +1574,23 @@ Macro "PostProcessor" (Args)
 	OpenTable("PM preload","FFB",{Scen_Dir+ "outputs\\Assignment_Preload_PM.bin",})
 	OpenTable("OP preload","FFB",{Scen_Dir+ "outputs\\Assignment_Preload_OP.bin",})
 */	
-	OpenTable("AM Assignment Result","FFB",{Scen_Dir+ "outputs\\Assignment_AM.bin",})
-	OpenTable("MD Assignment Result","FFB",{Scen_Dir+ "outputs\\Assignment_MD.bin",})
-	OpenTable("PM Assignment Result","FFB",{Scen_Dir+ "outputs\\Assignment_PM.bin",})
-	OpenTable("OP Assignment Result","FFB",{Scen_Dir+ "outputs\\Assignment_OP.bin",})
+	OpenTable("AM Assignment Result","FFB",{Scen_Dir + "outputs\\Assignment_AM.bin",})
+	OpenTable("MD Assignment Result","FFB",{Scen_Dir + "outputs\\Assignment_MD.bin",})
+	OpenTable("PM Assignment Result","FFB",{Scen_Dir + "outputs\\Assignment_PM.bin",})
+	OpenTable("OP Assignment Result","FFB",{Scen_Dir + "outputs\\Assignment_OP.bin",})
 	
-	vehicles={"PASS","HOV2","HOV3","COM","SU","MU"}
-	vehicles2={"Passenger","HOV2","HOV3","Commercial","SingleUnit","MU"}
+	//Match these to the field identifiers in the output table above
+	vehicles={"PASS_LOW","PASS_MED","PASS_HIGH","HOV2_LOW","HOV2_MED","HOV2_HIGH","HOV3_LOW","HOV3_MED","HOV3_HIGH","COM","SU","MU"}
+
+	//These are the field identifiers coming out of the raw assignment output table
+	vehicle_names={"Passenger_low","Passenger_med","Passenger_high","HOV2_low","HOV2_med","HOV2_high","HOV3_low","HOV3_med","HOV3_high","Commercial","SingleUnit","MU"}
+
 	periods={"AM","MD","PM","OP"}
 	
-	//step 1: update the MU fields in the final assignment result with preload MU and IIMU
 	for p=1 to periods.length do
 		
 		//preload
-		preload=Scen_Dir+ "outputs\\Assignment_Preload_"+periods[p]+".bin"
-		result=Args.[Assignment Result]
-/*		
+		/*preload=Scen_Dir+ "outputs\\Assignment_Preload_"+periods[p]+".bin"		
 		Opts = null
 		Opts.Input.[Dataview Set] = {{result, preload, {"ID"}, {"ID1"}}, "Assignment Result + Preload"+ periods[p]}
 		Opts.Global.Fields = {
@@ -1138,145 +1600,183 @@ Macro "PostProcessor" (Args)
 			}
 		Opts.Global.Method = "Formula"
 		Opts.Global.Parameter = {
-			"nz(AB_FLOW_PRELOAD_EIMU)+nz(AB_FLOW_PRELOAD_IEMU)+   nz(AB_FLOW_PRELOAD_EEMU)+nz(VOL_MU"+periods[p]+"AB)","nz(BA_FLOW_PRELOAD_EIMU)+nz(BA_FLOW_PRELOAD_IEMU)+nz(BA_FLOW_PRELOAD_EEMU)+nz(VOL_MU"+periods[p]+"BA)",
+			"nz(AB_FLOW_PRELOAD_EIMU)+nz(AB_FLOW_PRELOAD_IEMU)+nz(AB_FLOW_PRELOAD_EEMU)+nz(VOL_MU"+periods[p]+"AB)","nz(BA_FLOW_PRELOAD_EIMU)+nz(BA_FLOW_PRELOAD_IEMU)+nz(BA_FLOW_PRELOAD_EEMU)+nz(VOL_MU"+periods[p]+"BA)",
 			"nz(AB_FLOW_PRELOAD_IESU)+nz(AB_FLOW_PRELOAD_EESU)+nz(VOL_SU"+periods[p]+"AB)","nz(BA_FLOW_PRELOAD_IESU)+nz(BA_FLOW_PRELOAD_EESU)+nz(VOL_SU"+periods[p]+"BA)",
 			"nz(AB_FLOW_PRELOAD_Pass)+nz(VOL_PASS"+periods[p]+"AB)","nz(BA_FLOW_PRELOAD_Pass)+nz(VOL_PASS"+periods[p]+"BA)"
 			}
 		ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
-		if !ret_value then goto quit
-*/
+		if !ret_value then goto quit*/
+
+		//Step 1: update the MU/SU fields in the final assignment result with preload MU/SU and IIMU/IISU
 		Opts = null
-			Opts.Input.[Dataview Set] = {{result, Scen_Dir+ "outputs\\Assignment_"+periods[p]+".bin", {"ID"}, {"ID1"}}, "Assignment Result+"+periods[p]+" Assignment"}
-		Opts.Global.Fields = {
-			"VOL_MU"+periods[p]+"AB","VOL_MU"+periods[p]+"BA",
-			"VOL_SU"+periods[p]+"AB","VOL_SU"+periods[p]+"BA",
-			"VOL_PASS"+periods[p]+"AB","VOL_PASS"+periods[p]+"BA"
-			}
+		Opts.Input.[Dataview Set] = {{result, Scen_Dir + "outputs\\Assignment_"+periods[p]+".bin", {"ID"}, {"ID1"}}, "Assignment Result+"+periods[p]+" Assignment"}
+		Opts.Global.Fields = {	"VOL_MU_"+periods[p]+"_AB",
+								"VOL_MU_"+periods[p]+"_BA",
+								"VOL_SU_"+periods[p]+"_AB",
+								"VOL_SU_"+periods[p]+"_BA",
+								"VOL_PASS_"+periods[p]+"_AB",
+								"VOL_PASS_"+periods[p]+"_BA"}
 		Opts.Global.Method = "Formula"
-		Opts.Global.Parameter = {
-			"nz(AB_FLOW_PRELOAD_EIMU)+nz(AB_FLOW_PRELOAD_IEMU)+   nz(AB_FLOW_PRELOAD_EEMU)+nz(VOL_MU"+periods[p]+"AB)","nz(BA_FLOW_PRELOAD_EIMU)+nz(BA_FLOW_PRELOAD_IEMU)+nz(BA_FLOW_PRELOAD_EEMU)+nz(VOL_MU"+periods[p]+"BA)",
-			"nz(AB_FLOW_PRELOAD_IESU)+nz(AB_FLOW_PRELOAD_EESU)+nz(VOL_SU"+periods[p]+"AB)","nz(BA_FLOW_PRELOAD_IESU)+nz(BA_FLOW_PRELOAD_EESU)+nz(VOL_SU"+periods[p]+"BA)",
-			"nz(AB_FLOW_PRELOAD_Pass)+nz(VOL_PASS"+periods[p]+"AB)","nz(BA_FLOW_PRELOAD_Pass)+nz(VOL_PASS"+periods[p]+"BA)"
-			}
+		Opts.Global.Parameter = {	"nz(AB_FLOW_PRELOAD_EIMU)+nz(AB_FLOW_PRELOAD_IEMU)+nz(AB_FLOW_PRELOAD_EEMU)+nz(VOL_MU_"+periods[p]+"_AB)",
+									"nz(BA_FLOW_PRELOAD_EIMU)+nz(BA_FLOW_PRELOAD_IEMU)+nz(BA_FLOW_PRELOAD_EEMU)+nz(VOL_MU_"+periods[p]+"_BA)",
+									"nz(AB_FLOW_PRELOAD_IESU)+nz(AB_FLOW_PRELOAD_EESU)+nz(VOL_SU_"+periods[p]+"_AB)",
+									"nz(BA_FLOW_PRELOAD_IESU)+nz(BA_FLOW_PRELOAD_EESU)+nz(VOL_SU_"+periods[p]+"_BA)",
+									"nz(AB_FLOW_PRELOAD_Pass)+nz(VOL_PASS_"+periods[p]+"_AB)",
+									"nz(BA_FLOW_PRELOAD_Pass)+nz(VOL_PASS_"+periods[p]+"_BA)"}
 		ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
 		if !ret_value then goto quit
 
-
-		//step 2: Flow by Vehicle Type
+		//Step 2: Flow by Vehicle Type
 		for v=1 to vehicles.length do
 			Opts = null
-			Opts.Input.[Dataview Set] = {{result, Scen_Dir+ "outputs\\Assignment_"+periods[p]+".bin", {"ID"}, {"ID1"}}, "Assignment Result+"+periods[p]+" Assignment"}
-			Opts.Global.Fields = {
-				"VOL_"+vehicles[v]+periods[p]+"AB", 
-				"VOL_"+vehicles[v]+periods[p]+"BA", 
-				"VOL_"+vehicles[v]+periods[p]}
-				
+			Opts.Input.[Dataview Set] = {{result, Scen_Dir + "outputs\\Assignment_" + periods[p] + ".bin", {"ID"}, {"ID1"}}, "Assignment Result+" + periods[p] + " Assignment"}
+			Opts.Global.Fields = {	"VOL_"+vehicles[v]+"_"+periods[p]+"_AB", 
+									"VOL_"+vehicles[v]+"_"+periods[p]+"_BA", 
+									"VOL_"+vehicles[v]+"_"+periods[p]}
 			Opts.Global.Method = "Formula"
-			Opts.Global.Parameter = {
-				"nz("+"VOL_"+vehicles[v]+periods[p]+"AB)+" + "nz(AB_Flow_"+vehicles2[v]+")",
-				"nz("+"VOL_"+vehicles[v]+periods[p]+"BA)+" + "nz(BA_Flow_"+vehicles2[v]+")", 
-				"nz("+"VOL_"+vehicles[v]+periods[p]+"AB)+"+"nz("+"VOL_"+vehicles[v]+periods[p]+"BA)"}
-           
-			//passenger cars add HOV
-			if vehicles[v]="HOV2" then do
-				//if (auto_assign_classes=1) then no HOV class is available, all is in passenger
-				if (auto_assign_classes=2) then do
-					Opts.Global.Parameter = {
-						"nz(AB_Flow_HOV)" ,
-						"nz(BA_Flow_HOV)", 
-						"nz("+"VOL_"+vehicles[v]+periods[p]+"AB)+"+"nz("+"VOL_"+vehicles[v]+periods[p]+"BA)"}
-				end	
-				else if (auto_assign_classes=3) then do
-					Opts.Global.Parameter = {
-						"nz(AB_Flow_HOV2)" ,
-						"nz(BA_Flow_HOV2)", 
-						"nz("+"VOL_"+vehicles[v]+periods[p]+"AB)+"+"nz("+"VOL_"+vehicles[v]+periods[p]+"BA)"}
-				end	
-				else do
-					Opts.Global.Parameter = {
-						0,
-						0, 
-						0}
-				end										
+
+			//It would be better if these could be read off the vehicles list but it wasn't working
+			if v=1|v=4|v=7 then veh_vot = "LOW"
+				else if v=2|v=5|v=8 then veh_vot = "MED"
+					else if v=3|v=6|v=9 then veh_vot = "HIGH"
+						else veh_vot = ""
+
+			//For PASS vehicles (v<4), the filling varies according to auto_assign_classes
+			if (v<4 & auto_assign_classes = 1) then do
+				Opts.Global.Parameter = {	"nz(AB_Flow_Autos_"+veh_vot+")",
+											"nz(BA_Flow_Autos_"+veh_vot+")", 
+											"nz(VOL_"+vehicles[v]+"_"+periods[p]+"_AB)+nz(VOL_"+vehicles[v]+"_"+periods[p]+"_BA)"}
 			end
 
-			//passenger cars add HOV
-			if vehicles[v]="HOV3" then do
-				//if (auto_assign_classes=1) then no HOV class is available, all is in passenger
-				if (auto_assign_classes=3) then do
-					Opts.Global.Parameter = {
-						"nz(AB_Flow_HOV3)" ,
-						"nz(BA_Flow_HOV3)", 
-						"nz("+"VOL_"+vehicles[v]+periods[p]+"AB)+"+"nz("+"VOL_"+vehicles[v]+periods[p]+"BA)"}
-				end	
-				else do
-					Opts.Global.Parameter = {
-						0,
-						0, 
-						0}
-				end										
+			if (v<4 & auto_assign_classes <> 1) then do
+				Opts.Global.Parameter = {	"nz(AB_Flow_"+vehicle_names[v]+")",
+											"nz(BA_Flow_"+vehicle_names[v]+")", 
+											"nz(VOL_"+vehicles[v]+"_"+periods[p]+"_AB)+nz(VOL_"+vehicles[v]+"_"+periods[p]+"_BA)"}
+			end								
+
+			//For HOV2 vehicles (v>3 & v<7), we fill from the HOV field into the HOV2 field if auto_assign_classes = 2
+			if (v>3 & v<7 & auto_assign_classes=2) then do
+				Opts.Global.Parameter = {	"nz(AB_Flow_HOV_"+veh_vot+")",
+											"nz(BA_Flow_HOV_"+veh_vot+")",
+											"nz(VOL_"+vehicles[v]+"_"+periods[p]+"_AB)+nz(VOL_"+vehicles[v]+"_"+periods[p]+"_BA)"}
 			end
-                
+			//Or we fill all of the fields if auto_assign_classes = 3
+			if (v>3 & v<7 & auto_assign_classes=3) then do
+				Opts.Global.Parameter = {	"nz(AB_Flow_"+vehicle_names[v]+")",
+											"nz(BA_Flow_"+vehicle_names[v]+")", 
+											"nz(VOL_"+vehicles[v]+"_"+periods[p]+"_AB)+nz(VOL_"+vehicles[v]+"_"+periods[p]+"_BA)"}
+			end	
+			//Or we zero out the HOV fields
+			if (v>3 & v<7 & auto_assign_classes=1) then do
+				Opts.Global.Parameter = {"0", "0", "0"}
+			end										
+
+			//For HOV3 vehicles (v>6 & v<10), we fill all fields directly from the corresponding field in the assignment output when auto_assign_classes = 3
+			if (v>6 & v<10 & auto_assign_classes=3) then do
+				Opts.Global.Parameter = {	"nz(AB_Flow_"+vehicle_names[v]+")",
+											"nz(BA_Flow_"+vehicle_names[v]+")", 
+											"nz(VOL_"+vehicles[v]+"_"+periods[p]+"_AB)+nz(VOL_"+vehicles[v]+"_"+periods[p]+"_BA)"}
+			end
+			//otherwise we zero it out
+			if (v>6 & v<10 & auto_assign_classes<>3) then do
+				Opts.Global.Parameter = {"0", "0", "0"}
+			end
+
+			//Trucks and commercial vehicles (v>9) are unaffected by auto_assign_classes
+			if v>9 then do
+				Opts.Global.Parameter = {	"nz(AB_Flow_"+vehicle_names[v]+")",
+											"nz(BA_Flow_"+vehicle_names[v]+")", 
+											"nz(VOL_"+vehicles[v]+"_"+periods[p]+"_AB)+nz(VOL_"+vehicles[v]+"_"+periods[p]+"_BA)"}			
+			end
+
 			ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
 			if !ret_value then goto quit
+
 		end
 		
 		//step 3: Speed by TOD
 		Opts = null
-		Opts.Input.[Dataview Set] = {{Args.[Assignment Result], Scen_Dir+ "outputs\\Assignment_"+periods[p]+".bin", {"ID"}, {"ID1"}}, "Assignment Result+"+periods[p]+" Assignment"}
+		Opts.Input.[Dataview Set] = {{result, Scen_Dir+ "outputs\\Assignment_"+periods[p]+".bin", {"ID"}, {"ID1"}}, "Assignment Result+"+periods[p]+" Assignment"}
 		Opts.Global.Fields = {"SPD_"+periods[p]+"AB","SPD_"+periods[p]+"BA"}
 		Opts.Global.Method = "Formula"
 		Opts.Global.Parameter = {"AB_Speed","BA_Speed"}
 		ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
 		if !ret_value then goto quit
+
 	end
 	
 	//step 4 Daily VOL by vehicle class
 	for v=1 to vehicles.length do
 		Opts = null
-		Opts.Input.[Dataview Set] = {Args.[Assignment Result], "Assignment Result"}
-		Opts.Global.Fields = {"VOL_"+vehicles[v]+"AB","VOL_"+vehicles[v]+"BA","VOL_"+vehicles[v]}
+		Opts.Input.[Dataview Set] = {result, "Assignment Result"}
+		Opts.Global.Fields = {"VOL_"+vehicles[v]+"_AB","VOL_"+vehicles[v]+"_BA","VOL_"+vehicles[v]}
 		Opts.Global.Method = "Formula"
-		Opts.Global.Parameter = {
-			"nz(VOL_"+vehicles[v]+"AMAB)+nz(VOL_"+vehicles[v]+"MDAB)+nz(VOL_"+vehicles[v]+"PMAB)+nz(VOL_"+vehicles[v]+"OPAB)",
-			"nz(VOL_"+vehicles[v]+"AMBA)+nz(VOL_"+vehicles[v]+"MDBA)+nz(VOL_"+vehicles[v]+"PMBA)+nz(VOL_"+vehicles[v]+"OPBA)",
-			"nz(VOL_"+vehicles[v]+"AB)+nz(VOL_"+vehicles[v]+"BA)"
-			}
+		Opts.Global.Parameter = {	"nz(VOL_"+vehicles[v]+"_AM_AB)+nz(VOL_"+vehicles[v]+"_MD_AB)+nz(VOL_"+vehicles[v]+"_PM_AB)+nz(VOL_"+vehicles[v]+"_OP_AB)",
+									"nz(VOL_"+vehicles[v]+"_AM_BA)+nz(VOL_"+vehicles[v]+"_MD_BA)+nz(VOL_"+vehicles[v]+"_PM_BA)+nz(VOL_"+vehicles[v]+"_OP_BA)",
+									"nz(VOL_"+vehicles[v]+"_AB)+nz(VOL_"+vehicles[v]+"_BA)"}
+		ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
+		if !ret_value then goto quit
+	end
+
+	//Step 4A: Daily Vol by vehicle type (PASS, HOV2, HOV3) with directions, without regard to period or VOT
+	types = {"PASS","HOV2","HOV3"}
+
+	for n=1 to types.length do
+		Opts = null
+		Opts.Input.[Dataview Set] = {result, "Assignment Result"}
+		Opts.Global.Fields = {"VOL_"+types[n]+"_AB","VOL_"+types[n]+"_BA","VOL_"+types[n]}
+		Opts.Global.Method = "Formula"
+		Opts.Global.Parameter = {	"nz(VOL_"+types[n]+"_LOW_AB)+nz(VOL_"+types[n]+"_MED_AB)+nz(VOL_"+types[n]+"_HIGH_AB)",
+									"nz(VOL_"+types[n]+"_LOW_BA)+nz(VOL_"+types[n]+"_MED_BA)+nz(VOL_"+types[n]+"_HIGH_BA)",
+									"nz(VOL_"+types[n]+"_LOW)+nz(VOL_"+types[n]+"_MED)+nz(VOL_"+types[n]+"_HIGH)"}
 		ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
 		if !ret_value then goto quit
 	end
 	
-	//step 5 All vehicle Vol by Time of day
+	//Step 4B: Daily Vol by vehicle type (PASS, HOV2, HOV3) without direction or VOT, by period
+	for n=1 to types.length do
+		for p=1 to periods.length do
+			Opts = null
+			Opts.Input.[Dataview Set] = {result, "Assignment Result"}
+			Opts.Global.Fields = {"VOL_"+types[n]+"_"+periods[p]}
+			Opts.Global.Method = "Formula"
+			Opts.Global.Parameter = {"nz(VOL_"+types[n]+"_"+periods[p]+"_AB)+nz(VOL_"+types[n]+"_"+periods[p]+"_BA)"}
+			ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
+			if !ret_value then goto quit
+		end
+	end
+
+	//Step 5 All vehicle Vol by Time of day
 	for p=1 to periods.length do
 		Opts = null
-		Opts.Input.[Dataview Set] = {Args.[Assignment Result], "Assignment Result"}
-		Opts.Global.Fields = {"VOL_"+periods[p]+"AB","VOL_"+periods[p]+"BA","VOL_"+periods[p]}
+		Opts.Input.[Dataview Set] = {result, "Assignment Result"}
+		Opts.Global.Fields = {"VOL_"+periods[p]+"_AB","VOL_"+periods[p]+"_BA","VOL_"+periods[p]}
 		Opts.Global.Method = "Formula"
 		Opts.Global.Parameter = {
-			"nz(VOL_PASS"+periods[p]+"AB)+nz(VOL_HOV2"+periods[p]+"AB)+nz(VOL_HOV3"+periods[p]+"AB)+nz(VOL_COM"+periods[p]+"AB)+nz(VOL_SU"+periods[p]+"AB)+nz(VOL_MU"+periods[p]+"AB)",
-			"nz(VOL_PASS"+periods[p]+"BA)+nz(VOL_HOV2"+periods[p]+"BA)+nz(VOL_HOV3"+periods[p]+"BA)+nz(VOL_COM"+periods[p]+"BA)+nz(VOL_SU"+periods[p]+"BA)+nz(VOL_MU"+periods[p]+"BA)",
-			"nz(VOL_"+periods[p]+"AB)+nz(VOL_"+periods[p]+"BA)"
+			"nz(VOL_PASS_"+periods[p]+"_AB)+nz(VOL_HOV2_"+periods[p]+"_AB)+nz(VOL_HOV3_"+periods[p]+"_AB)+nz(VOL_COM_"+periods[p]+"_AB)+nz(VOL_SU_"+periods[p]+"_AB)+nz(VOL_MU_"+periods[p]+"_AB)",
+			"nz(VOL_PASS_"+periods[p]+"_BA)+nz(VOL_HOV2_"+periods[p]+"_BA)+nz(VOL_HOV3_"+periods[p]+"_BA)+nz(VOL_COM_"+periods[p]+"_BA)+nz(VOL_SU_"+periods[p]+"_BA)+nz(VOL_MU_"+periods[p]+"_BA)",
+			"nz(VOL_"+periods[p]+"_AB)+nz(VOL_"+periods[p]+"_BA)"
 			}
 		ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
 		if !ret_value then goto quit
 	end
 	
-	//step 5 All vehicle Daily Volume
+	//Step 5A All vehicle Daily Volume
 	Opts = null
-	Opts.Input.[Dataview Set] = {Args.[Assignment Result], "Assignment Result"}
+	Opts.Input.[Dataview Set] = {result, "Assignment Result"}
 	Opts.Global.Fields = {"VOL_AB","VOL_BA","VOL_TOT"}
 	Opts.Global.Method = "Formula"
 	Opts.Global.Parameter = {
-		"nz(VOL_AMAB)+nz(VOL_MDAB)+nz(VOL_PMAB)+nz(VOL_OPAB)",
-		"nz(VOL_AMBA)+nz(VOL_MDBA)+nz(VOL_PMBA)+nz(VOL_OPBA)",
+		"nz(VOL_AM_AB)+nz(VOL_MD_AB)+nz(VOL_PM_AB)+nz(VOL_OP_AB)",
+		"nz(VOL_AM_BA)+nz(VOL_MD_BA)+nz(VOL_PM_BA)+nz(VOL_OP_BA)",
 		"nz(VOL_AB)+nz(VOL_BA)"		
 	}
 	ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
 	if !ret_value then goto quit
 		
-	//step 6 Total VMT
+	//Step 6 Total VMT
 	Opts = null
-	Opts.Input.[Dataview Set] = {Args.[Assignment Result], "Assignment Result"}
+	Opts.Input.[Dataview Set] = {result, "Assignment Result"}
 	Opts.Global.Fields = {
 		
 		"VMT_AMAB",
@@ -1305,35 +1805,35 @@ Macro "PostProcessor" (Args)
 		}
 	Opts.Global.Method = "Formula"
 	Opts.Global.Parameter = {
-		"VOL_AMAB*Leng",
-		"VOL_AMBA*Leng",
+		"VOL_AM_AB*Leng",
+		"VOL_AM_BA*Leng",
 		"VOL_AM*Leng",
 		
-		"VOL_MDAB*Leng",
-		"VOL_MDBA*Leng",
+		"VOL_MD_AB*Leng",
+		"VOL_MD_BA*Leng",
 		"VOL_MD*Leng",
 		
-		"VOL_PMAB*Leng",
-		"VOL_PMBA*Leng",
+		"VOL_PM_AB*Leng",
+		"VOL_PM_BA*Leng",
 		"VOL_PM*Leng",
 		
-		"VOL_OPAB*Leng",
-		"VOL_OPBA*Leng",
+		"VOL_OP_AB*Leng",
+		"VOL_OP_BA*Leng",
 		"VOL_OP*Leng",
 		
 		"VOL_AB*Leng",
 		"VOL_BA*Leng",
 		"VOL_TOT*Leng",    
-		"nz(VOL_AMAB*Leng/SPD_AMAB)+nz(VOL_AMBA*Leng/SPD_AMBA)+nz(VOL_MDAB*Leng/SPD_MDAB)+nz(VOL_MDBA*Leng/SPD_MDBA)+nz(VOL_PMAB*Leng/SPD_PMAB)+nz(VOL_PMBA*Leng/SPD_PMBA)+nz(VOL_OPAB*Leng/SPD_OPAB)+nz(VOL_OPBA*Leng/SPD_OPBA)",
+		"nz(VOL_AM_AB*Leng/SPD_AMAB)+nz(VOL_AM_BA*Leng/SPD_AMBA)+nz(VOL_MD_AB*Leng/SPD_MDAB)+nz(VOL_MD_BA*Leng/SPD_MDBA)+nz(VOL_PM_AB*Leng/SPD_PMAB)+nz(VOL_PM_BA*Leng/SPD_PMBA)+nz(VOL_OP_AB*Leng/SPD_OPAB)+nz(VOL_OP_BA*Leng/SPD_OPBA)",
 		"nz(SPD_AMAB*VMT_AMAB)+nz(SPD_AMAB*VMT_AMBA)+nz(SPD_MDAB*VMT_MDAB)+nz(SPD_MDAB*VMT_MDBA)+nz(SPD_PMAB*VMT_PMAB)+nz(SPD_PMAB*VMT_PMBA)+nz(SPD_OPAB*VMT_OPAB)+nz(SPD_OPAB*VMT_OPBA)"      
 		}
     ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
 	if !ret_value then goto quit
     
-	// Volume over Capacity and Level of Service
+	//Step 7: Volume over Capacity and Level of Service
 	UpdateProgressBar("Update the LOS ", )
 	Opts = null
-	Opts.Input.[Dataview Set] = {{Args.[hwy db]+"|"+llayer, Args.[Assignment Result], {"ID"}, {"ID"}}, "Network+Assignment Result"}
+	Opts.Input.[Dataview Set] = {{Args.[hwy db]+"|"+llayer, result, {"ID"}, {"ID"}}, "Network+Assignment Result"}
 	Opts.Global.Fields = {
 		"VC_AMAB",
 		"VC_AMBA",
@@ -1402,20 +1902,20 @@ Macro "PostProcessor" (Args)
 		}
 	Opts.Global.Method = "Formula"
 	Opts.Global.Parameter = {
-		"if VOL_AMAB/capacity_am_AB<>null then VOL_AMAB/capacity_am_AB else 0",
-		"if VOL_AMBA/capacity_am_BA<>null then VOL_AMBA/capacity_am_BA else 0",
+		"if VOL_AM_AB/capacity_am_AB<>null then VOL_AM_AB/capacity_am_AB else 0",
+		"if VOL_AM_BA/capacity_am_BA<>null then VOL_AM_BA/capacity_am_BA else 0",
 		"max(VC_AMAB,VC_AMBA)",
 		
-		"if VOL_MDAB/capacity_md_AB<>null then VOL_MDAB/capacity_md_AB else 0",
-		"if VOL_MDBA/capacity_md_BA<>null then VOL_MDBA/capacity_md_BA else 0",
+		"if VOL_MD_AB/capacity_md_AB<>null then VOL_MD_AB/capacity_md_AB else 0",
+		"if VOL_MD_BA/capacity_md_BA<>null then VOL_MD_BA/capacity_md_BA else 0",
 		"max(VC_MDAB,VC_MDBA)",
 		
-		"if VOL_PMAB/capacity_pm_AB<>null then VOL_PMAB/capacity_pm_AB else 0",
-		"if VOL_PMBA/capacity_pm_BA<>null then VOL_PMBA/capacity_pm_BA else 0",
+		"if VOL_PM_AB/capacity_pm_AB<>null then VOL_PM_AB/capacity_pm_AB else 0",
+		"if VOL_PM_BA/capacity_pm_BA<>null then VOL_PM_BA/capacity_pm_BA else 0",
 		"max(VC_PMAB,VC_PMBA)",
 		
-		"if VOL_OPAB/capacity_op_AB<>null then VOL_OPAB/capacity_op_AB else 0",
-		"if VOL_OPBA/capacity_op_BA<>null then VOL_OPBA/capacity_op_BA else 0",
+		"if VOL_OP_AB/capacity_op_AB<>null then VOL_OP_AB/capacity_op_AB else 0",
+		"if VOL_OP_BA/capacity_op_BA<>null then VOL_OP_BA/capacity_op_BA else 0",
 		"max(VC_OPAB,VC_OPBA)",
 		
 		"VOL_TOT/(nz(capacity_daily_AB)+nz(capacity_daily_BA))",
@@ -1457,15 +1957,15 @@ Macro "PostProcessor" (Args)
 		"if spd_ff_ba<>null then spd_opba/spd_ff_ba else null",
 		"if Pct_FF_OPAB=null then Pct_FF_OPBA else if Pct_FF_OPBA=null then Pct_FF_OPAB else min(Pct_FF_OPAB,Pct_FF_OPBA)",
 		
-		"nz(VOL_MUAMAB*Leng/SPD_AMAB)",
-		"nz(VOL_MUAMBA*Leng/SPD_AMBA)",
-		"nz(VOL_MUMDAB*Leng/SPD_MDAB)",
-		"nz(VOL_MUMDBA*Leng/SPD_MDBA)",
-		"nz(VOL_MUPMAB*Leng/SPD_PMAB)",
-		"nz(VOL_MUPMBA*Leng/SPD_PMBA)",
-		"nz(VOL_MUOPAB*Leng/SPD_OPAB)",
-		"nz(VOL_MUOPBA*Leng/SPD_OPBA)",
-		"nz(VOL_MUAMAB*Leng/SPD_AMAB)+nz(VOL_MUAMBA*Leng/SPD_AMBA)+nz(VOL_MUMDAB*Leng/SPD_MDAB)+nz(VOL_MUMDBA*Leng/SPD_MDBA)+nz(VOL_MUPMAB*Leng/SPD_PMAB)+nz(VOL_MUPMBA*Leng/SPD_PMBA)+nz(VOL_MUOPAB*Leng/SPD_OPAB)+nz(VOL_MUOPBA*Leng/SPD_OPBA)"
+		"nz(VOL_MU_AM_AB*Leng/SPD_AMAB)",
+		"nz(VOL_MU_AM_BA*Leng/SPD_AMBA)",
+		"nz(VOL_MU_MD_AB*Leng/SPD_MDAB)",
+		"nz(VOL_MU_MD_BA*Leng/SPD_MDBA)",
+		"nz(VOL_MU_PM_AB*Leng/SPD_PMAB)",
+		"nz(VOL_MU_PM_BA*Leng/SPD_PMBA)",
+		"nz(VOL_MU_OP_AB*Leng/SPD_OPAB)",
+		"nz(VOL_MU_OP_BA*Leng/SPD_OPBA)",
+		"nz(VOL_MU_AM_AB*Leng/SPD_AMAB)+nz(VOL_MU_AM_BA*Leng/SPD_AMBA)+nz(VOL_MU_MD_AB*Leng/SPD_MDAB)+nz(VOL_MU_MD_BA*Leng/SPD_MDBA)+nz(VOL_MU_PM_AB*Leng/SPD_PMAB)+nz(VOL_MU_PM_BA*Leng/SPD_PMBA)+nz(VOL_MU_OP_AB*Leng/SPD_OPAB)+nz(VOL_MU_OP_BA*Leng/SPD_OPBA)"
 		}
 	
 	ret_value= RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)

@@ -336,89 +336,86 @@ Macro "05_VTripTOD"
 		
 endMacro
 
-
-
-
 Macro "LoadConfig" (csvfile)
-//csvfile: Description, Input, VariableName 
-// Make sure the path is correct for your installation of TransCAD
-fptr = OpenFile(csvfile, "r")
+	//csvfile: Description, Input, VariableName 
+	// Make sure the path is correct for your installation of TransCAD
+	fptr = OpenFile(csvfile, "r")
 
-while not FileAtEOF(fptr) do
-    thisline = ReadLine(fptr)
-	cfgcol = ParseString(thisline, ",")
-	if cfgcol[1] = "Description" then goto skip
-	if cfgcol[2] = "null" or cfgcol[2] = "" then cfgcol[2] = null
-	modelcfg = modelcfg + {{cfgcol[3], cfgcol[2]}}
-skip:
-end
+	while not FileAtEOF(fptr) do
+		thisline = ReadLine(fptr)
+		cfgcol = ParseString(thisline, ",")
+		if cfgcol[1] = "Description" then goto skip
+		if cfgcol[2] = "null" or cfgcol[2] = "" then cfgcol[2] = null
+		modelcfg = modelcfg + {{cfgcol[3], cfgcol[2]}}
+	skip:
+	end
 
-CloseFile(fptr)
-Return(modelcfg)
+	CloseFile(fptr)
+	Return(modelcfg)
 endMacro
 
 //Mapping
 Macro "AddLayer" (file, type)
-//Adds .dbd to map as a layer
-//Type: "Point", "Line", or "Area" for geographic layers, "Image" for image layers, or "Image Library" for image libraries
+	//Adds .dbd to map as a layer
+	//Type: "Point", "Line", or "Area" for geographic layers, "Image" for image layers, or "Image Library" for image libraries
 
-map_name = GetMap()
-layer_names = GetLayerNames()
-file_layers = GetDBLayers(file)
-file_info = GetDBInfo(file)
-if map_name = null then map_name = CreateMap("RSG", {{"Scope", file_info[1]}, {"Auto Project", "True"}})
-SetMapRedraw(map_name, "False")
+	map_name = GetMap()
+	layer_names = GetLayerNames()
+	file_layers = GetDBLayers(file)
+	file_info = GetDBInfo(file)
+	if map_name = null then map_name = CreateMap("RSG", {{"Scope", file_info[1]}, {"Auto Project", "True"}})
+	SetMapRedraw(map_name, "False")
 
-//If .rts then add to map
-if type = "rts" then do
-	newlyr = AddRouteSystemLayer(null, "Transit Routes", file, null)
-	RunMacro("Set Default RS Style", newlyr, "True", "True")
-	Return(newlyr[1])
-	//[1] Route System Layer Name
-	//[2] Stops
-	//[3] Physical Stops
-	//[4] Node Layer Name (if added)
-	//[5] Line Layer Name (if added)
-end
-
-//Check if db already exists
-for i=1 to layer_names.length do
-	//Skip if Type mismatch
-	layer_type = GetLayerType(layer_names[i])
-	if layer_type <> type then goto skip
-	
-	//Check for dbd match
-	layer_info = GetLayerInfo(layer_names[i])
-	layerdb = layer_info[10]
-	if lower(layerdb) = lower(file) then do
-		//ShowMessage("AddLayer: LayerDB already exists in map")
-		Return(layer_names[i])
+	//If .rts then add to map
+	if type = "rts" then do
+		newlyr = AddRouteSystemLayer(null, "Transit Routes", file, null)
+		RunMacro("Set Default RS Style", newlyr, "True", "True")
+		Return(newlyr[1])
+		//[1] Route System Layer Name
+		//[2] Stops
+		//[3] Physical Stops
+		//[4] Node Layer Name (if added)
+		//[5] Line Layer Name (if added)
 	end
-	skip:
-end
 
-/*
-//Check if layername already exists
-for i=1 to file_layers.length do
-	idx = ArrayPosition(layer_names, {file_layers[i]}, ) 
-	if idx <> 0 and GetLayerType(file_layers[i]) = type then do
-		newlyr = layer_names[idx]
-		//ShowMessage("AddLayer: LayerName already exists")
-		Return(newlyr)
+	//Check if db already exists
+	for i=1 to layer_names.length do
+		//Skip if Type mismatch
+		layer_type = GetLayerType(layer_names[i])
+		if layer_type <> type then goto skip
+		
+		//Check for dbd match
+		layer_info = GetLayerInfo(layer_names[i])
+		layerdb = layer_info[10]
+		if lower(layerdb) = lower(file) then do
+			//ShowMessage("AddLayer: LayerDB already exists in map")
+			Return(layer_names[i])
+		end
+		skip:
 	end
-end
-*/
 
-//Else, add file to map
-newlyr = AddLayer(null, file_layers[1], file, file_layers[1])
-if GetLayerType(newlyr) <> type then do
-	newlyr = AddLayer( , file_layers[2], file, file_layers[2]) //Add lines if only nodes were loaded
-end
-RunMacro("G30 new layer default settings", newlyr)
-Return(newlyr)
+	/*
+	//Check if layername already exists
+	for i=1 to file_layers.length do
+		idx = ArrayPosition(layer_names, {file_layers[i]}, ) 
+		if idx <> 0 and GetLayerType(file_layers[i]) = type then do
+			newlyr = layer_names[idx]
+			//ShowMessage("AddLayer: LayerName already exists")
+			Return(newlyr)
+		end
+	end
+	*/
 
-endhere:
-throw("AddLayer: Layer already exists in map!")
+	//Else, add file to map
+	newlyr = AddLayer(null, file_layers[1], file, file_layers[1])
+	if GetLayerType(newlyr) <> type then do
+		newlyr = AddLayer( , file_layers[2], file, file_layers[2]) //Add lines if only nodes were loaded
+	end
+	RunMacro("G30 new layer default settings", newlyr)
+	Return(newlyr)
+
+	endhere:
+	throw("AddLayer: Layer already exists in map!")
 
 endMacro
 
@@ -429,7 +426,7 @@ endMacro
 
 Macro "addfields" (dataview, newfldnames, typeflags)
 //Add a new field to a dataview; does not overwrite
-//RunMacro("addfields", mvw.node, {"Delay", "Centroid", "Notes"}, {"r","i","c"})
+//Call example: RunMacro("addfields", mvw.node, {"Delay", "Centroid", "Notes"}, {"r","i","c"})
 	fd = newfldnames.length
 	dim fldtypes[fd]
 	

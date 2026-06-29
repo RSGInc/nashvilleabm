@@ -30,23 +30,26 @@
 
     // STEP 2: Change the row and column IDs for Highway Skims
     classes = {"sov","hov"}
+    vots = {"low","med","high"}
     for class = 1 to classes.length do
         for iper=1 to PeriodsHwy.length do
-           inmat  = OutDir + "hwyskim_" + PeriodsHwy[iper] +"_" +classes[class]  + ".mtx"
-           outmat = OutDir + "hwyskim_" + PeriodsHwy[iper] +"_" +classes[class]  + "2.mtx"
-           new_mat = CopyFile(inmat,outmat)
+            for v=1 to vots.length do
+                inmat  = OutDir + "hwyskim_" + PeriodsHwy[iper] + "_" + classes[class]  + "_" + vots[v] + ".mtx"
+                outmat = OutDir + "hwyskim_" + PeriodsHwy[iper] + "_" + classes[class]  + "_" + vots[v] + "2.mtx"
+                new_mat = CopyFile(inmat,outmat)
+            end
         end
     end    
 
     // STEP 3: Change the row and column IDs for Transit Skims
     for iper=1 to Periods.length do
 	    for iacc=1 to AccessModes.Length do
-			for imode=1 to Modes.Length do
-				inmat  = OutDir + Periods[iper] + "_" + AccessModes[iacc] + Modes[imode] + ".mtx"
-				outmat = OutDir + Periods[iper] + "_" + AccessModes[iacc] + Modes[imode] + "Skim.mtx"
-				new_mat = CopyFile(inmat,outmat)
-			end   // transit 
-		end    // access  
+			  for imode=1 to Modes.Length do
+				  inmat  = OutDir + Periods[iper] + "_" + AccessModes[iacc] + Modes[imode] + ".mtx"
+				  outmat = OutDir + Periods[iper] + "_" + AccessModes[iacc] + Modes[imode] + "Skim.mtx"
+				  new_mat = CopyFile(inmat,outmat)
+			  end   // transit 
+		  end    // access  
     end    // period 
 
    // Close view 

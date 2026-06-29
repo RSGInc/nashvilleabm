@@ -45,7 +45,10 @@ Macro "Settings" (Args)
 
 	//INPUTS
 	path 				= Scen_Dir
-	skim_truck 			= Args.[md skim]
+
+	//skim_truck 			= Args.[md skim]
+	skim_truck			= path + "outputs\\hwyskim_md_trk.mtx"
+
 	hh_file 			= Args.[Households]
 	parcel_lu_file 		= Args.[Parcels]
 	tazindex_file 		= Args.[taz_index]

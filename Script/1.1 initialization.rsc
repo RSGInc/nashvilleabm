@@ -11,6 +11,7 @@
 // Compute Link Attributes and Build Highway Network */
 
 Macro "Initialization" (Args)// Initialization
+
 	// shared prj_dry_run  if prj_dry_run then return(1)
 	shared Scen_Dir, loop, loop_n, run_type 
 	starttime = RunMacro("RuntimeLog", {"Initialization", null})	
@@ -61,61 +62,44 @@ Macro "Initialization" (Args)// Initialization
 	// 5. Ramp Capacity Equations (Functional classification = 20, 21, 22)
 	// 6. Local Road Capacity Equations (Functional classification = 9, 19, 99)
 	
-	v_clear={"capacity",
-	"capacity_daily_AB",
-	"capacity_am_AB",
-	"capacity_md_AB",
-	"capacity_pm_AB",
-	"capacity_op_AB",
-	"capacity_daily_BA",
-	"capacity_am_BA",
-	"capacity_md_BA",
-	"capacity_pm_BA",
-	"capacity_op_BA",
-	"SPD_FF_AB", 
-	"SPD_AM_AB", 
-	"SPD_MD_AB",
-	"SPD_PM_AB",
-	"SPD_OP_AB",
+	/*v_clear={"capacity", "capacity_daily_AB", "capacity_am_AB", "capacity_md_AB", "capacity_pm_AB", "capacity_op_AB",
+	"capacity_daily_BA", "capacity_am_BA", "capacity_md_BA", "capacity_pm_BA", "capacity_op_BA",
+	"SPD_FF_AB", "SPD_AM_AB", "SPD_MD_AB", "SPD_PM_AB", "SPD_OP_AB",
+	"time_FF_AB", "time_AM_AB", "time_MD_AB", "time_PM_AB", "time_OP_AB",
+	"SPD_FF_BA", "SPD_AM_BA", "SPD_MD_BA", "SPD_PM_BA", "SPD_OP_BA",
+	"time_FF_BA", "time_AM_BA", "time_MD_BA", "time_PM_BA", "time_OP_BA",
+	//Added SCST, HCST, TCST field names
+	"Toll_SOV_AM_AB", "Toll_SOV_MD_AB", "Toll_SOV_PM_AB", "Toll_SOV_OP_AB",
+	"Toll_HOV_AM_AB", "Toll_HOV_MD_AB", "Toll_HOV_PM_AB", "Toll_HOV_OP_AB",
+	"Toll_TRK_AM_AB", "Toll_TRK_MD_AB", "Toll_TRK_PM_AB", "Toll_TRK_OP_AB",
+	"SCST_AM_AB", "SCST_MD_AB", "SCST_PM_AB", "SCST_OP_AB",
+	"HCST_AM_AB", "HCST_MD_AB", "HCST_PM_AB", "HCST_OP_AB",
+	"TCST_AM_AB", "TCST_MD_AB", "TCST_PM_AB", "TCST_OP_AB",
+	"Toll_SOV_AM_BA", "Toll_SOV_MD_BA", "Toll_SOV_PM_BA", "Toll_SOV_OP_BA",
+	"Toll_HOV_AM_BA", "Toll_HOV_MD_BA", "Toll_HOV_PM_BA", "Toll_HOV_OP_BA",
+	"Toll_TRK_AM_BA", "Toll_TRK_MD_BA", "Toll_TRK_PM_BA", "Toll_TRK_OP_BA",
+	"SCST_AM_BA", "SCST_MD_BA", "SCST_PM_BA", "SCST_OP_BA",
+	"HCST_AM_BA", "HCST_MD_BA", "HCST_PM_BA", "HCST_OP_BA",
+	"TCST_AM_BA", "TCST_MD_BA", "TCST_PM_BA", "TCST_OP_BA",
+	"Alpha", "Beta", "c", "Fw", "Fhv", "Fp", "Fe", "Fd", "Fsd", "Fsc", "Fctl", "Fpark", "Ft", "Fa",
+	"MOD_CLASS", "MOD_AREA", "TRUCKCOST", "PEN_FACTYPE"}*/
 
-	"time_FF_AB", 
-	"time_AM_AB", 
-	"time_MD_AB",
-	"time_PM_AB",
-	"time_OP_AB",
-
-	"SPD_FF_BA", 
-	"SPD_AM_BA", 
-	"SPD_MD_BA",
-	"SPD_PM_BA",
-	"SPD_OP_BA",
-
-	"time_FF_BA", 
-	"time_AM_BA", 
-	"time_MD_BA",
-	"time_PM_BA",
-	"time_OP_BA",
-	"Alpha",
-	"Beta",
-    
-	"c",
-	"Fw",
-	"Fhv",
-	"Fp",
-	"Fe",
-	"Fd",
-	"Fsd",
-	"Fsc",
-	"Fctl",
-	"Fpark",
-	"Ft",
-	"Fa",
-	"capacity",
-	"MOD_CLASS",
-	"MOD_AREA",
-    "TRUCKCOST",
-	"PEN_FACTYPE"
-	}
+	v_clear={"capacity", "capacity_daily_AB", "capacity_am_AB", "capacity_md_AB", "capacity_pm_AB", "capacity_op_AB",
+	"capacity_daily_BA", "capacity_am_BA", "capacity_md_BA", "capacity_pm_BA", "capacity_op_BA",
+	"SPD_FF_AB", "SPD_AM_AB", "SPD_MD_AB", "SPD_PM_AB", "SPD_OP_AB",
+	"time_FF_AB", "time_AM_AB", "time_MD_AB", "time_PM_AB", "time_OP_AB",
+	"SPD_FF_BA", "SPD_AM_BA", "SPD_MD_BA", "SPD_PM_BA", "SPD_OP_BA",
+	"time_FF_BA", "time_AM_BA", "time_MD_BA", "time_PM_BA", "time_OP_BA",
+	//Added field names for generalized cost calcs
+	"SCST_AM_AB", "SCST_MD_AB", "SCST_PM_AB", "SCST_OP_AB",
+	"HCST_AM_AB", "HCST_MD_AB", "HCST_PM_AB", "HCST_OP_AB",
+	"TCST_AM_AB", "TCST_MD_AB", "TCST_PM_AB", "TCST_OP_AB",
+	"SCST_AM_BA", "SCST_MD_BA", "SCST_PM_BA", "SCST_OP_BA",
+	"HCST_AM_BA", "HCST_MD_BA", "HCST_PM_BA", "HCST_OP_BA",
+	"TCST_AM_BA", "TCST_MD_BA", "TCST_PM_BA", "TCST_OP_BA",
+	//Removed clearing of the Toll_... fields since they are set on the network and used to calculated generalized costs
+	"Alpha", "Beta", "c", "Fw", "Fhv", "Fp", "Fe", "Fd", "Fsd", "Fsc", "Fctl", "Fpark", "Ft", "Fa",
+	"MOD_CLASS", "MOD_AREA", "TRUCKCOST", "PEN_FACTYPE"}
 
 	dim v_null[v_clear.length]
 	for i=1 to v_clear.length do
@@ -131,46 +115,54 @@ Macro "Initialization" (Args)// Initialization
 	Opts.Global.Method = "Formula"
 	Opts.Global.Parameter = v_null
 	ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
-	if !ret_value then goto quit    
+	if !ret_value then goto quit
+
+    UpdateProgressBar("Calculate Toll fields", )	
+	
+	// initialize gen. cost fields to 0
+	tod_fld = {	{"SCST_AM_AB"},{"SCST_MD_AB"},{"SCST_PM_AB"},{"SCST_OP_AB"},
+				{"HCST_AM_AB"},{"HCST_MD_AB"},{"HCST_PM_AB"},{"HCST_OP_AB"},
+				{"TCST_AM_AB"},{"TCST_MD_AB"},{"TCST_PM_AB"},{"TCST_OP_AB"},
+				{"SCST_AM_BA"},{"SCST_MD_BA"},{"SCST_PM_BA"},{"SCST_OP_BA"},
+				{"HCST_AM_BA"},{"HCST_MD_BA"},{"HCST_PM_BA"},{"HCST_OP_BA"},
+				{"TCST_AM_BA"},{"TCST_MD_BA"},{"TCST_PM_BA"},{"TCST_OP_BA"}}
+	
+    for i=1 to tod_fld.length do
+        calcString = {"0"}
+        Opts = null
+        Opts.Input.[View Set] = {hwy_db+"|"+llayer, llayer}
+        Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer}
+        Opts.Global.Fields = tod_fld[i]
+        Opts.Global.Method = "Formula"
+        Opts.Global.Parameter = calcString
+        ok = RunMacro("TCB Run Operation", 1, "Fill Dataview", Opts)
+        if !ok then goto quit
+    end  
 
     // ***************** Add a Truck Toll Field - nagendra.dhakar@rsginc.com **************
 	
     UpdateProgressBar("Add a truck toll field", )
-    
-    // STEP 1: Create TRUCKCOST field with following cost
-    // STEP 2: Apply a cost of 126.1 sec/mile to all links
+
+    // STEP 2: Apply a generalized cost of 126.1 sec/mile to all links
     // STEP 3: Removed for now
     // STEP 4: Deduct 10% of the total cost from the preferred truck links
 
-/*	 
-		//STEP 1: Create a new field    
-	vw = GetView()
-	strct = GetTableStructure(vw)
-	for i = 1 to strct.length do
-		strct[i] = strct[i] + {strct[i][1]}
-	end
-	strct = strct + {{"TRUCKCOST", "Real", 14, 6, "True", , , , , , , null}}
-	strct = strct + {{"PEN_FACTYPE", "Real", 14, 6, "True", , , , , , , null}}
-
-	ModifyTable(view1, strct)
-*/	
-
-   // STEP 2: Apply a cost of 126.1 sec/mile to all links
-   tollfield={"TRUCKCOST", "PEN_FACTYPE"}
-   tollfld_flg={"126.1*Length", "126.1*Length"}
+	// STEP 2: Apply a generalized cost of 126.1 sec/mile to all links
+	tollfield={"TRUCKCOST", "PEN_FACTYPE"}
+	tollfld_flg={"126.1*Length", "126.1*Length"}
    
-   for i=1 to tollfield.length do
-	   Opts = null
-	   Opts.Input.[View Set] = {hwy_db+"|"+llayer, llayer}
-	   Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer}
-	   Opts.Global.Fields = {tollfield[i]}
-	   Opts.Global.Method = "Formula"
-	   Opts.Global.Parameter = tollfld_flg[i]
-	   ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
-	   if !ret_value then goto quit
-   end   
-       
-	// STEP 3: Modify cost to links by facility type. More cost to lower facility classes to promote use of higher facility classes.
+	for i=1 to tollfield.length do
+		Opts = null
+		Opts.Input.[View Set] = {hwy_db+"|"+llayer, llayer}
+		Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer}
+		Opts.Global.Fields = {tollfield[i]}
+		Opts.Global.Method = "Formula"
+		Opts.Global.Parameter = tollfld_flg[i]
+		ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
+		if !ret_value then goto quit
+	end   
+    
+	// STEP 3: Modify generalized cost to links by facility type. More cost to lower facility classes to promote use of higher facility classes.
 	dim selections_class[6]	
 	selections_class[1]="select * where (Func_Class=1 or Func_Class=11 or Func_Class=20)"
 	selections_class[2]="select * where (Func_Class=12)"
@@ -182,6 +174,7 @@ Macro "Initialization" (Args)// Initialization
 	class_names={"INTERSTATE","FREEWAY","ART45","ART","COLLECTOR","LOCAL"}   
 	
 	tollfld_flg={{"PEN_FACTYPE*1.0"},{"PEN_FACTYPE*1.0"},{"PEN_FACTYPE*1.2"},{"PEN_FACTYPE*1.3"},{"PEN_FACTYPE*1.4"},{"PEN_FACTYPE*1.5"}}
+
 	for i=1 to class_names.length do
 		Opts = null
 		Opts.Input.[View Set] = {hwy_db+"|"+llayer, llayer}
@@ -193,36 +186,31 @@ Macro "Initialization" (Args)// Initialization
 		if !ret_value then goto quit
 	end
 	
-	tollfield={"TRUCKCOST"}
+	// STEP 4: Deduct 10% of the truck cost from the preferred truck links (TRUCKNET=1)
+	tollfield={{"TRUCKCOST/Length"},{"TRUCKCOST/Length"},{"TRUCKCOST/Length"},{"TRUCKCOST/Length"},{"TRUCKCOST/Length"},{"TRUCKCOST/Length"},{"TRUCKCOST/Length"},{"TRUCKCOST/Length"},{"0.90*TRUCKCOST"}}
+
+	//Make each of the TCST fields equal to TRUCKCOST so it gets added in as a fixed toll field for assignment, but to get it in sec./mi. format we have to divide by Length
+	fixed_toll_fields_trk = {{"TCST_AM_AB"},{"TCST_MD_AB"},{"TCST_PM_AB"},{"TCST_OP_AB"},{"TCST_AM_BA"},{"TCST_MD_BA"},{"TCST_PM_BA"},{"TCST_OP_BA"},{"TRUCKCOST"}}
+
     if Args.[TruckPreferred]=1 then do   
-       // STEP 4: Deduct 10% of the total cost from the preferred truck links (TRUCKNET=1)
-       Opts = null
-       Opts.Input.[View Set] = {hwy_db+"|"+llayer, llayer}
-       Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer, "Selection", "Select * where TRUCKNET=1"}
-       Opts.Global.Fields = tollfield
-       Opts.Global.Method = "Formula"
-       Opts.Global.Parameter = {"0.90*TRUCKCOST"}
-       ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
-       if !ret_value then goto quit
-   end
+		for i=1 to fixed_toll_fields_trk.length do
+			Opts = null
+			Opts.Input.[View Set] = {hwy_db+"|"+llayer, llayer}
+			Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer}
+			Opts.Global.Fields = fixed_toll_fields_trk[i]
+			Opts.Global.Method = "Formula"
+			Opts.Global.Parameter = tollfield[i]
+			ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
+			if !ret_value then goto quit
+		end
+	end
    
-   // ********************************************************************
+   	// ********************************************************************
    
-   //non-base year senario attributes update 1-6-2014
-	    	if Args.HYEAR<>"base" then do
-		v_clear={
-		"FUNC_CLASS",
-		"Lanes",
-		"Med",
-		"CTL",
-		"Assignment_LOC",
-		"SPD_LMT",
-		"W_Lane",
-		"W_Shoulder_Out",
-		"PARK",
-		"Signal"
-		}
-	   
+   	//non-base year scenario attributes update 1-6-2014
+	if Args.HYEAR<>"base" then do
+
+		v_clear={"FUNC_CLASS", "Lanes", "Med", "CTL", "Assignment_LOC", "SPD_LMT", "W_Lane", "W_Shoulder_Out", "PARK", "Signal"}
 	   
 	   dim v_fill[v_clear.length]
 	   
@@ -239,59 +227,19 @@ Macro "Initialization" (Args)// Initialization
 		ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
 		if !ret_value then goto quit
 		
-		
-		
-	// 	 Default Value for the missing records
-	//    1. Freeway, system to system ramps
-	//    2. Principle Art
-	//    3. Minor Art
-	//    4. Collector
-	//    5. Local
+		// 	 Default Value for the missing records
+		//    1. Freeway, system to system ramps
+		//    2. Principle Art
+		//    3. Minor Art
+		//    4. Collector
+		//    5. Local
 	   
-	   
-	   v_fclass={
-	   	"1","11","12","20",
-	   "2","14",
-	   "6","16",
-	   "7","8","17",
-	   "9","19"
-	   }
-
-	   def_W_Lane={
-	   	"12","12","12","12",
-	   	"12","12",
-	   	"11","11",
-	   	"10.6","9.8","11.1",
-	   	"9.8","10"	   	
-	   	}
-	   def_W_Shoulder_Out={
-	   	"10","10","10","10",
-	   	"9.1","6.6",
-	   	"5.6","4",
-	   	"2.6","2.1","2.7",
-	   	"1.8","2"
-	   	}
-	   def_Signal={
-	   	"1","1","1","1",
-	   	"1","1",
-	   	"1","1",
-	   	"1","1","1",
-	   	"1","1"
-	   	}
-	   	
-	   	def_ty_terrain={
-	   	"2","2","2","2",
-	   	"2","2",
-	   	"2","2",
-	   	"2","2","2",
-	   	"2","2"}
-	   	
-	   	v_def_fields={
-		"W_Lane",
-		"W_Shoulder_Out",
-		"Signal",
-		"TY_TERRAIN"
-		}
+		v_fclass={"1","11","12","20","2","14","6","16","7","8","17","9","19"}
+		def_W_Lane={"12","12","12","12","12","12","11","11","10.6","9.8","11.1","9.8","10"}
+		def_W_Shoulder_Out={"10","10","10","10","9.1","6.6","5.6","4","2.6","2.1","2.7","1.8","2"}
+		def_Signal={"1","1","1","1","1","1","1","1","1","1","1","1","1"}
+	   	def_ty_terrain={"2","2","2","2","2","2","2","2","2","2","2","2","2"}
+	   	v_def_fields={"W_Lane","W_Shoulder_Out","Signal","TY_TERRAIN"}
 		
 	   	v_def_values={
 	   		def_W_Lane,
@@ -300,7 +248,6 @@ Macro "Initialization" (Args)// Initialization
 	   		def_ty_terrain
 	   		}
 	   	
-   	
 		for i=1 to v_fclass.length do
 			for j=1 to v_def_fields.length do
 				Opts = null
@@ -312,17 +259,20 @@ Macro "Initialization" (Args)// Initialization
 				if !ret_value then goto quit	
 			end
 		end
-		
-		
-		//update lanes for the HOV lane segements
-	   	Opts = null
-		Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer,"Selection", "Select * where HOV_m1_"+Args.HYEAR+"<>null"}
-		Opts.Global.Fields = {"lanes"}
-		Opts.Global.Method = "Formula"
-		Opts.Global.Parameter = {"lanes-nz(HOV_m1_"+Args.HYEAR+")"}
-		ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
-		if !ret_value then goto quit		
-   end  
+	
+		//Number of auto classes being assigned this run
+		auto_assign_classes = Args.[Auto_Assign_Classes]
+		//update lanes for the HOV lane segments if auto_assign_classes <> 1 (otherwise all lanes are considered GP)
+		if auto_assign_classes <> 1 then do
+			Opts = null
+			Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer,"Selection", "Select * where HOV_m1_"+Args.HYEAR+"<>null"}
+			Opts.Global.Fields = {"lanes"}
+			Opts.Global.Method = "Formula"
+			Opts.Global.Parameter = {"lanes-nz(HOV_m1_"+Args.HYEAR+")"}
+			ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
+			if !ret_value then goto quit
+		end		
+	end  
 
 	endtime = RunMacro("RuntimeLog", {"Initialization", starttime})	
 	ret_value = 1
@@ -342,47 +292,45 @@ EndMacro
 */
 
 Macro "AREATYPE" (Args)// Initialization 1 - Area Type
-  shared prj_dry_run, Scen_Dir
-	
+	shared prj_dry_run, Scen_Dir
+		
 	starttime = RunMacro("RuntimeLog", {"Initialization - Area Type", null})	
 	RunMacro("HwycadLog", {"1.1 Initialization.rsc", "Area Type"})
 	UpdateProgressBar("Area Type - Initialization", )
-	
+		
 	// Input highway and TAZ files. 
-   hwy_db = Args.[hwy db]
+	hwy_db = Args.[hwy db]
 	taz_db = Args.[taz]
-	
+		
 	layers = GetDBlayers(hwy_db)
-   llayer = layers[2]
-   nlayer = layers[1]
-   db_linklyr = hwy_db + "|" + llayer
-   
-   temp_map = CreateMap("temp",{{"scope",Scope(Coord(-80000000, 44500000), 200.0, 100.0, 0)}})
-   temp_layer = AddLayer(temp_map,llayer,hwy_db,llayer)
-	AddLayer(temp_map,nlayer,hwy_db,nlayer)
+	llayer = layers[2]
+	nlayer = layers[1]
+	db_linklyr = hwy_db + "|" + llayer
 	
-   	//Add TAZ layer
-   	layers = GetDBlayers(taz_db)
-   tazname = layers[1]
+	temp_map = CreateMap("temp",{{"scope",Scope(Coord(-80000000, 44500000), 200.0, 100.0, 0)}})
+	temp_layer = AddLayer(temp_map,llayer,hwy_db,llayer)
+	AddLayer(temp_map,nlayer,hwy_db,nlayer)
+		
+	//Add TAZ layer
+	layers = GetDBlayers(taz_db)
+	tazname = layers[1]
 	temp_layer =AddLayer("temp",tazname,taz_db,tazname)
 	SetView(tazname)
-	
+		
 	//convert TAZ to centroids
 	fields_array=GetFields(tazname,"All")
-   field_names=fields_array[1]
-   field_specs=fields_array[2]
+	field_names=fields_array[1]
+	field_specs=fields_array[2]
 
-   ExportGeography(tazname+"|",Scen_Dir+"\\outputs\\ATCentroids.dbd",   
-   {{"Centroid","True"},
+	ExportGeography(tazname+"|",Scen_Dir+"\\outputs\\ATCentroids.dbd",   
+	{{"Centroid","True"},
 	{"Field Spec",field_specs},
 	{"Field Name",field_names},
 	{"ID Field",tazname+".ID"},
 	{"Label","Centroids"},
 	{"Layer Name","Centroids"}})
-	
+		
 	temp_layer = AddLayer(temp_map,"Centroids",Scen_Dir+"\\outputs\\ATCentroids.dbd","Centroids")
-	
-	
 	
 	// aggregate 0.5 mile area, pop, and emp
 	ColumnAggregate(tazname+"|", 0.5, "Centroids|", {{"Area05", "Sum", "Area2", },{"POP05", "Sum", "POP", },{"EMP05", "Sum", "EMP", },{"HH05", "Sum", "HH", }}, null)
@@ -438,18 +386,6 @@ Macro "AREATYPE" (Args)// Initialization 1 - Area Type
 	Opts.Global.Parameter = {"if max_all=CBD then 'CBD' else if max_all=Urban then 'URBAN' else if max_all=Su then 'SU' else if max_all=Rural then 'RURAL' else 'RURAL'"}
 	ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
 	if !ret_value then goto quit
-
-
-	//UpdateProgressBar("Area Type - Tagging Area Type to Network -(inside of the TAZs)", ) //TransCAD6
-	//tag the area type
-	//Opts = null
-	//Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer,  "selection", "select * where id>0"}
-	//Opts.Input.[Tag View Set] = {taz_db+"|"+tazname,  tazname}
-	//Opts.Global.Fields = {llayer+".MOD_AREA"}
-	//Opts.Global.Method = "Tag"
-	//Opts.Global.Parameter = {"Value", tazname, tazname+".Predict"}
-	//ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
-	//if !ret_value then goto quit
 	
 	UpdateProgressBar("Area Type - Tagging Area Type to Network -(inside of the TAZs)", ) //TransCAD8
 	//tag the area type
@@ -460,16 +396,6 @@ Macro "AREATYPE" (Args)// Initialization 1 - Area Type
     ok = (tag_set <> null)
     if !ok then goto quit
     TagLayer("Value", vw_set, llayer+".MOD_AREA", tag_set, tazname+".Predict")
-
-    //tag node layer with TAZ id
-	// Opts = null // TransCAD6
-	//Opts.Input.[Dataview Set] = {hwy_db+"|"+nlayer, llayer,  , }
-	//Opts.Input.[Tag View Set] = {taz_db+"|"+tazname,  tazname}
-	//Opts.Global.Fields = {nlayer+".TAZID_Stop_New"}
-	//Opts.Global.Method = "Tag"
-	//Opts.Global.Parameter = {"Value", tazname, tazname+".ID_NEW"}
-	//ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
-	//if !ret_value then goto quit
 	
 	vw_set = RunMacro("TCB Create View Set", hwy_db+"|"+nlayer, llayer,  , ) //TransCAD8
     ok = (vw_set <> null)
@@ -503,16 +429,6 @@ Macro "AREATYPE" (Args)// Initialization 1 - Area Type
 		n=SelectByQuery(llayer, "Several", qry,)
 		if n>0 then do
 			
-			// 1 tag to centroids if no tag result
-			//Opts = null //TransCAD6
-			//Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer, "selection", "select * where MOD_AREA=null "}
-			//Opts.Input.[Tag View Set] = {Scen_Dir+"\\outputs\\ATCentroids.dbd"+"|Centroids",  "Centroids"}
-			//Opts.Global.Fields = {llayer+".MOD_AREA"}
-			//Opts.Global.Method = "Tag"
-			//Opts.Global.Parameter = {"Value", "Centroids", "Centroids.Predict"}
-			//ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
-			//if !ret_value then goto quit
-			
 			vw_set = RunMacro("TCB Create View Set", hwy_db+"|"+llayer, llayer, "selection", "select * where MOD_AREA=null ") //TransCAD8
 			ok = (vw_set <> null)
 			if !ok then goto quit
@@ -528,7 +444,6 @@ Macro "AREATYPE" (Args)// Initialization 1 - Area Type
 		qry="select * where MOD_AREA=null"
 		n=SelectByQuery(llayer, "Several", qry,)
 		if n>0 then do
-			
 			Opts = null
 			Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer, "selection", "select * where MOD_AREA=null"}
 			Opts.Global.Fields = {"MOD_AREA"}
@@ -550,30 +465,28 @@ Macro "AREATYPE" (Args)// Initialization 1 - Area Type
 	class_names={"INTERSTATE","FREEWAY","ART45","ART","COLLECTOR","LOCAL"}
 	
 	for i=1 to selections_class.length do
-    Opts = null
-    Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer, "Selection", selections_class[i]}
-    Opts.Global.Fields = {"MOD_CLASS"}
-    Opts.Global.Method = "Value"
-    Opts.Global.Parameter = {class_names[i]}
+		Opts = null
+		Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer, "Selection", selections_class[i]}
+		Opts.Global.Fields = {"MOD_CLASS"}
+		Opts.Global.Method = "Value"
+		Opts.Global.Parameter = {class_names[i]}
 
-    ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
-	if !ret_value then goto quit
+		ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
+		if !ret_value then goto quit
 	end
 	
-
-
 	AREATYPE={"CBD", "URBAN", "SU", "RURAL"}
 	AREASPEED={30,30,30,30}
 	
 	for i=1 to AREATYPE.length do
-    Opts = null
-    Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer, "Selection", "Select * where CCSTYLE=99 and MOD_AREA='"+AREATYPE[i]+"'"}
-    Opts.Global.Fields = {"SPD_LMT"}
-    Opts.Global.Method = "Value"
-    Opts.Global.Parameter = {AREASPEED[i]}
+		Opts = null
+		Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer, "Selection", "Select * where CCSTYLE=99 and MOD_AREA='"+AREATYPE[i]+"'"}
+		Opts.Global.Fields = {"SPD_LMT"}
+		Opts.Global.Method = "Value"
+		Opts.Global.Parameter = {AREASPEED[i]}
 
-    ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
-	if !ret_value then goto quit
+		ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
+		if !ret_value then goto quit
 	end
 
 	endtime = RunMacro("RuntimeLog", {"Initialization - Area Type", starttime})
@@ -597,16 +510,28 @@ macro "CAP_FF" (Args)// Initialization 2 - Capacity and FF speed
 	RunMacro("HwycadLog", {"1.1 Initialization.rsc", "Capacity and FF Speed"})
 
 	// Input highway
-   hwy_db = Args.[hwy db]
+	hwy_db = Args.[hwy db]
 	demographics = Args.[taz table]	
 	taz_db = Args.[taz]
-	
+	am_tollfac_sov = string(Args.[AM_Toll_Fac_SOV])
+	md_tollfac_sov = string(Args.[MD_Toll_Fac_SOV])
+	pm_tollfac_sov = string(Args.[PM_Toll_Fac_SOV])
+	op_tollfac_sov = string(Args.[OP_Toll_Fac_SOV])
+	am_tollfac_hov = string(Args.[AM_Toll_Fac_HOV])
+	md_tollfac_hov = string(Args.[MD_Toll_Fac_HOV])
+	pm_tollfac_hov = string(Args.[PM_Toll_Fac_HOV])
+	op_tollfac_hov = string(Args.[OP_Toll_Fac_HOV])
+	am_tollfac_trk = string(Args.[AM_Toll_Fac_TRK])
+	md_tollfac_trk = string(Args.[MD_Toll_Fac_TRK])
+	pm_tollfac_trk = string(Args.[PM_Toll_Fac_TRK])
+	op_tollfac_trk = string(Args.[OP_Toll_Fac_TRK])
+		
 	layers = GetDBlayers(hwy_db)
-   llayer = layers[2]
-   db_linklyr = highway_layer + "|" + llayer
-   
-   temp_map = CreateMap("temp",{{"scope",Scope(Coord(-80000000, 44500000), 200.0, 100.0, 0)}})
-   temp_layer = AddLayer(temp_map,llayer,hwy_db,llayer)
+	llayer = layers[2]
+	db_linklyr = highway_layer + "|" + llayer
+	
+	temp_map = CreateMap("temp",{{"scope",Scope(Coord(-80000000, 44500000), 200.0, 100.0, 0)}})
+	temp_layer = AddLayer(temp_map,llayer,hwy_db,llayer)
 	SetView(llayer)
 	RunMacro("TCB Init")
 
@@ -625,7 +550,7 @@ macro "CAP_FF" (Args)// Initialization 2 - Capacity and FF speed
 	capacity=OpenTable("capacity","FFB", {Args.[Capacity Table],})
 	
 	//Capacity table Field names
-	condition1={	"Func_Class",
+	condition1={"Func_Class",
 		"Lanes",
 		"W_Shoulder_Out1",
 		"W_Shoulder_Out2",
@@ -639,7 +564,7 @@ macro "CAP_FF" (Args)// Initialization 2 - Capacity and FF speed
 		"PARK"}
 	
 	//Network Field Names
-	condition2={	"Func_Class",
+	condition2={"Func_Class",
 		"Lanes",
 		"W_Shoulder_Out",
 		"W_Shoulder_Out",
@@ -653,8 +578,7 @@ macro "CAP_FF" (Args)// Initialization 2 - Capacity and FF speed
 		"PARK"}
 	
 	//Capacity Coefficients
-	coeff=
-	{	"c",
+	coeff={"c",
 		"Fw",
 		"Fhv",
 		"Fp",
@@ -665,8 +589,7 @@ macro "CAP_FF" (Args)// Initialization 2 - Capacity and FF speed
 		"Fctl",
 		"Fpark",
 		"Ft",
-		"Fa"
-		}
+		"Fa"}
 	
 	//reads the capacity table
 	v_condition=getdatavectors(capacity+"|", condition1,)
@@ -677,7 +600,6 @@ macro "CAP_FF" (Args)// Initialization 2 - Capacity and FF speed
  
 	//build queries based on the condition
 	for i=1 to queries.length do
-		//subs = ParseString("Aaron LaClair Brandon", " ")
 		
 		subs= ParseString(v_condition[1][i], ",")
 		if subs.length=1 then queries[i]="Select * where Func_Class=" + v_condition[1][i] //query head for all the functional classes 
@@ -741,8 +663,7 @@ macro "CAP_FF" (Args)// Initialization 2 - Capacity and FF speed
 		CreateExpression(a,b,c,)
 	end
 
-	// klm period_factor={"11",		"1.6",		"2.5",		"2.3",		"3.6"} Daily, AM, MD PM OP
-	//period_factor={"11","1.6","2.6","2.1","3.7"}
+	// multiplier on hourly capacity for time of day, or the approximate hours or travel in that period
 	period_factor={"11","1.7","3.1","2.4","3.8"}
 
 	qryset={"Select * where dir=0","Select * where dir=1","Select * where dir=-1"}
@@ -781,6 +702,7 @@ macro "CAP_FF" (Args)// Initialization 2 - Capacity and FF speed
 	
 	CAP_FF_3:
 	UpdateProgressBar("Capacity and Speed - Speed", )
+
 	// Input Files
 	fftableview = OpenTable("FFTABLE","FFB",{Args.[ff],})
 	
@@ -804,62 +726,180 @@ macro "CAP_FF" (Args)// Initialization 2 - Capacity and FF speed
 				qry=selections_class[i]+selections_atype[j]+selections_dir[k]
 				n=SelectByQuery("Selection", "Several", qry, )
 				if n>0 then do
+					//Fill the fields in the link layer
 					Opts = null
 					Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer, "Selection"}
 					Opts.Global.Method = "Formula"
-					
 					if k=1 then do //direction 0
 						Opts.Global.Fields = {
-							"SPD_FF_AB", 
-							"SPD_AM_AB", 
-							"SPD_MD_AB",
-							"SPD_PM_AB",
-							"SPD_OP_AB",
-		
-							"time_FF_AB", 
-							"time_AM_AB", 
-							"time_MD_AB",
-							"time_PM_AB",
-							"time_OP_AB",
-							
-							"SPD_FF_BA", 
-							"SPD_AM_BA", 
-							"SPD_MD_BA",
-							"SPD_PM_BA",
-							"SPD_OP_BA",
-		
-							"time_FF_BA", 
-							"time_AM_BA", 
-							"time_MD_BA",
-							"time_PM_BA",
-							"time_OP_BA"
-							}
+						"SPD_FF_AB", 
+						"SPD_AM_AB", 
+						"SPD_MD_AB",
+						"SPD_PM_AB",
+						"SPD_OP_AB",
+	
+						"time_FF_AB", 
+						"time_AM_AB", 
+						"time_MD_AB",
+						"time_PM_AB",
+						"time_OP_AB",
+
+						"Toll_SOV_AM_AB",
+						"Toll_SOV_MD_AB",
+						"Toll_SOV_PM_AB",
+						"Toll_SOV_OP_AB",
+
+						"Toll_HOV_AM_AB",
+						"Toll_HOV_MD_AB",
+						"Toll_HOV_PM_AB",
+						"Toll_HOV_OP_AB",
+
+						"Toll_TRK_AM_AB",
+						"Toll_TRK_MD_AB",
+						"Toll_TRK_PM_AB",
+						"Toll_TRK_OP_AB",
+
+						"SCST_AM_AB", 
+						"SCST_MD_AB", 
+						"SCST_PM_AB", 
+						"SCST_OP_AB",
+
+						"HCST_AM_AB", 
+						"HCST_MD_AB", 
+						"HCST_PM_AB", 
+						"HCST_OP_AB",
+
+						"TCST_AM_AB", 
+						"TCST_MD_AB", 
+						"TCST_PM_AB", 
+						"TCST_OP_AB",
+						
+						"SPD_FF_BA", 
+						"SPD_AM_BA", 
+						"SPD_MD_BA",
+						"SPD_PM_BA",
+						"SPD_OP_BA",
+	
+						"time_FF_BA", 
+						"time_AM_BA", 
+						"time_MD_BA",
+						"time_PM_BA",
+						"time_OP_BA",
+
+						"Toll_SOV_AM_BA",
+						"Toll_SOV_MD_BA",
+						"Toll_SOV_PM_BA",
+						"Toll_SOV_OP_BA",
+
+						"Toll_HOV_AM_BA",
+						"Toll_HOV_MD_BA",
+						"Toll_HOV_PM_BA",
+						"Toll_HOV_OP_BA",
+
+						"Toll_TRK_AM_BA",
+						"Toll_TRK_MD_BA",
+						"Toll_TRK_PM_BA",
+						"Toll_TRK_OP_BA",
+						
+						"SCST_AM_BA", 
+						"SCST_MD_BA", 
+						"SCST_PM_BA", 
+						"SCST_OP_BA",
+
+						"HCST_AM_BA", 
+						"HCST_MD_BA", 
+						"HCST_PM_BA", 
+						"HCST_OP_BA",
+
+						"TCST_AM_BA", 
+						"TCST_MD_BA", 
+						"TCST_PM_BA", 
+						"TCST_OP_BA"}
 						
 						Opts.Global.Parameter = {
-							"if Func_Class=97 then SPD_LMT else "+ff[j][i]+"*SPD_LMT", 
-							"if Func_Class=97 then SPD_LMT else "+ff[j][i+7]+"*SPD_LMT", 
-							"if Func_Class=97 then SPD_LMT else "+ff[j][i+14]+"*SPD_LMT", 
-							"if Func_Class=97 then SPD_LMT else "+ff[j][i+21]+"*SPD_LMT", 
-							"if Func_Class=97 then SPD_LMT else "+ff[j][i+28]+"*SPD_LMT",
-			
-							"(Length/SPD_FF_AB)*60",
-							"(Length/SPD_AM_AB)*60",
-							"(Length/SPD_MD_AB)*60",
-							"(Length/SPD_PM_AB)*60",
-							"(Length/SPD_OP_AB)*60",
-							
-							"if Func_Class=97 then SPD_LMT else "+ff[j][i]+"*SPD_LMT", 
-							"if Func_Class=97 then SPD_LMT else "+ff[j][i+7]+"*SPD_LMT", 
-							"if Func_Class=97 then SPD_LMT else "+ff[j][i+14]+"*SPD_LMT", 
-							"if Func_Class=97 then SPD_LMT else "+ff[j][i+21]+"*SPD_LMT", 
-							"if Func_Class=97 then SPD_LMT else "+ff[j][i+28]+"*SPD_LMT",
+						"if Func_Class=97 then SPD_LMT else "+ff[j][i]+"*SPD_LMT", 
+						"if Func_Class=97 then SPD_LMT else "+ff[j][i+7]+"*SPD_LMT", 
+						"if Func_Class=97 then SPD_LMT else "+ff[j][i+14]+"*SPD_LMT", 
+						"if Func_Class=97 then SPD_LMT else "+ff[j][i+21]+"*SPD_LMT", 
+						"if Func_Class=97 then SPD_LMT else "+ff[j][i+28]+"*SPD_LMT",
 		
-							"(Length/SPD_FF_BA)*60",
-							"(Length/SPD_AM_BA)*60",
-							"(Length/SPD_MD_BA)*60",
-							"(Length/SPD_PM_BA)*60",
-							"(Length/SPD_OP_BA)*60"
-						}
+						"(Length/SPD_FF_AB)*60",
+						"(Length/SPD_AM_AB)*60",
+						"(Length/SPD_MD_AB)*60",
+						"(Length/SPD_PM_AB)*60",
+						"(Length/SPD_OP_AB)*60",
+
+						"if Toll_SOV_AB = null then 0 else "+am_tollfac_sov+"*Toll_SOV_AB",
+						"if Toll_SOV_AB = null then 0 else "+md_tollfac_sov+"*Toll_SOV_AB",
+						"if Toll_SOV_AB = null then 0 else "+pm_tollfac_sov+"*Toll_SOV_AB",
+						"if Toll_SOV_AB = null then 0 else "+op_tollfac_sov+"*Toll_SOV_AB",
+
+						"if Toll_HOV_AB = null then 0 else "+am_tollfac_hov+"*Toll_HOV_AB",
+						"if Toll_HOV_AB = null then 0 else "+md_tollfac_hov+"*Toll_HOV_AB",
+						"if Toll_HOV_AB = null then 0 else "+pm_tollfac_hov+"*Toll_HOV_AB",
+						"if Toll_HOV_AB = null then 0 else "+op_tollfac_hov+"*Toll_HOV_AB",
+
+						"if Toll_TRK_AB = null then 0 else "+am_tollfac_trk+"*Toll_TRK_AB",
+						"if Toll_TRK_AB = null then 0 else "+md_tollfac_trk+"*Toll_TRK_AB",
+						"if Toll_TRK_AB = null then 0 else "+pm_tollfac_trk+"*Toll_TRK_AB",
+						"if Toll_TRK_AB = null then 0 else "+op_tollfac_trk+"*Toll_TRK_AB",
+
+						"if SCST_AM_AB = null then 0",
+						"if SCST_MD_AB = null then 0",
+						"if SCST_PM_AB = null then 0",
+						"if SCST_OP_AB = null then 0",
+
+						"if HCST_AM_AB = null then 0",
+						"if HCST_MD_AB = null then 0",
+						"if HCST_PM_AB = null then 0",
+						"if HCST_OP_AB = null then 0",
+
+						"if TCST_AM_AB = null then 0",
+						"if TCST_MD_AB = null then 0",
+						"if TCST_PM_AB = null then 0",
+						"if TCST_OP_AB = null then 0",
+						
+						"if Func_Class=97 then SPD_LMT else "+ff[j][i]+"*SPD_LMT", 
+						"if Func_Class=97 then SPD_LMT else "+ff[j][i+7]+"*SPD_LMT", 
+						"if Func_Class=97 then SPD_LMT else "+ff[j][i+14]+"*SPD_LMT", 
+						"if Func_Class=97 then SPD_LMT else "+ff[j][i+21]+"*SPD_LMT", 
+						"if Func_Class=97 then SPD_LMT else "+ff[j][i+28]+"*SPD_LMT",
+	
+						"(Length/SPD_FF_BA)*60",
+						"(Length/SPD_AM_BA)*60",
+						"(Length/SPD_MD_BA)*60",
+						"(Length/SPD_PM_BA)*60",
+						"(Length/SPD_OP_BA)*60",
+
+						"if Toll_SOV_BA = null then 0 else "+am_tollfac_sov+"*Toll_SOV_BA",
+						"if Toll_SOV_BA = null then 0 else "+md_tollfac_sov+"*Toll_SOV_BA",
+						"if Toll_SOV_BA = null then 0 else "+pm_tollfac_sov+"*Toll_SOV_BA",
+						"if Toll_SOV_BA = null then 0 else "+op_tollfac_sov+"*Toll_SOV_BA",
+
+						"if Toll_HOV_BA = null then 0 else "+am_tollfac_hov+"*Toll_HOV_BA",
+						"if Toll_HOV_BA = null then 0 else "+md_tollfac_hov+"*Toll_HOV_BA",
+						"if Toll_HOV_BA = null then 0 else "+pm_tollfac_hov+"*Toll_HOV_BA",
+						"if Toll_HOV_BA = null then 0 else "+op_tollfac_hov+"*Toll_HOV_BA",
+
+						"if Toll_TRK_BA = null then 0 else "+am_tollfac_trk+"*Toll_TRK_BA",
+						"if Toll_TRK_BA = null then 0 else "+md_tollfac_trk+"*Toll_TRK_BA",
+						"if Toll_TRK_BA = null then 0 else "+pm_tollfac_trk+"*Toll_TRK_BA",
+						"if Toll_TRK_BA = null then 0 else "+op_tollfac_trk+"*Toll_TRK_BA",
+
+						"if SCST_AM_BA = null then 0",
+						"if SCST_MD_BA = null then 0",
+						"if SCST_PM_BA = null then 0",
+						"if SCST_OP_BA = null then 0",
+
+						"if HCST_AM_BA = null then 0",
+						"if HCST_MD_BA = null then 0",
+						"if HCST_PM_BA = null then 0",
+						"if HCST_OP_BA = null then 0",
+
+						"if TCST_AM_BA = null then 0",
+						"if TCST_MD_BA = null then 0",
+						"if TCST_PM_BA = null then 0",
+						"if TCST_OP_BA = null then 0"}
 					end
 					
 					if k=2 then do //direction 1
@@ -874,26 +914,84 @@ macro "CAP_FF" (Args)// Initialization 2 - Capacity and FF speed
 						"time_AM_AB", 
 						"time_MD_AB",
 						"time_PM_AB",
-						"time_OP_AB"
-						}
+						"time_OP_AB",
+						
+						"Toll_SOV_AM_AB",
+						"Toll_SOV_MD_AB",
+						"Toll_SOV_PM_AB",
+						"Toll_SOV_OP_AB",
+
+						"Toll_HOV_AM_AB",
+						"Toll_HOV_MD_AB",
+						"Toll_HOV_PM_AB",
+						"Toll_HOV_OP_AB",
+
+						"Toll_TRK_AM_AB",
+						"Toll_TRK_MD_AB",
+						"Toll_TRK_PM_AB",
+						"Toll_TRK_OP_AB",
+
+						"SCST_AM_AB", 
+						"SCST_MD_AB", 
+						"SCST_PM_AB", 
+						"SCST_OP_AB",
+
+						"HCST_AM_AB", 
+						"HCST_MD_AB", 
+						"HCST_PM_AB", 
+						"HCST_OP_AB",
+
+						"TCST_AM_AB", 
+						"TCST_MD_AB", 
+						"TCST_PM_AB", 
+						"TCST_OP_AB"}
 					
-					Opts.Global.Parameter = {
-							"if Func_Class=97 then SPD_LMT else "+ff[j][i]+"*SPD_LMT", 
-							"if Func_Class=97 then SPD_LMT else "+ff[j][i+7]+"*SPD_LMT", 
-							"if Func_Class=97 then SPD_LMT else "+ff[j][i+14]+"*SPD_LMT", 
-							"if Func_Class=97 then SPD_LMT else "+ff[j][i+21]+"*SPD_LMT", 
-							"if Func_Class=97 then SPD_LMT else "+ff[j][i+28]+"*SPD_LMT",
+						Opts.Global.Parameter = {
+						"if Func_Class=97 then SPD_LMT else "+ff[j][i]+"*SPD_LMT", 
+						"if Func_Class=97 then SPD_LMT else "+ff[j][i+7]+"*SPD_LMT", 
+						"if Func_Class=97 then SPD_LMT else "+ff[j][i+14]+"*SPD_LMT", 
+						"if Func_Class=97 then SPD_LMT else "+ff[j][i+21]+"*SPD_LMT", 
+						"if Func_Class=97 then SPD_LMT else "+ff[j][i+28]+"*SPD_LMT",
 		
 						"(Length/SPD_FF_AB)*60",
 						"(Length/SPD_AM_AB)*60",
 						"(Length/SPD_MD_AB)*60",
 						"(Length/SPD_PM_AB)*60",
-						"(Length/SPD_OP_AB)*60"
-						}
+						"(Length/SPD_OP_AB)*60",
+						
+						"if Toll_SOV_AB = null then 0 else "+am_tollfac_sov+"*Toll_SOV_AB",
+						"if Toll_SOV_AB = null then 0 else "+md_tollfac_sov+"*Toll_SOV_AB",
+						"if Toll_SOV_AB = null then 0 else "+pm_tollfac_sov+"*Toll_SOV_AB",
+						"if Toll_SOV_AB = null then 0 else "+op_tollfac_sov+"*Toll_SOV_AB",
+
+						"if Toll_HOV_AB = null then 0 else "+am_tollfac_hov+"*Toll_HOV_AB",
+						"if Toll_HOV_AB = null then 0 else "+md_tollfac_hov+"*Toll_HOV_AB",
+						"if Toll_HOV_AB = null then 0 else "+pm_tollfac_hov+"*Toll_HOV_AB",
+						"if Toll_HOV_AB = null then 0 else "+op_tollfac_hov+"*Toll_HOV_AB",
+
+						"if Toll_TRK_AB = null then 0 else "+am_tollfac_trk+"*Toll_TRK_AB",
+						"if Toll_TRK_AB = null then 0 else "+md_tollfac_trk+"*Toll_TRK_AB",
+						"if Toll_TRK_AB = null then 0 else "+pm_tollfac_trk+"*Toll_TRK_AB",
+						"if Toll_TRK_AB = null then 0 else "+op_tollfac_trk+"*Toll_TRK_AB",
+						
+						"if SCST_AM_AB = null then 0",
+						"if SCST_MD_AB = null then 0",
+						"if SCST_PM_AB = null then 0",
+						"if SCST_OP_AB = null then 0",
+
+						"if HCST_AM_AB = null then 0",
+						"if HCST_MD_AB = null then 0",
+						"if HCST_PM_AB = null then 0",
+						"if HCST_OP_AB = null then 0",
+
+						"if TCST_AM_AB = null then 0",
+						"if TCST_MD_AB = null then 0",
+						"if TCST_PM_AB = null then 0",
+						"if TCST_OP_AB = null then 0"}
 					end	
 					
 					if k=3 then do //direction -1
-					Opts.Global.Fields = {
+						Opts.Global.Fields = {
 						"SPD_FF_BA", 
 						"SPD_AM_BA", 
 						"SPD_MD_BA",
@@ -904,22 +1002,80 @@ macro "CAP_FF" (Args)// Initialization 2 - Capacity and FF speed
 						"time_AM_BA", 
 						"time_MD_BA",
 						"time_PM_BA",
-						"time_OP_BA"
-						}
-					
-					Opts.Global.Parameter = {
-							"if Func_Class=97 then SPD_LMT else "+ff[j][i]+"*SPD_LMT", 
-							"if Func_Class=97 then SPD_LMT else "+ff[j][i+7]+"*SPD_LMT", 
-							"if Func_Class=97 then SPD_LMT else "+ff[j][i+14]+"*SPD_LMT", 
-							"if Func_Class=97 then SPD_LMT else "+ff[j][i+21]+"*SPD_LMT", 
-							"if Func_Class=97 then SPD_LMT else "+ff[j][i+28]+"*SPD_LMT",
+						"time_OP_BA",
+						
+						"Toll_SOV_AM_BA",
+						"Toll_SOV_MD_BA",
+						"Toll_SOV_PM_BA",
+						"Toll_SOV_OP_BA",
+
+						"Toll_HOV_AM_BA",
+						"Toll_HOV_MD_BA",
+						"Toll_HOV_PM_BA",
+						"Toll_HOV_OP_BA",
+
+						"Toll_TRK_AM_BA",
+						"Toll_TRK_MD_BA",
+						"Toll_TRK_PM_BA",
+						"Toll_TRK_OP_BA",
+
+						"SCST_AM_BA", 
+						"SCST_MD_BA", 
+						"SCST_PM_BA", 
+						"SCST_OP_BA",
+
+						"HCST_AM_BA", 
+						"HCST_MD_BA", 
+						"HCST_PM_BA", 
+						"HCST_OP_BA",
+
+						"TCST_AM_BA", 
+						"TCST_MD_BA", 
+						"TCST_PM_BA", 
+						"TCST_OP_BA"}
+
+						Opts.Global.Parameter = {
+						"if Func_Class=97 then SPD_LMT else "+ff[j][i]+"*SPD_LMT", 
+						"if Func_Class=97 then SPD_LMT else "+ff[j][i+7]+"*SPD_LMT", 
+						"if Func_Class=97 then SPD_LMT else "+ff[j][i+14]+"*SPD_LMT", 
+						"if Func_Class=97 then SPD_LMT else "+ff[j][i+21]+"*SPD_LMT", 
+						"if Func_Class=97 then SPD_LMT else "+ff[j][i+28]+"*SPD_LMT",
 	
 						"(Length/SPD_FF_BA)*60",
 						"(Length/SPD_AM_BA)*60",
 						"(Length/SPD_MD_BA)*60",
 						"(Length/SPD_PM_BA)*60",
-						"(Length/SPD_OP_BA)*60"
-						}
+						"(Length/SPD_OP_BA)*60",
+						
+						"if Toll_SOV_BA = null then 0 else "+am_tollfac_sov+"*Toll_SOV_BA",
+						"if Toll_SOV_BA = null then 0 else "+md_tollfac_sov+"*Toll_SOV_BA",
+						"if Toll_SOV_BA = null then 0 else "+pm_tollfac_sov+"*Toll_SOV_BA",
+						"if Toll_SOV_BA = null then 0 else "+op_tollfac_sov+"*Toll_SOV_BA",
+
+						"if Toll_HOV_BA = null then 0 else "+am_tollfac_hov+"*Toll_HOV_BA",
+						"if Toll_HOV_BA = null then 0 else "+md_tollfac_hov+"*Toll_HOV_BA",
+						"if Toll_HOV_BA = null then 0 else "+pm_tollfac_hov+"*Toll_HOV_BA",
+						"if Toll_HOV_BA = null then 0 else "+op_tollfac_hov+"*Toll_HOV_BA",
+
+						"if Toll_TRK_BA = null then 0 else "+am_tollfac_trk+"*Toll_TRK_BA",
+						"if Toll_TRK_BA = null then 0 else "+md_tollfac_trk+"*Toll_TRK_BA",
+						"if Toll_TRK_BA = null then 0 else "+pm_tollfac_trk+"*Toll_TRK_BA",
+						"if Toll_TRK_BA = null then 0 else "+op_tollfac_trk+"*Toll_TRK_BA",
+						
+						"if SCST_AM_BA = null then 0",
+						"if SCST_MD_BA = null then 0",
+						"if SCST_PM_BA = null then 0",
+						"if SCST_OP_BA = null then 0",
+
+						"if HCST_AM_BA = null then 0",
+						"if HCST_MD_BA = null then 0",
+						"if HCST_PM_BA = null then 0",
+						"if HCST_OP_BA = null then 0",
+
+						"if TCST_AM_BA = null then 0",
+						"if TCST_MD_BA = null then 0",
+						"if TCST_PM_BA = null then 0",
+						"if TCST_OP_BA = null then 0"}
 					end
 					
 					ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts)

@@ -50,7 +50,8 @@ dbox "MMC Model"
        ui_file = GetInterface()
        model_title = "MMC Model"
        {drive, dir,,} = SplitPath(ui_file)
-       bmp_path = drive + dir + "bmp\\"
+       //bmp_path = drive + dir + "bmp\\"
+       bmp_path = "E:\\U-Expansion\\Projects\\Clients\\Nashville_storage\\ManagedLane2026\\nashvilleabm\\bmp\\"
        script_path= drive + dir + "\\"
 
        {ModelInfo, StageInfo, MacroInfo,} = RunMacro("TCP Load Model", model_title)
@@ -83,34 +84,33 @@ dbox "MMC Model"
     close do RunMacro("closing") enditem
 
     // Define GUI
-    button  0,0
-    icons: "bmp\\2040.bmp"
+    button  2,0
+    icons: bmp_path + "nashville_mpo.bmp"
 
-    frame 0.5, 6, 39.0, 5 prompt: "Scenarios"
-    scroll list 1.5, 7.0, 37.0, 3.5 multiple list: ScenNames variable: ScenSel do
+    frame 0.5, 2.5, 39.0, 5 prompt: "Scenarios"
+    scroll list 1.5, 3.5, 37.0, 3.5 multiple list: ScenNames variable: ScenSel do
        RunMacro("TCP Update Scenarios", model_title, stages, model_table)
     enditem
        
     // Run and Feedback Loop Settings
-    radio list  0.5,11.5, 39, 6 prompt: "Run" variable: run_type
-    radio button 2, 12.5 prompt: "Stage"      help: "Check to run one stage"
+    radio list  0.5, 8, 39, 5.5 prompt: "Run" variable: run_type
+    radio button 2, 9 prompt: "Stage"      help: "Check to run one stage"
     radio button 14, Same prompt: "Loop"      help: "Check to run one loop"
     radio button 25, Same prompt: "All Loops" help: "Check to run all loops"
       
-    popdown menu 28, 15.5, 7, 10 prompt: "Max. Feedback Loops"  list: MFB_List  variable: loop_n do
+    popdown menu 28, 12.5, 7, 10 prompt: "Max. Feedback Loops"  list: MFB_List  variable: loop_n do
       RunMacro("update feedback")
     enditem     
-    popdown menu 28, 14, 7, 10 prompt: "Start Feedback Loop"  list: FB_List  variable: cur_loop do
+    popdown menu 28, 11, 7, 10 prompt: "Start Feedback Loop"  list: FB_List  variable: cur_loop do
        if cur_loop <= loop_n then StepFlag = StepFlagVec[cur_loop] else StepFlag = StepFlagVec[all_loops]
     enditem    
  
-    	
-    button   2.0, 18, 18, 1.5 prompt: "Model Table"
+    button   1, 14.5, 18, 1.5 prompt: "Model Table"
       help: "Click to change model table", "Current Model Table: " + model_table do
       Model_Info = RunMacro("TCP Choose Model Table", model_title, model_table)
       // RunMacro("update all")
     enditem
-    button  after, same, 18, 1.5 prompt: "Setup"
+    button  21, same, 18, 1.5 prompt: "Setup"
       help: "Click to modify current scenario" do
       RunDbox("TCP Scenario Manager", model_title, model_table)
     enditem
@@ -121,41 +121,41 @@ dbox "MMC Model"
       // RunMacro("update all")
     enditem
 */
-    button "MMC_A1" 1, 22 icons: "bmp\\plansetup.bmp" do cur_stage = 1  Runmacro("set steps") enditem
-    button "MMC_B1" after, same, 19.0, 1.6 disabled prompt:StageName[1]  do cur_stage = 1  Runmacro("run stages") enditem
+    button "MMC_A1" 1, 17 icons: bmp_path + "plansetup.bmp" do cur_stage = 1  Runmacro("set steps") enditem
+    button "MMC_B1" 15, same, 19.0, 1.6 disabled prompt:StageName[1]  do cur_stage = 1  Runmacro("run stages") enditem
     button "MMC_C1" after, same icons: "bmp\\ViewButton.bmp", "bmp\\ViewButton.bmp", "bmp\\ViewButton2.bmp" do RunMacro("TCP Model Show", ScenArr, 1) enditem
 
-    button "MMC_A2" 1, 24 icons: "bmp\\plantripgen.bmp" do cur_stage = 2  Runmacro("set steps") enditem
-    button "MMC_B2" after, same, 19.0, 1.6 disabled prompt:StageName[2]  do cur_stage = 2  Runmacro("run stages") enditem
+    button "MMC_A2" 1, 19 icons: bmp_path + "plantripgen.bmp" do cur_stage = 2  Runmacro("set steps") enditem
+    button "MMC_B2" 15, same, 19.0, 1.6 disabled prompt:StageName[2]  do cur_stage = 2  Runmacro("run stages") enditem
     button "MMC_C2" after, same icons: "bmp\\ViewButton.bmp", "bmp\\ViewButton.bmp", "bmp\\ViewButton2.bmp" do RunMacro("TCP Model Show", ScenArr, 2) enditem
 
-    button "MMC_A3" 1, 26 icons: "bmp\\planskim.bmp" do cur_stage = 3  Runmacro("set steps") enditem
-    button "MMC_B3" after, same, 19.0, 1.6 disabled prompt:StageName[3]  do cur_stage = 3  Runmacro("run stages") enditem
+    button "MMC_A3" 1, 21 icons: bmp_path + "planskim.bmp" do cur_stage = 3  Runmacro("set steps") enditem
+    button "MMC_B3" 15, same, 19.0, 1.6 disabled prompt:StageName[3]  do cur_stage = 3  Runmacro("run stages") enditem
     button "MMC_C3" after, same icons: "bmp\\ViewButton.bmp", "bmp\\ViewButton.bmp", "bmp\\ViewButton2.bmp" do RunMacro("TCP Model Show", ScenArr, 3) enditem
 
-    button "MMC_A4" 1, 28 icons: "bmp\\truck.bmp" do cur_stage = 4  Runmacro("set steps") enditem
-    button "MMC_B4" after, same, 19.0, 1.6 disabled prompt:StageName[4]  do cur_stage = 4  Runmacro("run stages") enditem
+    button "MMC_A4" 1, 23 icons: bmp_path + "truck.bmp" do cur_stage = 4  Runmacro("set steps") enditem
+    button "MMC_B4" 15, same, 19.0, 1.6 disabled prompt:StageName[4]  do cur_stage = 4  Runmacro("run stages") enditem
     button "MMC_C4" after, same icons: "bmp\\ViewButton.bmp", "bmp\\ViewButton.bmp", "bmp\\ViewButton2.bmp" do RunMacro("TCP Model Show", ScenArr, 4) enditem
 
-    button "MMC_A5" 1, 30 icons: "bmp\\plantripdist.bmp" do cur_stage = 5  Runmacro("set steps") enditem
-    button "MMC_B5" after, same, 19.0, 1.6 disabled prompt:StageName[5]  do cur_stage = 5  Runmacro("run stages") enditem
+    button "MMC_A5" 1, 25 icons: bmp_path + "plantripdist.bmp" do cur_stage = 5  Runmacro("set steps") enditem
+    button "MMC_B5" 15, same, 19.0, 1.6 disabled prompt:StageName[5]  do cur_stage = 5  Runmacro("run stages") enditem
     button "MMC_C5" after, same icons: "bmp\\ViewButton.bmp", "bmp\\ViewButton.bmp", "bmp\\ViewButton2.bmp" do RunMacro("TCP Model Show", ScenArr, 5) enditem
 
-    button "MMC_A6" 1, 32 icons: "bmp\\planmodesplit.bmp" do cur_stage = 6  Runmacro("set steps") enditem
-    button "MMC_B6" after, same, 19.0, 1.6 disabled prompt:StageName[6]  do cur_stage = 6  Runmacro("run stages") enditem
+    button "MMC_A6" 1, 27 icons: bmp_path + "planmodesplit.bmp" do cur_stage = 6  Runmacro("set steps") enditem
+    button "MMC_B6" 15, same, 19.0, 1.6 disabled prompt:StageName[6]  do cur_stage = 6  Runmacro("run stages") enditem
     button "MMC_C6" after, same icons: "bmp\\ViewButton.bmp", "bmp\\ViewButton.bmp", "bmp\\ViewButton2.bmp" do RunMacro("TCP Model Show", ScenArr, 6) enditem
     
-    button "MMC_A8" 1, 34 icons: "bmp\\daysim.bmp" do cur_stage = 7  Runmacro("set steps") enditem
-    button "MMC_B8" after, same, 19.0, 1.6 disabled prompt:StageName[7]  do cur_stage = 7  Runmacro("run stages") enditem
+    button "MMC_A8" 1, 29 icons: bmp_path + "daysim.bmp" do cur_stage = 7  Runmacro("set steps") enditem
+    button "MMC_B8" 15, same, 19.0, 1.6 disabled prompt:StageName[7]  do cur_stage = 7  Runmacro("run stages") enditem
     button "MMC_C8" after, same icons: "bmp\\ViewButton.bmp", "bmp\\ViewButton.bmp", "bmp\\ViewButton2.bmp" do RunMacro("TCP Model Show", ScenArr, 7) enditem
     
-    button "MMC_A7" 1, 36 icons: "bmp\\planassign.bmp" do cur_stage = 8  Runmacro("set steps") enditem
-    button "MMC_B7" after, same, 19.0, 1.6 disabled prompt:StageName[8]  do cur_stage = 8  Runmacro("run stages") enditem
+    button "MMC_A7" 1, 31 icons: bmp_path + "planassign.bmp" do cur_stage = 8  Runmacro("set steps") enditem
+    button "MMC_B7" 15, same, 19.0, 1.6 disabled prompt:StageName[8]  do cur_stage = 8  Runmacro("run stages") enditem
     button "MMC_C7" after, same icons: "bmp\\ViewButton.bmp", "bmp\\ViewButton.bmp", "bmp\\ViewButton2.bmp" do RunMacro("TCP Model Show", ScenArr, 8) enditem
    
 
-    button     1,  after, 36, 1.6  prompt: "Utilities" do RunDbox("MMC Utilities") enditem
-    button  same, after, 36, 1.6  prompt: "Quit"      do Runmacro("closing") enditem
+    button  1,  33.5, 18, 1.6  prompt: "Utilities" do RunDbox("MMC Utilities") enditem
+    button  21, same, 18, 1.6  prompt: "Quit"      do Runmacro("closing") enditem
 
     text  25, after variable: "v " + i2s(model_version)
 

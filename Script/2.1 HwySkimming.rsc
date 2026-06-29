@@ -34,28 +34,10 @@ Macro "Highway Skimming" (Args)    // Highway Skimming
     db_nodelyr = hwy_db + "|" + nlayer
      
     network_file = Args.[Network File]
-	
-    dim hov_skims_fileName[4], hov_skims[4]  
-    hov_skims_fileName[1] = Left(Args.[am skim],Len(Args.[am skim])-8) + "_hov.mtx"
-    hov_skims_fileName[2] = Left(Args.[pm skim],Len(Args.[pm skim])-8) + "_hov.mtx"
-    hov_skims_fileName[3] = Left(Args.[op skim],Len(Args.[op skim])-8) + "_hov.mtx"  
-    hov_skims_fileName[4] = Left(Args.[md skim],Len(Args.[md skim])-8) + "_hov.mtx"
-      
-    hov_skims[1]={hov_skims_fileName[1],"[time_AM_AB_time_AM_BA]","AM"}  
-    hov_skims[2]={hov_skims_fileName[2],"[time_PM_AB_time_PM_BA]","PM"}
-    hov_skims[3]={hov_skims_fileName[3],"[time_OP_AB_time_OP_BA]","OP"}
-    hov_skims[4]={hov_skims_fileName[4],"[time_MD_AB_time_MD_BA]","MD"}    
     
-	dim sov_skims[5] //File name, field
-	sov_skims[1]={Args.[am skim],"[time_AM_AB_time_AM_BA]","AM"}
-	sov_skims[2]={Args.[pm skim],"[time_PM_AB_time_PM_BA]","PM"}
-	sov_skims[3]={Args.[op skim],"[time_OP_AB_time_OP_BA]","OP"}
-	sov_skims[4]={Args.[md skim],"[time_MD_AB_time_MD_BA]","MD"}
-	sov_skims[5]={Args.[ff skim],"[time_FF_AB_time_FF_BA]","FF"}
-    
-    //**************************************
+    //********************************************************************
 	//*      Skim_1: Build Highway Network - build it only once          *
-	//**************************************   
+	//********************************************************************   
 	// skim_1:
 	RunMacro("HwycadLog", {"Build highway network", null})
     RunMacro("Build Hwy Network", Args)
@@ -71,17 +53,17 @@ Macro "Highway Skimming" (Args)    // Highway Skimming
 	//**************************************   
 	// skim_2:
 	RunMacro("HwycadLog", {"Shortest path using length", null})
-   Opts = null
-   Opts.Input.Network = network_file
-   Opts.Input.[Origin Set] = {db_nodelyr, nlayer, "Selection", "Select * where CCSTYLE=97 or CCSTYLE=98 or CCSTYLE=99"}
-   Opts.Input.[Destination Set] = {db_nodelyr, nlayer, "Selection"}
-   Opts.Input.[Via Set] = {db_nodelyr, nlayer}
-   Opts.Field.Minimize = "Length"
-   Opts.Field.Nodes = nlayer + ".ID"
-   Opts.Output.[Output Matrix].Label = "EE"
-   Opts.Output.[Output Matrix].[File Name] = Scen_Dir + "outputs\\ExtDistSkims.mtx"
-   ret_value = RunMacro("TCB Run Procedure", 1, "TCSPMAT", Opts)
-   if !ret_value then goto quit 
+    Opts = null
+    Opts.Input.Network = network_file
+    Opts.Input.[Origin Set] = {db_nodelyr, nlayer, "Selection", "Select * where CCSTYLE=97 or CCSTYLE=98 or CCSTYLE=99"}
+    Opts.Input.[Destination Set] = {db_nodelyr, nlayer, "Selection"}
+    Opts.Input.[Via Set] = {db_nodelyr, nlayer}
+    Opts.Field.Minimize = "Length"
+    Opts.Field.Nodes = nlayer + ".ID"
+    Opts.Output.[Output Matrix].Label = "EE"
+    Opts.Output.[Output Matrix].[File Name] = Scen_Dir + "outputs\\ExtDistSkims.mtx"
+    ret_value = RunMacro("TCB Run Procedure", 1, "TCSPMAT", Opts)
+    if !ret_value then goto quit 
 
     //**************************************
 	//*      Skim_4: Terminal Time			               
@@ -100,7 +82,7 @@ Macro "Highway Skimming" (Args)    // Highway Skimming
 	for i=1 to terminal.length do 
 		//Matrix Index - Create Area Type Matrix Index
 		Opts = null
-		Opts.Input.[Current Matrix] = Scen_Dir + "//outputs//terminal_time.mtx"
+		Opts.Input.[Current Matrix] = Scen_Dir + "\\outputs\\terminal_time.mtx"
 		Opts.Input.[Index Type] = "Both"
 		Opts.Input.[View Set] = {taz_db+"|"+tazname, tazname, "Selection", "Select * where Predict='"+terminal[i][1]+"'"}
 		Opts.Input.[Old ID Field] = {taz_db+"|"+tazname, "ID"}
@@ -109,9 +91,9 @@ Macro "Highway Skimming" (Args)    // Highway Skimming
 		ret_value = RunMacro("TCB Run Operation", "Add Matrix Index", Opts, &Ret)
 		if !ret_value then goto quit
 		
-		// Terminal Time - Adding Orgin Terminal Time
+		// Terminal Time - Adding Origin Terminal Time
 		Opts = null
-		Opts.Input.[Matrix Currency] = {Scen_Dir + "//outputs//terminal_time.mtx", "origin_time", terminal[i][1], "TAZ_ID"}
+		Opts.Input.[Matrix Currency] = {Scen_Dir + "\\outputs\\terminal_time.mtx", "origin_time", terminal[i][1], "TAZ_ID"}
 		Opts.Global.Method = 1
 		Opts.Global.Value = terminal[i][2]
 		Opts.Global.[Cell Range] = 2
@@ -122,7 +104,7 @@ Macro "Highway Skimming" (Args)    // Highway Skimming
 	   
 		// Terminal Time - Adding Destination Terminal Time
 		Opts = null
-		Opts.Input.[Matrix Currency] = {Scen_Dir + "//outputs//terminal_time.mtx", "destination_time", "TAZ_ID", terminal[i][1]}
+		Opts.Input.[Matrix Currency] = {Scen_Dir + "\\outputs\\terminal_time.mtx", "destination_time", "TAZ_ID", terminal[i][1]}
 		Opts.Global.Method = 1
 		Opts.Global.Value = terminal[i][2]
 		Opts.Global.[Cell Range] = 2
@@ -134,79 +116,166 @@ Macro "Highway Skimming" (Args)    // Highway Skimming
 	
 	// Fill Matrices - Sum the total terminal time
 	Opts = null
-	Opts.Input.[Matrix Currency] = {Scen_Dir + "//outputs//terminal_time.mtx", "total_time", "TAZ_ID", "TAZ_ID"}
+	Opts.Input.[Matrix Currency] = {Scen_Dir + "\\outputs\\terminal_time.mtx", "total_time", "TAZ_ID", "TAZ_ID"}
 	Opts.Global.Method = 11
 	Opts.Global.[Cell Range] = 2
 	Opts.Global.[Expression Text] = "nz([origin_time])+ nz([destination_time])"
 	Opts.Global.[Force Missing] = "Yes"
 	ret_value = RunMacro("TCB Run Operation", 11, "Fill Matrices", Opts)
-	if !ret_value then goto quit   
+	if !ret_value then goto quit  
    
     //**************************************
 	//*      Create TOD Skim Matrices & Add Intrazonal and Terminal 
-	//************************************** 
-	RunMacro("HwycadLog", {"Build HOV skims", null})	
-    // Build HOV skims
-    for i=1 to hov_skims.length do
+	//**************************************
+    RunMacro("HwycadLog", {"Build TRK skims", null})
+
+    // Build TRK skims
+    dim trk_skims[4]
+
+    periods = {"AM","MD","PM","OP"}
+
+	//value-of-time ($/hr)
+    ////make this an Arg
+	truck_vot = 45
+
+    for i=1 to periods.length do
+        period = periods[i]
+        trk_skims_fileName = "hwyskim_" + period + "_trk.mtx"
+        trk_skims[i]={trk_skims_fileName,"[time_" + period + "_AB_time_" + period + "_BA]",period}
 
         // for feedback
-        if feedback_iteration = 1 then
-            skim_field = hov_skims[i][2]
-        else do
-            if i <=4 then
-                skim_field = "_MSATime" + hov_skims[i][3]
-            else // nothing for FF
-                skim_field = hov_skims[i][2]
+        RunMacro("Update Highway Network", Args, feedback_iteration, period, truck_vot, "TRK")
+
+        // for feedback
+        if feedback_iteration = 1 then skim_field1 = trk_skims[i][2]  
+        else skim_field1 = "_MSATime" + trk_skims[i][3]
+
+        skim_field2 = "TCST_" + period  //generalized cost
+        skim_fields = {skim_field1,skim_field2}
+
+        RunMacro("Build Hwy Skims", network_file, db_nodelyr, nlayer, trk_skims[i], skim_fields, truck_vot)
+        RunMacro("Add Intrazonal & Terminal Times",  trk_skims[i], skim_fields)
+        RunMacro("SaveAndCopySkims", trk_skims[i])
+    end
+
+	RunMacro("HwycadLog", {"Build HOV skims", null})
+
+    // Build HOV skims
+    dim hov_skims[4]
+    periods = {"AM","MD","PM","OP"}
+	vots = {"low","med","high"}
+
+    //value-of-time ($/hr)
+    ////Make these Args
+    vot_hov = {6,12,24}
+
+    for i=1 to periods.length do
+        period = periods[i]
+		//vot loop - build a skim for each VOT
+		for v =1 to vots.Length do
+            vot = vots[v]
+            hov_skims_fileName = "hwyskim_" + period + "_hov_" + vot + ".mtx"
+            hov_skims[i]={hov_skims_fileName,"[time_" + period + "_AB_time_" + period + "_BA]",period}
+			// for feedback
+			RunMacro("Update Highway Network", Args, feedback_iteration, period, vot_hov[v], "HOV")
+
+            // for feedback
+            if feedback_iteration = 1 then do
+                skim_field1 = hov_skims[i][2]  
+            end
+            else do
+                if i <=4 then do
+                    skim_field1 = "_MSATime" + hov_skims[i][3] 
+                end
+                else do // nothing for FF
+                    skim_field1 = hov_skims[i][2]  
+                end
+            end
+
+            skim_field2 = "HCST_" + period  //generalized cost
+            skim_fields = {skim_field1,skim_field2}
+
+            RunMacro("Build Hwy Skims", network_file, db_nodelyr, nlayer, hov_skims[i], skim_fields, vot)
+            RunMacro("Add Intrazonal & Terminal Times",  hov_skims[i], skim_fields)
+            RunMacro("SaveAndCopySkims", hov_skims[i])
+
         end
-    
-        RunMacro("Build Hwy Skims", network_file, db_nodelyr, nlayer, hov_skims[i],skim_field)
-        RunMacro("Add Intrazonal & Terminal Times",  hov_skims[i],skim_field)
     end
 
 	RunMacro("HwycadLog", {"Build SOV skims", null})
+
     // Build SOV skims
-    for i=1 to sov_skims.length do  
-        // Disable HOV links
-        net = ReadNetwork(network_file)
-        NetOpts = null
-        NetOpts.[Link ID] = link_lyr+".ID"
-        NetOpts.[Type] = "Enable"
-        NetOpts.[Write to file] = "Yes"
-        ChangeLinkStatus(net,, NetOpts) // first enable all links
-        NetOpts.[Type] = "Disable"
-        NetworkEnableDisableLinkByExpression(net, "hov = 1", NetOpts)
 
-        // for feedback
-        if feedback_iteration = 1 then
-            skim_field = sov_skims[i][2]
-        else do
-            if i <=4 then
-                skim_field = "_MSATime" + sov_skims[i][3]
-            else
-                skim_field = sov_skims[i][2]
+    //value-of-time ($/hr)
+    ////Make these Args from the model spec table
+    vot_sov = {4,10,20}
+
+    periods_sov = {"AM","MD","PM","OP","FF"}
+
+    //Array to store file name, time field, and period
+    sov_skims_length = periods_sov.Length
+    dim sov_skims[sov_skims_length]
+	
+    for i=1 to sov_skims_length do
+        period_sov = periods_sov[i]
+        //vot loop
+		for v =1 to vots.Length do
+            vot = vots[v]
+            sov_skims_fileName = "hwyskim_" + period_sov + "_sov_" + vot + ".mtx"
+            sov_skims[i]={sov_skims_fileName,"[time_" + period_sov + "_AB_time_" + period_sov + "_BA]", period_sov}
+
+            // Disable HOV links
+            net = ReadNetwork(network_file)
+            NetOpts = null
+            //NetOpts.[Link ID] = link_lyr+".ID"
+            NetOpts.[Type] = "Enable"
+            NetOpts.[Write to file] = "Yes"
+            ChangeLinkStatus(net,, NetOpts) // first enable all links
+            //Then disable HOV links
+            NetOpts.[Type] = "Disable"
+            hov_field = "HOV_m1_"+Args.HYEAR+" = 1"
+            NetworkEnableDisableLinkByExpression(net, hov_field, NetOpts)
+
+            // for feedback
+            if feedback_iteration = 1 then do
+                //Call to the new macro below, which updates the generalized cost fields
+                RunMacro("Update Highway Network", Args, feedback_iteration, period_sov, vot_sov[v], "SOV")
+                skim_field1 = sov_skims[i][2]
+            end
+            else do
+                if period_sov <> "FF" then do
+                    skim_field1 = "_MSATime" + sov_skims[i][3]
+                end
+                else do//free flow skim
+                    //set vot counter to the length, so that there is only one loop of vot
+                    v = vots.Length
+                    skim_field1 = sov_skims[i][2]
+                end
+            end
+
+            skim_field2 = "SCST_" + period_sov     //generalized cost
+            skim_fields = {skim_field1, skim_field2}
+        
+            RunMacro("Build Hwy Skims", network_file, db_nodelyr, nlayer, sov_skims[i], skim_fields)
+            RunMacro("Add Intrazonal & Terminal Times",  sov_skims[i], skim_fields)
+        
+            NetOpts.[Type] = "Enable"
+            NetworkEnableDisableLinkByExpression(net, hov_field, NetOpts)
+
+            if (loop > 1) then do
+                //Add a new core "[time_am_AB / time_am_BA]" to highway skims for each period - mode choice model needs this core
+                RunMacro("AddCore", sov_skims[i], periods_sov.Length)
+                RunMacro("AddCore", hov_skims[i], periods.Length)
+            end
+    
+ 	        RunMacro("HwycadLog", {"Save and copy skims", null})
+            RunMacro("SaveAndCopySkims", sov_skims[i])
+
         end
-      
-        RunMacro("Build Hwy Skims", network_file, db_nodelyr, nlayer, sov_skims[i],skim_field)
-        RunMacro("Add Intrazonal & Terminal Times",  sov_skims[i],skim_field)
-      
-        NetOpts.[Type] = "Enable"                                   
-        NetworkEnableDisableLinkByExpression(net, "hov = 1", NetOpts)
-
     end 
 
-    if (loop > 1) then do
-        //Add a new core "[time_am_AB / time_am_BA]" to highway skims - mode choice model needs this core
-        // only to first 4 cores
-        RunMacro("AddCore", sov_skims, 4)
-        RunMacro("AddCore", hov_skims, 4)
-    end
-    
- 	RunMacro("HwycadLog", {"Save and copy skims", null})
-    //Save and copy skims
-    RunMacro("SaveAndCopySkims", sov_skims)
-    RunMacro("SaveAndCopySkims", hov_skims)
-
 	RunMacro("HwycadLog", {"2.1 HwySkimming.rsc", "Finished Highway Skimming"})
+
 	endtime = RunMacro("RuntimeLog", {"Highway Skimming - Feedback Loop " + i2s(loop), starttime})	
     
     ret_value = 1
@@ -214,7 +283,75 @@ Macro "Highway Skimming" (Args)    // Highway Skimming
     CloseMap("temp")
     return(ret_value)
 endMacro    
- 
+
+//Calculate the generalized cost (SCST or HCST) and update those network fields
+Macro "Update Highway Network" (Args, Iteration, Period, VOT, Mode)
+	shared  Scen_Dir, loop
+
+    // Input highway and TAZ files. 
+    hwy_db = Args.[hwy db]
+	layers = GetDBlayers(hwy_db)
+    llayer = layers[2]
+    nlayer = layers[1]
+	network_file = Args.[Network File]
+	
+	flowTable = Scen_Dir + "outputs\\Assignment_" + Period + ".bin"
+	
+	//set cost field as per feedback iteration. If first, set to travel time. Else, set to MSA cost.
+	if Iteration = 1 then do
+		field_cost_ab = "time_" + Period + "_AB"
+		field_cost_ba = "time_" + Period + "_BA"
+		dataview_set = {hwy_db+"|"+llayer, "sovtime" + Period}
+	end
+	else do
+		field_cost_ab = "AB_MSA_Cost"
+		field_cost_ba = "BA_MSA_Cost"
+		dataview_set = {{hwy_db+"|"+llayer, flowTable, {"ID"}, {"ID1"}}, "hovtime" + Period}
+	end
+
+    //first part of the fields to be updated
+	if Mode = "SOV" then field_part = "SCST_" + Period
+	if Mode= "HOV" then field_part = "HCST_" + Period
+    if Mode= "TRK" then field_part = "TCST_" + Period
+	
+    //Update the generalized cost field for all of the time-of-day runs
+    if Period <> "FF" then do
+        //The Dataview Set is a joined view of the link layer and the flow table, based on link ID
+        //Update Cost field in highway database
+        Opts.Input.[Dataview Set] = dataview_set   
+        Opts.Global.Fields = {field_part + "_AB", field_part + "_BA"}   //fields to fill (SCST, HCST, or TCST)
+        Opts.Global.Method = "Formula"
+        //Fill with the generalized costs (min.), calculated from the Toll_... fields
+        //Make sure the truck cost includes the existing value in these fields that was previouisly calculated from TRUCKCOST
+        if Mode= "TRK" then do
+            Opts.Global.Parameter = {   field_part + "_AB +" + field_cost_ab + "+ ((Toll_"+ Mode + "_" +Period+"_AB/100)/"+String(VOT)+"*60)", 
+                                        field_part + "_BA +" + field_cost_ba + "+ ((Toll_"+ Mode + "_" +Period+"_BA/100)/"+String(VOT)+"*60)"} 
+        end
+        else do
+            Opts.Global.Parameter = {   field_cost_ab + "+ ((Toll_"+ Mode + "_" +Period+"_AB/100)/"+String(VOT)+"*60)", 
+                                        field_cost_ba + "+ ((Toll_"+ Mode + "_" +Period+"_BA/100)/"+String(VOT)+"*60)"}
+        end
+
+        ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
+        if !ret_value then goto quit	
+        
+        //Update the network file
+        Opts = null
+        Opts.Input.Database = hwy_db
+        Opts.Input.Network = network_file
+        Opts.Input.[Link Set] = {hwy_db+"|"+llayer, llayer}
+        Opts.Global.[Fields Indices] = field_part
+        Opts.Global.Options.[Link Fields] = { {llayer+"." + field_part +"_AB", llayer+"." + field_part +"_BA"} }
+        Opts.Global.Options.Constants = {1}
+        ret_value = RunMacro("TCB Run Operation",  "Update Network Field", Opts) 
+        if !ret_value then goto quit
+    end
+	
+	quit:
+    return(ret_value)
+	 
+endMacro
+
 Macro "Build Hwy Network" (Args)
     shared  Scen_Dir, loop
 
@@ -227,7 +364,7 @@ Macro "Build Hwy Network" (Args)
     db_linklyr = hwy_db + "|" + llayer
     db_nodelyr = hwy_db + "|" + nlayer
     
-    temp_map = CreateMap("temp",{{"scope",Scope(Coord(-80000000, 44500000), 200.0, 100.0, 0)}})
+    temp_map = CreateMap("temp",{{"scope", Scope(Coord(-80000000, 44500000), 200.0, 100.0, 0)}})
     temp_layer = AddLayer(temp_map,llayer,hwy_db,llayer)
     temp_layer = AddLayer(temp_map,nlayer,hwy_db,nlayer)
     
@@ -258,8 +395,32 @@ Macro "Build Hwy Network" (Args)
         {"[time_AM_AB_time_AM_BA]", {llayer+".time_AM_AB", llayer+".time_AM_BA", , , "False"}}, 
         {"[time_MD_AB_time_MD_BA]", {llayer+".time_MD_AB", llayer+".time_MD_BA", , , "False"}}, 
         {"[time_PM_AB_time_PM_BA]", {llayer+".time_PM_AB", llayer+".time_PM_BA", , , "False"}}, 
-        {"[time_OP_AB_time_OP_BA]", {llayer+".time_OP_AB", llayer+".time_OP_BA", , , "False"}}, 
-        {"hov", {llayer+".hov", llayer+".hov", , , "False"}}, 
+        {"[time_OP_AB_time_OP_BA]", {llayer+".time_OP_AB", llayer+".time_OP_BA", , , "False"}},
+        {"Toll_SOV_AM", {llayer+".Toll_SOV_AM_AB", llayer+".Toll_SOV_AM_BA", , , "False"}}, 
+        {"Toll_SOV_MD", {llayer+".Toll_SOV_MD_AB", llayer+".Toll_SOV_MD_BA", , , "False"}}, 
+        {"Toll_SOV_PM", {llayer+".Toll_SOV_PM_AB", llayer+".Toll_SOV_PM_BA", , , "False"}}, 
+        {"Toll_SOV_OP", {llayer+".Toll_SOV_OP_AB", llayer+".Toll_SOV_OP_BA", , , "False"}},
+        {"Toll_HOV_AM", {llayer+".Toll_HOV_AM_AB", llayer+".Toll_HOV_AM_BA", , , "False"}}, 
+        {"Toll_HOV_MD", {llayer+".Toll_HOV_MD_AB", llayer+".Toll_HOV_MD_BA", , , "False"}}, 
+        {"Toll_HOV_PM", {llayer+".Toll_HOV_PM_AB", llayer+".Toll_HOV_PM_BA", , , "False"}}, 
+        {"Toll_HOV_OP", {llayer+".Toll_HOV_OP_AB", llayer+".Toll_HOV_OP_BA", , , "False"}},
+        {"Toll_TRK_AM", {llayer+".Toll_TRK_AM_AB", llayer+".Toll_TRK_AM_BA", , , "False"}}, 
+        {"Toll_TRK_MD", {llayer+".Toll_TRK_MD_AB", llayer+".Toll_TRK_MD_BA", , , "False"}}, 
+        {"Toll_TRK_PM", {llayer+".Toll_TRK_PM_AB", llayer+".Toll_TRK_PM_BA", , , "False"}}, 
+        {"Toll_TRK_OP", {llayer+".Toll_TRK_OP_AB", llayer+".Toll_TRK_OP_BA", , , "False"}}, 
+		{"SCST_AM", {llayer+".SCST_AM_AB", llayer+".SCST_AM_BA", , , "False"}},
+		{"SCST_MD", {llayer+".SCST_MD_AB", llayer+".SCST_MD_BA", , , "False"}},
+		{"SCST_PM", {llayer+".SCST_PM_AB", llayer+".SCST_PM_BA", , , "False"}},
+		{"SCST_OP", {llayer+".SCST_OP_AB", llayer+".SCST_OP_BA", , , "False"}},
+		{"HCST_AM", {llayer+".HCST_AM_AB", llayer+".HCST_AM_BA", , , "False"}},
+		{"HCST_MD", {llayer+".HCST_MD_AB", llayer+".HCST_MD_BA", , , "False"}},
+		{"HCST_PM", {llayer+".HCST_PM_AB", llayer+".HCST_PM_BA", , , "False"}},
+		{"HCST_OP", {llayer+".HCST_OP_AB", llayer+".HCST_OP_BA", , , "False"}},
+		{"TCST_AM", {llayer+".TCST_AM_AB", llayer+".TCST_AM_BA", , , "False"}},
+		{"TCST_MD", {llayer+".TCST_MD_AB", llayer+".TCST_MD_BA", , , "False"}},
+		{"TCST_PM", {llayer+".TCST_PM_AB", llayer+".TCST_PM_BA", , , "False"}},
+		{"TCST_OP", {llayer+".TCST_OP_AB", llayer+".TCST_OP_BA", , , "False"}}, 
+        {"HOV_m1_"+Args.HYEAR, {llayer+".HOV_m1_"+Args.HYEAR, llayer+".HOV_m1_"+Args.HYEAR, , , "False"}}, //
         {"alpha", {llayer+".alpha", llayer+".alpha", , , "False"}}, 
         {"beta", {llayer+".beta", llayer+".beta", , , "False"}},
         {"TRUCKNET", {llayer+".TRUCKNET", llayer+".TRUCKNET", , , "False"}},
@@ -286,42 +447,42 @@ Macro "Build Hwy Network" (Args)
     return(ret_value)
 endMacro
 
- 
 //**************************************
 //*    Create TOD Skim Matrices     
 //**************************************     
-Macro "Build Hwy Skims"(network_file, db_nodelyr, nlayer, skim, SkimField)    
+Macro "Build Hwy Skims"(network_file, db_nodelyr, nlayer, skim, SkimFields, vot)    
+    shared Scen_Dir
 
     Opts = null
     Opts.Input.Network = network_file
     Opts.Input.[Origin Set] = {db_nodelyr, nlayer, "Selection", "Select * where CCSTYLE=97 or CCSTYLE=98 or CCSTYLE=99"}
     Opts.Input.[Destination Set] = {db_nodelyr, nlayer, "Selection"}
     Opts.Input.[Via Set] = {db_nodelyr, nlayer}
-    Opts.Field.Minimize = SkimField
-	Opts.Field.[Skim Fields] = {{"RiverX","All"}}  //added for internal truck model
+    Opts.Field.Minimize = SkimFields[1]
+	Opts.Field.[Skim Fields] = {{"RiverX","All"},{SkimFields[2],"All"}}
     Opts.Field.Nodes = nlayer + ".ID"
     Opts.Output.[Output Matrix].Label = "Shortest Path"
-    Opts.Output.[Output Matrix].[File Name] = skim[1]
+    Opts.Output.[Output Matrix].[File Name] = Scen_Dir + "outputs\\" + skim[1]
     ret_value = RunMacro("TCB Run Procedure","TCSPMAT", Opts, &Ret)
     if !ret_value then goto quit
 
     // Add Matrix Core "Shortest Path - "+SkimField. After adding new skim "RiverX", output matrix core name was different. 
 	// So, this step was added to add a consistent core name and avoid breaking the model code.
     Opts = null
-    Opts.Input.[Input Matrix] = skim[1]
-    Opts.Input.[New Core] = "Shortest Path - " + SkimField
+    Opts.Input.[Input Matrix] = Scen_Dir + "outputs\\" + skim[1]
+    Opts.Input.[New Core] = "Shortest Path - " + SkimFields[1]
     ret_value = RunMacro("TCB Run Operation", "Add Matrix Core", Opts, &Ret)
     if !ret_value then goto quit
 	
 	// set the new matrix core to skimmed field
-	m = OpenMatrix(skim[1],)
-	mc1 = CreateMatrixCurrency(m, SkimField,,, )
-	mc2 = CreateMatrixCurrency(m, "Shortest Path - "+SkimField,,, )
+	m = OpenMatrix(Scen_Dir + "outputs\\" + skim[1],)
+	mc1 = CreateMatrixCurrency(m, SkimFields[1],,, )
+	mc2 = CreateMatrixCurrency(m, "Shortest Path - "+SkimFields[1],,, )
     mc2 := mc1
 
     //add taz index
     Opts = null
-    Opts.Input.[Current Matrix] = skim[1]
+    Opts.Input.[Current Matrix] = Scen_Dir + "outputs\\" + skim[1]
     Opts.Input.[Index Type] = "Both"
     Opts.Input.[View Set] = {db_nodelyr, nlayer, "Selection", "Select * where CCSTYLE=99"}
     Opts.Input.[Old ID Field] = {db_nodelyr, "ID"}
@@ -332,7 +493,7 @@ Macro "Build Hwy Skims"(network_file, db_nodelyr, nlayer, skim, SkimField)
 
     //add external station index
     Opts = null
-    Opts.Input.[Current Matrix] = skim[1]
+    Opts.Input.[Current Matrix] = Scen_Dir + "outputs\\" + skim[1]
     Opts.Input.[Index Type] = "Both"
     Opts.Input.[View Set] = {db_nodelyr, nlayer, "Selection", "Select * where CCSTYLE=97 or CCSTYLE=98"}
     Opts.Input.[Old ID Field] = {db_nodelyr, "ID"}
@@ -343,7 +504,7 @@ Macro "Build Hwy Skims"(network_file, db_nodelyr, nlayer, skim, SkimField)
     
     // calculate the intrazonal travel time for tazs
     Opts = null
-    Opts.Input.[Matrix Currency] = {skim[1], "Shortest Path - "+SkimField, "TAZ_ID", "TAZ_ID"}
+    Opts.Input.[Matrix Currency] = {Scen_Dir + "outputs\\" + skim[1], "Shortest Path - "+SkimFields[1], "TAZ_ID", "TAZ_ID"}
     Opts.Global.Factor = 0.5
     Opts.Global.Neighbors = 3
     Opts.Global.Operation = 1
@@ -351,7 +512,7 @@ Macro "Build Hwy Skims"(network_file, db_nodelyr, nlayer, skim, SkimField)
     ret_value = RunMacro("TCB Run Procedure", "Intrazonal", Opts, &Ret)
     if !ret_value then goto quit     	
 
-    mc = RunMacro("TCB Create Matrix Currency", skim[1], "Shortest Path - "+SkimField, "ee", "ee")
+    mc = RunMacro("TCB Create Matrix Currency", Scen_Dir + "outputs\\" + skim[1], "Shortest Path - "+SkimFields[1], "ee", "ee")
     ret_value = (mc <> null)
     if !ret_value then goto quit
 
@@ -363,13 +524,13 @@ endMacro
 //**************************************
 //*    Add Intrazonal and Terminal   
 //**************************************  
-Macro "Add Intrazonal & Terminal Times"(skim, SkimField)
-Shared Scen_Dir  	
+Macro "Add Intrazonal & Terminal Times"(skim, SkimFields)
+    shared Scen_Dir  
 
-    // STEP 5: Sum Peak Skim and terminal time. 
+    //Sum Peak Skim and terminal time. 
     Opts = null
-    Opts.Input.[Matrix Currency] = { skim[1], "Shortest Path - "+SkimField, "TAZ_ID", "TAZ_ID"}
-    Opts.Input.[Core Currencies] = {{ skim[1], "Shortest Path - "+SkimField, "TAZ_ID", "TAZ_ID"}, {Scen_Dir + "//outputs//terminal_time.mtx", "total_time", "TAZ_ID", "TAZ_ID"}}
+    Opts.Input.[Matrix Currency] = {Scen_Dir + "outputs\\" + skim[1], "Shortest Path - "+SkimFields[1], "TAZ_ID", "TAZ_ID"}
+    Opts.Input.[Core Currencies] = {{Scen_Dir + "outputs\\" + skim[1], "Shortest Path - "+SkimFields[1], "TAZ_ID", "TAZ_ID"}, {Scen_Dir + "outputs\\terminal_time.mtx", "total_time", "TAZ_ID", "TAZ_ID"}}
     Opts.Global.Method = 7 
     Opts.Global.[Cell Range] = 2
     Opts.Global.[Matrix K] = {1, 1}
@@ -377,24 +538,24 @@ Shared Scen_Dir
     ret_value = RunMacro("TCB Run Operation", "Fill Matrices", Opts)
     if !ret_value then goto quit
             
-    // STEP 2: Add Matrix Core "Length"
+    //Add Matrix Core "Length"
     Opts = null
-    Opts.Input.[Input Matrix] = skim[1]
+    Opts.Input.[Input Matrix] = Scen_Dir + "outputs\\" + skim[1]
     Opts.Input.[New Core] = "Length"
     ret_value = RunMacro("TCB Run Operation", "Add Matrix Core", Opts, &Ret)
     if !ret_value then goto quit
     
-    // STEP 4: Merge Matrices
+    //Merge Matrices
     Opts = null
-    Opts.Input.[Target Currency] = {skim[1], "Length", "Origin", "Destination"}
+    Opts.Input.[Target Currency] = {Scen_Dir + "outputs\\" + skim[1], "Length", "Origin", "Destination"}
     Opts.Input.[Source Currencies] = {{Scen_Dir +  "outputs\\ExtDistSkims.mtx", "Length", "Origin", "Destination"}}
     Opts.Global.[Missing Option].[Force Missing] = "No"
     ret_value = RunMacro("TCB Run Operation", "Merge Matrices", Opts, &Ret)
     if !ret_value then goto quit
     
-    // STEP 5: Intrazonal for length matrix
+    //Intrazonal for length matrix
     Opts = null
-    Opts.Input.[Matrix Currency] = {skim[1], "Length", "Origin", "Destination"}
+    Opts.Input.[Matrix Currency] = {Scen_Dir + "outputs\\" + skim[1], "Length", "Origin", "Destination"}
     Opts.Global.Factor = 1
     Opts.Global.Neighbors = 3
     Opts.Global.Operation = 1
@@ -411,14 +572,14 @@ Macro "AddCore" (HwySkims,CoreCount)
 
     // add core to skims except ff
     for i=1 to CoreCount do
-        inMat = HwySkims[i][1]
+        inMat = Scen_Dir + "outputs\\" + HwySkims[1]
         m = OpenMatrix(inMat,)
         
-        coreName = "Shortest Path - [time_" + HwySkims[i][3] + "_AB_time_" + HwySkims[i][3] + "_BA]"
+        coreName = "Shortest Path - [time_" + HwySkims[3] + "_AB_time_" + HwySkims[3] + "_BA]"
         
         AddMatrixCore(m, coreName)
         
-        mc1 = CreateMatrixCurrency(m, "Shortest Path - _MSATime" + HwySkims[i][3],,, )
+        mc1 = CreateMatrixCurrency(m, "Shortest Path - _MSATime" + HwySkims[3],,, )
         mc2 = CreateMatrixCurrency(m, coreName,,, )
         
         // set the new core to MSA time core
@@ -430,11 +591,7 @@ endMacro
 Macro "SaveAndCopySkims" (HwySkims)
     shared Scen_Dir, loop
 
-    counter=HwySkims.Length
-    count=1
-    
     directory = Scen_Dir + "outputs\\Skims_iter" + string(loop)
-    
     info = GetDirectoryInfo(directory, "Directory")
     
     if info = null then do
@@ -443,7 +600,8 @@ Macro "SaveAndCopySkims" (HwySkims)
     
     // save by loop numbers
     for i=1 to HwySkims.Length do
-        inMat = HwySkims[i][1]
+
+        inMat = Scen_Dir + "outputs\\" + HwySkims[1]
         file_info = SplitPath(inMat)
         
         // save skims
