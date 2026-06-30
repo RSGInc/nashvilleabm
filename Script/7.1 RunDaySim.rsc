@@ -108,8 +108,8 @@ STEPS:
     if (loop=1) then do
 
 		// copy roster file to outputs folder
-		infile = DaySimDir + "inputs\\nashville-roster_matrix_omx-ML.csv"
-		outfile = OutDir + "nashville-roster_matrix_omx-ML.csv"
+		infile = DaySimDir + "inputs\\nashville-roster_matrix_omx.csv"
+		outfile = OutDir + "nashville-roster_matrix_omx.csv"
 		CopyFile(infile,outfile)
 		
 		// copy roster combination file to outputs folder
@@ -118,8 +118,8 @@ STEPS:
 		CopyFile(infile,outfile)    
 		
 		// create properties file
-		properties_template = DaySimDir + "Configuration_template-ML.properties"
-		properties_full = DaySimDir + "Configuration_full-ML.properties"
+		properties_template = DaySimDir + "Configuration_template.properties"
+		properties_full = DaySimDir + "Configuration_full.properties"
 		properties_shadow_price = DaySimDir + "Configuration_shadow_price.properties"
 		
 		fptr = OpenFile(properties_template, "r")
@@ -170,7 +170,7 @@ STEPS:
     for i=1 to itercount do
 		starttime = RunMacro("RuntimeLog", {"DaySim Iteration " + i2s(i) + " in feedback loop " + i2s(loop), null})
         if i=itercount then do
-            config_file = "Configuration_full-ML.properties"
+            config_file = "Configuration_full.properties"
         end
         else do
 			//shadow prices runs (itercount-1)
