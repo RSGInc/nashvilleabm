@@ -67,7 +67,8 @@ Macro "Settings" (Args)
 	mf.netfile			= Args.[Network File]
 	mf.linefile			= Args.[hwy db]
 	mf.v_spec_gen		= mf.path + "Inputs\\visitor\\special_generators.bin"
-	mf.skimfile			= Args.[md skim]
+	//mf.skimfile			= Args.[md skim]
+	mf.skimfile			= mf.path + "outputs\\hwyskim_MD_sov_high.mtx"
 	mf.VKFactor			= mf.path + "Inputs\\visitor\\Visitor_KF.mtx"	
 	
 	//parameters
