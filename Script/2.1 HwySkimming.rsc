@@ -197,6 +197,13 @@ Macro "Highway Skimming" (Args)    // Highway Skimming
 
             RunMacro("Build Hwy Skims", network_file, db_nodelyr, nlayer, hov_skims[i], skim_fields, vot)
             RunMacro("Add Intrazonal & Terminal Times",  hov_skims[i], skim_fields)
+            
+            //Added July 1 2026
+            if (loop > 1) then do
+                //Add a new core "[time_am_AB / time_am_BA]" to highway skims for each period - mode choice model needs this core
+                RunMacro("AddCore", hov_skims[i], 1)
+            end
+            
             RunMacro("SaveAndCopySkims", hov_skims[i])
 
         end
@@ -262,10 +269,10 @@ Macro "Highway Skimming" (Args)    // Highway Skimming
             NetOpts.[Type] = "Enable"
             NetworkEnableDisableLinkByExpression(net, hov_field, NetOpts)
 
-            if (loop > 1) then do
+            //Modified July 1 2026
+            if (loop > 1 and i<=4) then do
                 //Add a new core "[time_am_AB / time_am_BA]" to highway skims for each period - mode choice model needs this core
-                RunMacro("AddCore", sov_skims[i], periods_sov.Length)
-                RunMacro("AddCore", hov_skims[i], periods.Length)
+                RunMacro("AddCore", sov_skims[i], 1)
             end
     
  	        RunMacro("HwycadLog", {"Save and copy skims", null})

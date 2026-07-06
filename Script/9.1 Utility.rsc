@@ -55,6 +55,7 @@ macro "MOE1" (Args) //MOE 1 for the table
 	shared Scen_Dir
 	RunMacro("summarizing_HH_POP_EMP") 
 	RunMacro("Update_TAZ_fields", Args)
+	
 	//create an MOE file
 	MOE_file = Scen_Dir + "reports\\moe\\scenario_moe.csv"
 	MOE = OpenFile(MOE_file,"w")
@@ -94,17 +95,7 @@ macro "MOE1" (Args) //MOE 1 for the table
 	taz_fields=GetViewStructure(tazname)
 	
 	districts={1,1,0,0,0,0,0,0,0,0} //flag for analysis, 10 districts max
-/*	
-	//look for fields with "MOE_DIST"
-	for i=2 to 10 do
-		for j=1 to taz_fields.length do
-			if taz_fields[j][1]="MOE_DIST"+i2s(i) then do
-				districts[i]=1
-				j=taz_fields.length
-			end
-		end
-	end
-*/	
+	
 	//Lane Mile
 	Opts = null
 	Opts.Input.[View Set] = {hwy_db+"|"+llayer, llayer}
@@ -132,16 +123,6 @@ macro "MOE1" (Args) //MOE 1 for the table
 			if moe_data[i]<>moe_data[i-1] then moe_names=moe_names+{moe_data[i]}
 		end
 		
-		//tag the line layer with district names //TransCAD6
-		//Opts = null
-		//Opts.Input.[Dataview Set] = {hwy_db+"|"+llayer, llayer,  "selection", "Select * where Assignment_Loc=1 and (County='47037' or County='47119' or County='47147' or County='47149' or County='47165' or County='47187' or County='47189')"}
-		//Opts.Input.[Tag View Set] = {taz_db+"|"+tazname,  tazname}
-		//Opts.Global.Fields = {llayer+".DIST_NAME"}
-		//Opts.Global.Method = "Tag"
-		//Opts.Global.Parameter = {"Value", tazname, tazname+".MOE_DIST"+i2s(n_dist_set)}
-		//ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
-		//if !ret_value then goto quit
-
 		UpdateProgressBar("tag the line layer with district names", ) //TransCAD8
 		//tag district names
 		vw_set = RunMacro("TCB Create View Set", hwy_db+"|"+llayer, llayer, "Selection", "Select * where Assignment_Loc=1 and (County='47037' or County='47119' or County='47147' or County='47149' or County='47165' or County='47187' or County='47189')")
@@ -338,14 +319,14 @@ macro "MOE1" (Args) //MOE 1 for the table
 				"Leng",
 				
 				"VOL_MU",
-				"VOL_MUAMAB",
-				"VOL_MUAMBA",
-				"VOL_MUMDAB",
-				"VOL_MUMDBA",
-				"VOL_MUPMAB",
-				"VOL_MUPMBA",
-				"VOL_MUOPAB",
-				"VOL_MUOPBA",
+				"VOL_MU_AM_AB",
+				"VOL_MU_AM_BA",
+				"VOL_MU_MD_AB",
+				"VOL_MU_MD_BA",
+				"VOL_MU_PM_AB",
+				"VOL_MU_PM_BA",
+				"VOL_MU_OP_AB",
+				"VOL_MU_OP_BA",
 				"LANEMILE",
 				
 				"MU_VHT_AMAB",
@@ -663,8 +644,11 @@ Macro "Build Daily Trip Table" (daily_matrix_file, Args)
 	end
 	
 	//add all time periods
-	// matrix_cores = {"Passenger", "Commercial", "SingleUnit", "MU", "Preload_EIMU", "Preload_IEMU", "Preload_EEMU","Preload_IESU","Preload_EESU","Preload_Pass","HOV","HOV2","HOV3"}
-	matrix_cores = {"IICOM", "IISU", "IIMU", "IEAUTO", "IESU", "EEAUTO", "EESU", "Passenger_SOV", "Passenger_HOV2", "Passenger_HOV3", "Preload_MU", "Preload_SU", "PersonTrips", "IEMU", "EIMU", "EEMU", "Passenger", "Commercial", "SingleUnit", "MU", "Preload_EIMU", "Preload_IEMU", "Preload_EEMU", "Preload_IESU", "Preload_EESU", "Preload_Pass", "HOV", "HOV2", "HOV3", "Autos"}
+	matrix_cores = {"IICOM", "IISU", "IIMU", "IEAUTO", "IESU", "EEAUTO", "EESU", "Passenger_SOV_low", "Passenger_SOV_med","Passenger_SOV_high",
+	"Passenger_HOV2_low","Passenger_HOV2_med","Passenger_HOV2_high", "Passenger_HOV3_low","Passenger_HOV3_med","Passenger_HOV3_high", 
+	"Preload_MU", "Preload_SU", "PersonTrips", "IEMU", "EIMU", "EEMU", "Passenger_low","Passenger_med","Passenger_high", "Commercial", "SingleUnit", "MU", 
+	"Preload_EIMU", "Preload_IEMU", "Preload_EEMU", "Preload_IESU", "Preload_EESU", "Preload_Pass", "HOV_low","HOV_med","HOV_high", 
+	"HOV2_low","HOV2_med","HOV2_high", "HOV3_low","HOV3_med","HOV3_high", "Autos_low", "Autos_med", "Autos_high"}
 	for p=1 to periods.length do
 		for core=1 to matrix_cores.Length do
 			mc_daily = RunMacro("TCB Create Matrix Currency", daily_matrix_file, matrix_cores[core], "Rows", "Cols")

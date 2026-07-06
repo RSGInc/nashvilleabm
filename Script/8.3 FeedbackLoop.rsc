@@ -146,6 +146,7 @@ Macro "Convergence"
         
         periods = {"AM","MD","PM","OP"}
         classes = {"sov","hov"}
+		vots = {"low","med","high"}
         
         RMSE_summary = Scen_Dir+"\\outputs\\Convergence_Summary.txt"
 
@@ -157,35 +158,38 @@ Macro "Convergence"
             WriteLine(fptr, "-------- Iteration = " + String(feedback_iteration) + " --------")
             for class=1 to 2 do // sov and hov
                 for p = 1 to periods.Length do
-                    directory = Scen_Dir + "outputs\\Skims_iter" + string(feedback_iteration-1)
-                    //directory = Scen_Dir + "outputs"
-                    previous_skim_matrix = directory + "\\hwyskim_" + Lower(periods[p]) + "_" +classes[class] + "_" + i2s(feedback_iteration - 1) + ".mtx"
-                    
-                    directory = Scen_Dir + "outputs\\Skims_iter" + string(feedback_iteration)
-                    //directory = Scen_Dir + "outputs"
-                    current_skim_matrix = directory + "\\hwyskim_" + Lower(periods[p]) + "_" +classes[class] + "_"  + i2s(feedback_iteration) + ".mtx"
-                    
-                    m_prev_skim = OpenMatrix(previous_skim_matrix,)
-                    m_curr_skim = OpenMatrix(current_skim_matrix,)
-                    
-                    matrix_prev_cores = GetMatrixCoreNames(m_prev_skim)
-                    matrix_curr_cores = GetMatrixCoreNames(m_curr_skim)
-                    
-                    mc_prev_skim = CreateMatrixCurrency(m_prev_skim, matrix_prev_cores[1],,,)
-                    mc_curr_skim = CreateMatrixCurrency(m_curr_skim, matrix_curr_cores[1],,,)
-                    
-                    rmse_array = MatrixRMSE(mc_prev_skim, mc_curr_skim)
-                    rmse = rmse_array.RMSE
-                    percent_rmse = rmse_array.RelRMSE
+					for v = 1 to vots.Length do
+						directory = Scen_Dir + "outputs\\Skims_iter" + string(feedback_iteration-1)
+					
+						previous_skim_matrix = directory + "\\hwyskim_" + Lower(periods[p]) + "_" +classes[class] + "_" + vots[v] + "_" + i2s(feedback_iteration - 1) + ".mtx"
+						
+						directory = Scen_Dir + "outputs\\Skims_iter" + string(feedback_iteration)
+						
+						current_skim_matrix = directory + "\\hwyskim_" + Lower(periods[p]) + "_" +classes[class] + "_" + vots[v] + "_"  + i2s(feedback_iteration) + ".mtx"
+						
+						m_prev_skim = OpenMatrix(previous_skim_matrix,)
+						m_curr_skim = OpenMatrix(current_skim_matrix,)
+						
+						matrix_prev_cores = GetMatrixCoreNames(m_prev_skim)
+						matrix_curr_cores = GetMatrixCoreNames(m_curr_skim)
+						
+						mc_prev_skim = CreateMatrixCurrency(m_prev_skim, matrix_prev_cores[1],,,)
+						mc_curr_skim = CreateMatrixCurrency(m_curr_skim, matrix_curr_cores[1],,,)
+						
+						rmse_array = MatrixRMSE(mc_prev_skim, mc_curr_skim)
+						rmse = rmse_array.RMSE
+						percent_rmse = rmse_array.RelRMSE
 
-                    WriteLine(fptr, "")
-                    WriteLine(fptr, "Period         : " + periods[p])
-                    WriteLine(fptr, "Class         : " + classes[class])
-                    WriteLine(fptr, "RMSE           : " + String(rmse))    
-                    WriteLine(fptr, "Pct_RMSE       : " + String(percent_rmse)) 
-                    
-                    if percent_rmse < 0.1 then  converged = 1
-                    else  converged = 0
+						WriteLine(fptr, "")
+						WriteLine(fptr, "Period         : " + periods[p])
+						WriteLine(fptr, "Class         : " + classes[class])
+						WriteLine(fptr, "Vot         : " + vots[v])
+						WriteLine(fptr, "RMSE           : " + String(rmse))    
+						WriteLine(fptr, "Pct_RMSE       : " + String(percent_rmse)) 
+						
+						if percent_rmse < 0.1 then  converged = 1
+						else  converged = 0
+					end
                 
                 end
             end
