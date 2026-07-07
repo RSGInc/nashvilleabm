@@ -1567,13 +1567,7 @@ Macro "PostProcessor" (Args)
 		
 		}, )
 	
-	//open assignment result tables
-/*	
-	OpenTable("AM preload","FFB",{Scen_Dir+ "outputs\\Assignment_Preload_AM.bin",})
-	OpenTable("MD preload","FFB",{Scen_Dir+ "outputs\\Assignment_Preload_MD.bin",})
-	OpenTable("PM preload","FFB",{Scen_Dir+ "outputs\\Assignment_Preload_PM.bin",})
-	OpenTable("OP preload","FFB",{Scen_Dir+ "outputs\\Assignment_Preload_OP.bin",})
-*/	
+	//open assignment result tables	
 	OpenTable("AM Assignment Result","FFB",{Scen_Dir + "outputs\\Assignment_AM.bin",})
 	OpenTable("MD Assignment Result","FFB",{Scen_Dir + "outputs\\Assignment_MD.bin",})
 	OpenTable("PM Assignment Result","FFB",{Scen_Dir + "outputs\\Assignment_PM.bin",})
@@ -1589,24 +1583,6 @@ Macro "PostProcessor" (Args)
 	
 	for p=1 to periods.length do
 		
-		//preload
-		/*preload=Scen_Dir+ "outputs\\Assignment_Preload_"+periods[p]+".bin"		
-		Opts = null
-		Opts.Input.[Dataview Set] = {{result, preload, {"ID"}, {"ID1"}}, "Assignment Result + Preload"+ periods[p]}
-		Opts.Global.Fields = {
-			"VOL_MU"+periods[p]+"AB","VOL_MU"+periods[p]+"BA",
-			"VOL_SU"+periods[p]+"AB","VOL_SU"+periods[p]+"BA",
-			"VOL_PASS"+periods[p]+"AB","VOL_PASS"+periods[p]+"BA"
-			}
-		Opts.Global.Method = "Formula"
-		Opts.Global.Parameter = {
-			"nz(AB_FLOW_PRELOAD_EIMU)+nz(AB_FLOW_PRELOAD_IEMU)+nz(AB_FLOW_PRELOAD_EEMU)+nz(VOL_MU"+periods[p]+"AB)","nz(BA_FLOW_PRELOAD_EIMU)+nz(BA_FLOW_PRELOAD_IEMU)+nz(BA_FLOW_PRELOAD_EEMU)+nz(VOL_MU"+periods[p]+"BA)",
-			"nz(AB_FLOW_PRELOAD_IESU)+nz(AB_FLOW_PRELOAD_EESU)+nz(VOL_SU"+periods[p]+"AB)","nz(BA_FLOW_PRELOAD_IESU)+nz(BA_FLOW_PRELOAD_EESU)+nz(VOL_SU"+periods[p]+"BA)",
-			"nz(AB_FLOW_PRELOAD_Pass)+nz(VOL_PASS"+periods[p]+"AB)","nz(BA_FLOW_PRELOAD_Pass)+nz(VOL_PASS"+periods[p]+"BA)"
-			}
-		ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
-		if !ret_value then goto quit*/
-
 		//Step 1: update the MU/SU fields in the final assignment result with preload MU/SU and IIMU/IISU
 		Opts = null
 		Opts.Input.[Dataview Set] = {{result, Scen_Dir + "outputs\\Assignment_"+periods[p]+".bin", {"ID"}, {"ID1"}}, "Assignment Result+"+periods[p]+" Assignment"}
@@ -1636,56 +1612,56 @@ Macro "PostProcessor" (Args)
 			Opts.Global.Method = "Formula"
 
 			//It would be better if these could be read off the vehicles list but it wasn't working
-			if v=1|v=4|v=7 then veh_vot = "LOW"
-				else if v=2|v=5|v=8 then veh_vot = "MED"
-					else if v=3|v=6|v=9 then veh_vot = "HIGH"
+			if v=1 or v=4 or v=7 then veh_vot = "LOW"
+				else if v=2 or v=5 or v=8 then veh_vot = "MED"
+					else if v=3 or v=6 or v=9 then veh_vot = "HIGH"
 						else veh_vot = ""
 
 			//For PASS vehicles (v<4), the filling varies according to auto_assign_classes
-			if (v<4 & auto_assign_classes = 1) then do
+			if (v<4 and auto_assign_classes = 1) then do
 				Opts.Global.Parameter = {	"nz(AB_Flow_Autos_"+veh_vot+")",
 											"nz(BA_Flow_Autos_"+veh_vot+")", 
 											"nz(VOL_"+vehicles[v]+"_"+periods[p]+"_AB)+nz(VOL_"+vehicles[v]+"_"+periods[p]+"_BA)"}
 			end
 
-			if (v<4 & auto_assign_classes <> 1) then do
+			if (v<4 and auto_assign_classes <> 1) then do
 				Opts.Global.Parameter = {	"nz(AB_Flow_"+vehicle_names[v]+")",
 											"nz(BA_Flow_"+vehicle_names[v]+")", 
 											"nz(VOL_"+vehicles[v]+"_"+periods[p]+"_AB)+nz(VOL_"+vehicles[v]+"_"+periods[p]+"_BA)"}
 			end								
 
 			//For HOV2 vehicles (v>3 & v<7), we fill from the HOV field into the HOV2 field if auto_assign_classes = 2
-			if (v>3 & v<7 & auto_assign_classes=2) then do
+			if (v>3 and v<7 and auto_assign_classes=2) then do
 				Opts.Global.Parameter = {	"nz(AB_Flow_HOV_"+veh_vot+")",
 											"nz(BA_Flow_HOV_"+veh_vot+")",
 											"nz(VOL_"+vehicles[v]+"_"+periods[p]+"_AB)+nz(VOL_"+vehicles[v]+"_"+periods[p]+"_BA)"}
 			end
 			//Or we fill all of the fields if auto_assign_classes = 3
-			if (v>3 & v<7 & auto_assign_classes=3) then do
+			if (v>3 and v<7 and auto_assign_classes=3) then do
 				Opts.Global.Parameter = {	"nz(AB_Flow_"+vehicle_names[v]+")",
 											"nz(BA_Flow_"+vehicle_names[v]+")", 
 											"nz(VOL_"+vehicles[v]+"_"+periods[p]+"_AB)+nz(VOL_"+vehicles[v]+"_"+periods[p]+"_BA)"}
 			end	
 			//Or we zero out the HOV fields
-			if (v>3 & v<7 & auto_assign_classes=1) then do
+			if (v>3 and v<7 and auto_assign_classes=1) then do
 				Opts.Global.Parameter = {"0", "0", "0"}
 			end										
 
 			//For HOV3 vehicles (v>6 & v<10), we fill all fields directly from the corresponding field in the assignment output when auto_assign_classes = 3
-			if (v>6 & v<10 & auto_assign_classes=3) then do
+			if (v>6 and v<10 and auto_assign_classes=3) then do
 				Opts.Global.Parameter = {	"nz(AB_Flow_"+vehicle_names[v]+")",
 											"nz(BA_Flow_"+vehicle_names[v]+")", 
 											"nz(VOL_"+vehicles[v]+"_"+periods[p]+"_AB)+nz(VOL_"+vehicles[v]+"_"+periods[p]+"_BA)"}
 			end
 			//otherwise we zero it out
-			if (v>6 & v<10 & auto_assign_classes<>3) then do
+			if (v>6 and v<10 and auto_assign_classes<>3) then do
 				Opts.Global.Parameter = {"0", "0", "0"}
 			end
 
 			//Trucks and commercial vehicles (v>9) are unaffected by auto_assign_classes
 			if v>9 then do
-				Opts.Global.Parameter = {	"nz(AB_Flow_"+vehicle_names[v]+")",
-											"nz(BA_Flow_"+vehicle_names[v]+")", 
+				Opts.Global.Parameter = {	"nz(VOL_"+vehicles[v]+"_"+periods[p]+"_AB)+nz(AB_Flow_"+vehicle_names[v]+")",
+											"nz(VOL_"+vehicles[v]+"_"+periods[p]+"_BA)+nz(BA_Flow_"+vehicle_names[v]+")", 
 											"nz(VOL_"+vehicles[v]+"_"+periods[p]+"_AB)+nz(VOL_"+vehicles[v]+"_"+periods[p]+"_BA)"}			
 			end
 
@@ -1738,9 +1714,11 @@ Macro "PostProcessor" (Args)
 		for p=1 to periods.length do
 			Opts = null
 			Opts.Input.[Dataview Set] = {result, "Assignment Result"}
-			Opts.Global.Fields = {"VOL_"+types[n]+"_"+periods[p]}
+			Opts.Global.Fields = {"VOL_"+types[n]+"_"+periods[p]+"_AB","VOL_"+types[n]+"_"+periods[p]+"_BA","VOL_"+types[n]+"_"+periods[p]}
 			Opts.Global.Method = "Formula"
-			Opts.Global.Parameter = {"nz(VOL_"+types[n]+"_"+periods[p]+"_AB)+nz(VOL_"+types[n]+"_"+periods[p]+"_BA)"}
+			Opts.Global.Parameter = {"nz(VOL_"+types[n]+"_"+periods[p]+"_AB)+nz(VOL_"+types[n]+"_LOW_"+periods[p]+"_AB)+nz(VOL_"+types[n]+"_MED_"+periods[p]+"_AB)+nz(VOL_"+types[n]+"_HIGH_"+periods[p]+"_AB)",
+									 "nz(VOL_"+types[n]+"_"+periods[p]+"_BA)+nz(VOL_"+types[n]+"_LOW_"+periods[p]+"_BA)+nz(VOL_"+types[n]+"_MED_"+periods[p]+"_BA)+nz(VOL_"+types[n]+"_HIGH_"+periods[p]+"_BA)",
+									"nz(VOL_"+types[n]+"_LOW_"+periods[p]+")+nz(VOL_"+types[n]+"_MED_"+periods[p]+")+nz(VOL_"+types[n]+"_HIGH_"+periods[p]+")"}
 			ret_value = RunMacro("TCB Run Operation", "Fill Dataview", Opts, &Ret)
 			if !ret_value then goto quit
 		end
