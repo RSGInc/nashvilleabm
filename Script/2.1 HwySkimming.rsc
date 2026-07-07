@@ -155,6 +155,13 @@ Macro "Highway Skimming" (Args)    // Highway Skimming
 
         RunMacro("Build Hwy Skims", network_file, db_nodelyr, nlayer, trk_skims[i], skim_fields, truck_vot)
         RunMacro("Add Intrazonal & Terminal Times",  trk_skims[i], skim_fields)
+
+		//Added July 7 2026
+		if (loop > 1) then do
+			//Add a new core "[time_am_AB / time_am_BA]" to truck skims for each period - internal truck model needs this core
+			RunMacro("AddCore", trk_skims[i], 1)
+		end
+		
         RunMacro("SaveAndCopySkims", trk_skims[i])
     end
 
