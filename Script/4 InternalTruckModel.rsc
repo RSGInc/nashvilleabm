@@ -53,8 +53,7 @@ Macro "Settings" (Args)
 	parcel_lu_file 		= Args.[Parcels]
 	tazindex_file 		= Args.[taz_index]
 	
-	//skim_truck_time 	= "Shortest Path - [time_MD_AB_time_MD_BA]"
-	skim_truck_time 	= "Shortest Path - _MSATimeMD"
+	skim_truck_time 	= "Shortest Path - [time_MD_AB_time_MD_BA]"
 
 	//OUTPUTS - TRUCKS (SU and MU)
 	od_trk				= Args.[Internal Truck OD]
