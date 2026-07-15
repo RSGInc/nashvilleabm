@@ -30,7 +30,7 @@ if not exist "%final_path%" (
 )
 
 REM Call the Python script with the dynamically set path and redirect error messages
-E:\Projects\Clients\NashvilleMPO\ModelUpdate2023\GitHub\nashvillePopSim\Setup\software\Anaconda2\envs\py3env\python.exe auto_validation.py %final_path% 2018 2> error_log.txt
+E:\Projects\Clients\NashvilleMPO\ModelUpdate2023\GitHub\nashvillePopSim\Setup\software\Anaconda2\envs\py3env\python.exe auto_validation.py %final_path% 2023 2> error_log.txt
 
 REM Check for errors
 if %errorlevel% neq 0 (
